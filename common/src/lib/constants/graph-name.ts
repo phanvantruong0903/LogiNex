@@ -5,4 +5,5 @@ export const GRAPHQL_NAME = {
   UPDATE: 'UpdateProfile',
   LOGIN: 'LoginUser',
   REFRESH_TOKEN: 'RefreshToken',
+  CHANGE_PASSWORD: 'ChangePassword',
 };

@@ -6,6 +6,7 @@ import {
   ApolloServerPluginLandingPageDisabled,
   ApolloServerPluginLandingPageLocalDefault,
 } from 'apollo-server-core';
+import { UserModule } from '../modules/user/user.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import {
       ],
     }),
     AuthModule,
+    UserModule,
   ],
 })
 export class AppModule {}

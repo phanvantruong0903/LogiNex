@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { join } from 'path';
+import { join } from 'node:path';
 import { AuthService } from './auth.service';
 import {
   ConsuleModule,
@@ -22,7 +22,7 @@ import { ConfigModule } from '@nestjs/config';
         inject: [ConsulService],
         useFactory: async (consulService: ConsulService) => {
           const authService = await consulService.discoverService(
-            CONSULT_SERVICE_ID.AUTH
+            CONSULT_SERVICE_ID.AUTH,
           );
           return {
             transport: Transport.GRPC,

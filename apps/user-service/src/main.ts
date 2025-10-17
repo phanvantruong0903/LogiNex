@@ -3,7 +3,7 @@ import { AppModule } from './app/app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { GrpcExceptionFilter } from '@mebike/common';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-import { join } from 'path';
+import { join } from 'node:path';
 import { config as dotenvConfig } from 'dotenv';
 async function bootstrap() {
   dotenvConfig();
@@ -14,8 +14,8 @@ async function bootstrap() {
       options: {
         package: ['user', 'grpc.health.v1'],
         protoPath: [
-          join(__dirname, '../../../common/src/lib/proto/user.proto'),
-          join(__dirname, '../../../common/src/lib/proto/health.proto'),
+          join(process.cwd(), 'common/src/lib/proto/user.proto'),
+          join(process.cwd(), 'common/src/lib/proto/health.proto'),
         ],
         url: `0.0.0.0:${process.env.USER_SERVICE_PORT}`,
       },

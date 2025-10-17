@@ -5,6 +5,7 @@ export const GRPC_SERVICES = {
 
 export const GRPC_PACKAGE = {
   AUTH: 'AUTH_PACKAGE',
+  USER: 'USER_PACKAGE',
 };
 
 export const USER_METHODS = {

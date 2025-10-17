@@ -5,8 +5,11 @@ import { GRPC_PACKAGE, GRPC_SERVICES } from '@mebike/common';
 import { UserListResponse, UserResponse } from '../auth/graphql/UserResponse';
 import { UpdateUserDto } from '../auth/dto/UpdateUserDto';
 
-interface AuthServiceClient {
-  GetAllUsers(data: { page?: 1; limit?: 10 }): Observable<UserListResponse>;
+interface UserServiceClient {
+  GetAllUsers(data: {
+    page: number;
+    limit: number;
+  }): Observable<UserListResponse>;
   GetUser(data: { id: string }): Observable<UserResponse>;
   UpdateUser(data: { id: string } & UpdateUserDto): Observable<UserResponse>;
   ChangePassword(data: {
@@ -16,18 +19,18 @@ interface AuthServiceClient {
 }
 
 @Injectable()
-export class AuthService implements OnModuleInit {
-  private userService!: AuthServiceClient;
+export class UserService implements OnModuleInit {
+  private userService!: UserServiceClient;
 
-  constructor(@Inject(GRPC_PACKAGE.AUTH) private readonly client: ClientGrpc) {}
+  constructor(@Inject(GRPC_PACKAGE.USER) private readonly client: ClientGrpc) {}
 
   onModuleInit() {
-    this.userService = this.client.getService<AuthServiceClient>(
-      GRPC_SERVICES.AUTH,
+    this.userService = this.client.getService<UserServiceClient>(
+      GRPC_SERVICES.USER,
     );
   }
 
-  async getAllUser(data: { page?: 1; limit?: 10 }) {
+  async getAllUser(data: { page: number; limit: number }) {
     return await lastValueFrom(this.userService.GetAllUsers(data));
   }
 

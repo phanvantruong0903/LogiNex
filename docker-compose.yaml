@@ -65,6 +65,21 @@ services:
       - ./apps/auth-service/.env
     networks:
       - mebike-network
+  user-service:
+    build: 
+      context: .
+      dockerfile: ./apps/user-service/Dockerfile
+    container_name: user-service
+    restart: "unless-stopped"
+    depends_on:
+      - consul
+      - postgres-db
+    environment:
+      - DATABASE_URL=${DATABASE_URL}  
+    env_file:
+      - ./apps/user-service/.env
+    networks:
+      - mebike-network
 
 networks:
   mebike-network:
