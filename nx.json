@@ -76,5 +76,16 @@
     "test": {
       "dependsOn": ["^build"]
     }
+  },
+  "projects": {
+    "common": {
+      "targets": {
+        "test": {
+          "options": {
+            "passWithNoTests": true
+          }
+        }
+      }
+    }
   }
 }
