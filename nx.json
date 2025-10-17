@@ -78,7 +78,7 @@
     }
   },
   "projects": {
-    "common": {
+    "@mebike/common": {
       "targets": {
         "test": {
           "options": {
