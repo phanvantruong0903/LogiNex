@@ -4,4 +4,6 @@ export const GRAPHQL_NAME = {
   CREATE: 'CreateUser',
   UPDATE: 'UpdateProfile',
   LOGIN: 'LoginUser',
+  REFRESH_TOKEN: 'RefreshToken',
+  CHANGE_PASSWORD: 'ChangePassword',
 };

@@ -10,7 +10,7 @@ export class UserConsulRegistrar implements OnModuleInit, OnModuleDestroy {
       CONSULT_SERVICE_ID.USER,
       CONSULT_SERVICE_ID.USER,
       this.consulService.getLocalIp(),
-      Number(process.env.USER_SERVICE_PORT) || 50051
+      Number(process.env.USER_SERVICE_PORT) || 50052,
     );
   }
 

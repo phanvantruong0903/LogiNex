@@ -1,2 +1,2 @@
-export * from './api-response.type'
-export * from './user-type'
+export * from './api-response.type';
+export * from './abstract-input';

@@ -1,10 +1,10 @@
 {
-  "name": "@mebike/api-gateway-e2e",
+  "name": "@mebike/auth-service-e2e",
   "version": "0.0.1",
   "private": true,
   "nx": {
     "implicitDependencies": [
-      "@mebike/api-gateway"
+      "@mebike/auth-service"
     ],
     "targets": {
       "e2e": {
@@ -13,12 +13,12 @@
           "{projectRoot}/test-output/jest/coverage"
         ],
         "options": {
-          "jestConfig": "apps/api-gateway-e2e/jest.config.ts",
+          "jestConfig": "apps/auth-service-e2e/jest.config.ts",
           "passWithNoTests": true
         },
         "dependsOn": [
-          "@mebike/api-gateway:build",
-          "@mebike/api-gateway:serve"
+          "@mebike/auth-service:build",
+          "@mebike/auth-service:serve"
         ]
       }
     }
