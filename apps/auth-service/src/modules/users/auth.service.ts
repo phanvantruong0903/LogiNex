@@ -5,14 +5,14 @@ import {
   JwtServiceCustom,
   SERVER_MESSAGE,
   TokenPayload,
+  prisma,
+  USER_MESSAGES,
+  throwGrpcError,
 } from '@mebike/common';
 import { CreateUserDto } from './dto/CreateUserDto';
-import { prisma } from '@mebike/common';
 import { LoginUserDto } from './dto/LoginUserDto';
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
-import { USER_MESSAGES } from '@mebike/common';
-import { throwGrpcError } from '@mebike/common';
 import * as bcrypt from 'bcrypt';
 import { RpcException } from '@nestjs/microservices';
 
@@ -44,7 +44,11 @@ export class AuthService extends BaseService<User, CreateUserDto, never> {
             USER_MESSAGES.VALIDATION_FAILED,
           ]);
         }
-        return { user_id: findUser.id, verify: findUser.verify };
+        return {
+          user_id: findUser.id,
+          verify: findUser.verify,
+          role: findUser.role,
+        };
       } catch (error: unknown) {
         if (error instanceof RpcException) {
           throw error;
@@ -75,7 +79,7 @@ export class AuthService extends BaseService<User, CreateUserDto, never> {
         ]);
       }
 
-      const { user_id, verify } = decoded as TokenPayload;
+      const { user_id, verify, role } = decoded as TokenPayload;
       if (!user_id) {
         throwGrpcError(SERVER_MESSAGE.UNAUTHORIZED, [
           USER_MESSAGES.INVALID_TOKEN_PAYLOAD,
@@ -87,7 +91,11 @@ export class AuthService extends BaseService<User, CreateUserDto, never> {
         throwGrpcError(SERVER_MESSAGE.NOT_FOUND, [USER_MESSAGES.NOT_FOUND]);
       }
 
-      const accessToken = await this.jwtService.signToken({ user_id, verify });
+      const accessToken = await this.jwtService.signToken({
+        user_id,
+        verify,
+        role,
+      });
       return { accessToken };
     } catch (error: unknown) {
       if (error instanceof RpcException) {

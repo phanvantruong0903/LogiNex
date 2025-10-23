@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import Consul from 'consul';
-import * as os from 'os';
+import * as os from 'node:os';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 @Injectable()
 export class ConsulService {
@@ -8,7 +10,7 @@ export class ConsulService {
 
   constructor() {
     this.consul = new Consul({
-      host: process.env.CONSUL_HOST || 'consul',
+      host: process.env.CONSUL_HOST || 'localhost',
       port: process.env.CONSUL_PORT || '8500',
       promisify: true,
     } as any);

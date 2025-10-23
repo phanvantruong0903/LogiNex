@@ -3,3 +3,9 @@ export enum UserVerifyStatus {
   Verified,
   Banned,
 }
+
+export enum Role {
+  USER = 'User',
+  ADMIN = 'Admin',
+  STAFF = 'Staff',
+}

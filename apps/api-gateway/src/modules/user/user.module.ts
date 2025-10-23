@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { join } from 'path';
+import { join } from 'node:path';
 import {
   ConsuleModule,
   ConsulService,
@@ -37,5 +37,6 @@ import { UserResolver } from './user.resolver';
     ]),
   ],
   providers: [UserService, UserResolver],
+  exports: [ClientsModule],
 })
 export class UserModule {}

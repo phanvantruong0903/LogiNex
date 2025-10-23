@@ -20,6 +20,7 @@ export const USER_MESSAGES = {
   PASSWORD_REQUIRED: 'Password is required',
   ID_REQUIRED: 'User ID is required',
   PASSWORRD_NOT_CHANGED: 'Password must be changed',
+  USER_NOT_FOUND: 'User not found',
 };
 
 export const SERVER_MESSAGE = {

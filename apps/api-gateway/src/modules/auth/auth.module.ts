@@ -10,9 +10,12 @@ import {
 } from '@mebike/common';
 import { AuthResolver } from './auth.resolver';
 import { ConfigModule } from '@nestjs/config';
+import { JwtStrategy } from './jwt.strategy';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
+    UserModule,
     ConsuleModule,
     ConfigModule.forRoot({ isGlobal: true }),
     ClientsModule.registerAsync([
@@ -36,6 +39,6 @@ import { ConfigModule } from '@nestjs/config';
       },
     ]),
   ],
-  providers: [AuthService, AuthResolver],
+  providers: [AuthService, AuthResolver, JwtStrategy],
 })
 export class AuthModule {}
