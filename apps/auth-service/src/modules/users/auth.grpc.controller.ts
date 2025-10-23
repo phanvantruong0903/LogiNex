@@ -11,7 +11,7 @@ import {
   grpcResponse,
   USER_MESSAGES,
 } from '@mebike/common';
-import { Role, User } from '@prisma/client';
+import { User } from '@prisma/client';
 import { LoginUserDto } from './dto/LoginUserDto';
 import * as bcrypt from 'bcrypt';
 
