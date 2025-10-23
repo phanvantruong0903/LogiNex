@@ -7,6 +7,8 @@ message User {
   string email = 2;
   string name = 3;
   int32 YOB = 4;
+  int32 verify = 5;
+  string role = 6;
 }
 
 message LoginUserRequest{

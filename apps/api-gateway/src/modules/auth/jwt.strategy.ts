@@ -45,7 +45,6 @@ export class JwtStrategy
         'User service is not available',
       ]);
     }
-    console.log(payload);
     try {
       const findUser: UserResponse = await firstValueFrom(
         this.userServiceCLient.GetUser({ id: payload.user_id }),
@@ -57,7 +56,7 @@ export class JwtStrategy
         ]);
       }
 
-      return findUser;
+      return findUser.data;
     } catch (error) {
       let errorMessage = SERVER_MESSAGE.UNEXPECTED_ERROR;
 

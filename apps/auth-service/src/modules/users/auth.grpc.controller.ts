@@ -28,7 +28,7 @@ export class AuthGrpcController {
     try {
       const hashPassword = bcrypt.hashSync(data.password, 10);
 
-      const userData = { ...data, password: hashPassword, role: Role.USER };
+      const userData = { ...data, password: hashPassword };
 
       const result = await this.baseHandler.createLogic(userData);
       return grpcResponse(result, USER_MESSAGES.CREATE_SCUCCESS);
@@ -41,6 +41,7 @@ export class AuthGrpcController {
   @GrpcMethod(GRPC_SERVICES.AUTH, USER_METHODS.LOGIN)
   async login(data: LoginUserDto) {
     const result = await this.authService.validateUser(data);
+    console.log(result);
 
     const { accessToken, refreshToken } = await this.authService.generateToken(
       result,

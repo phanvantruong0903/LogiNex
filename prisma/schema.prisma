@@ -32,7 +32,7 @@ enum UserVerifyStatus {
 }
 
 enum Role {
-  USER  @map("User")
-  ADMIN @map("Admin")
-  STAFF @map("Staff")
+  USER
+  ADMIN
+  STAFF
 }
