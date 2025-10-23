@@ -14,12 +14,25 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
+  id        String           @id @default(uuid())
+  email     String           @unique
   password  String
   name      String
   YOB       Int
-  verify    Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role      Role             @default(USER)
+  verify    UserVerifyStatus @default(Unverified)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+}
+
+enum UserVerifyStatus {
+  Unverified
+  Verified
+  Banned
+}
+
+enum Role {
+  USER  @map("User")
+  ADMIN @map("Admin")
+  STAFF @map("Staff")
 }

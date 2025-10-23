@@ -6,12 +6,13 @@ import {
   BaseGrpcHandler,
   SERVER_MESSAGE,
   throwGrpcError,
+  GRPC_SERVICES,
+  USER_METHODS,
+  grpcResponse,
+  USER_MESSAGES,
 } from '@mebike/common';
-import { grpcResponse } from '@mebike/common';
-import { User } from '@prisma/client';
-import { USER_MESSAGES } from '@mebike/common';
+import { Role, User } from '@prisma/client';
 import { LoginUserDto } from './dto/LoginUserDto';
-import { GRPC_SERVICES, USER_METHODS } from '@mebike/common';
 import * as bcrypt from 'bcrypt';
 
 @Controller()
@@ -27,7 +28,7 @@ export class AuthGrpcController {
     try {
       const hashPassword = bcrypt.hashSync(data.password, 10);
 
-      const userData = { ...data, password: hashPassword };
+      const userData = { ...data, password: hashPassword, role: Role.USER };
 
       const result = await this.baseHandler.createLogic(userData);
       return grpcResponse(result, USER_MESSAGES.CREATE_SCUCCESS);
