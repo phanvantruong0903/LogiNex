@@ -50,3 +50,6 @@ test-output
 .env
 .env.*
 !.env.example
+
+# Prisma CLient
+.generated/*
