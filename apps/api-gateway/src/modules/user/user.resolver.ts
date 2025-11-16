@@ -8,7 +8,7 @@ import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/role.decorator';
 import { RoleGuard } from '../auth/role.guard';
-import { Role } from '@prisma/client';
+import { Role } from '@mebike/common';
 import { CurrentUser } from '../auth/current-user.decorator';
 import type { User } from '@prisma/client/edge';
 

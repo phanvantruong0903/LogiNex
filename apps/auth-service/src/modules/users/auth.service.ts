@@ -1,25 +1,54 @@
-import { Injectable } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import {
   BaseService,
+  GRPC_PACKAGE,
+  GRPC_SERVICES,
   JwtServiceCustom,
   SERVER_MESSAGE,
   TokenPayload,
-  prisma,
   USER_MESSAGES,
+  UserProfile,
+  UserResponse,
   throwGrpcError,
 } from '@mebike/common';
-import { CreateUserDto } from './dto/CreateUserDto';
-import { LoginUserDto } from './dto/LoginUserDto';
+import { LoginUserDto } from '@mebike/common';
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import * as bcrypt from 'bcrypt';
 import { RpcException } from '@nestjs/microservices';
+import type { ClientGrpc } from '@nestjs/microservices';
+import { prisma } from '../../config/prisma';
+import { User } from '@mebike/prisma-auth-client';
+import { CreateUserDto } from '@mebike/common';
+import { CreateProfileDto } from '@mebike/common';
+import { firstValueFrom, Observable } from 'rxjs';
 
+interface UserServiceClient {
+  CreateProfile(data: {
+    name: string;
+    YOB: number;
+    accountId: string;
+  }): Observable<UserResponse>;
+  GetUser(data: { id: string }): Observable<UserResponse>;
+}
 @Injectable()
-export class AuthService extends BaseService<User, CreateUserDto, never> {
-  constructor(private readonly jwtService: JwtServiceCustom) {
+export class AuthService
+  extends BaseService<User, CreateUserDto, never>
+  implements OnModuleInit
+{
+  private userService!: UserServiceClient;
+
+  constructor(
+    private readonly jwtService: JwtServiceCustom,
+    @Inject(GRPC_PACKAGE.USER) private readonly client: ClientGrpc,
+  ) {
     super(prisma.user);
+  }
+
+  onModuleInit() {
+    this.userService = this.client.getService<UserServiceClient>(
+      GRPC_SERVICES.USER,
+    );
   }
 
   async validateUser(data: LoginUserDto) {
@@ -44,10 +73,16 @@ export class AuthService extends BaseService<User, CreateUserDto, never> {
             USER_MESSAGES.VALIDATION_FAILED,
           ]);
         }
+
+        const userProfile = await this.getUserProfile(findUser.id);
+        const userData = userProfile.data as UserProfile;
+
+        console.log(userData);
+
         return {
           user_id: findUser.id,
-          verify: findUser.verify,
-          role: findUser.role,
+          verify: userData.verify,
+          role: userData.role,
         };
       } catch (error: unknown) {
         if (error instanceof RpcException) {
@@ -59,6 +94,14 @@ export class AuthService extends BaseService<User, CreateUserDto, never> {
     } else {
       throwGrpcError(SERVER_MESSAGE.BAD_REQUEST, [USER_MESSAGES.INVALID_DATA]);
     }
+  }
+
+  async createUserProfile(payload: CreateProfileDto) {
+    return await firstValueFrom(this.userService.CreateProfile(payload));
+  }
+
+  async getUserById(id: string) {
+    return await firstValueFrom(this.userService.GetUser({ id }));
   }
 
   async generateToken(payload: TokenPayload) {
@@ -120,5 +163,40 @@ export class AuthService extends BaseService<User, CreateUserDto, never> {
 
   async verifyToken(token: string) {
     return this.jwtService.verifyToken(token);
+  }
+
+  async createProfile(data: CreateProfileDto) {
+    if (data) {
+      const dtoInstance = plainToInstance(CreateProfileDto, data);
+      try {
+        await validateOrReject(dtoInstance);
+        const profile = await this.createUserProfile({
+          name: data.name,
+          accountId: data.accountId,
+          YOB: data.YOB,
+        });
+
+        return profile;
+      } catch (error) {
+        const err = error as Error;
+        throwGrpcError(SERVER_MESSAGE.INTERNAL_SERVER, [err?.message]);
+      }
+    } else {
+      throwGrpcError(SERVER_MESSAGE.BAD_REQUEST, [USER_MESSAGES.INVALID_DATA]);
+    }
+  }
+
+  async getUserProfile(id: string): Promise<UserResponse> {
+    try {
+      const user = await this.getUserById(id);
+      if (!user) {
+        throwGrpcError(SERVER_MESSAGE.NOT_FOUND, [USER_MESSAGES.NOT_FOUND]);
+      }
+
+      return user;
+    } catch (error) {
+      const err = error as Error;
+      throwGrpcError(SERVER_MESSAGE.INTERNAL_SERVER, [err?.message]);
+    }
   }
 }

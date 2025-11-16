@@ -1,18 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { BaseService, prisma } from '@mebike/common';
-import { UpdateUserDto } from './dto/UpdateUserDto';
-import { User } from '@prisma/client';
+import { BaseService, CreateProfileDto } from '@mebike/common';
+import { UpdateProfileDto } from '@mebike/common';
+import { Profile } from '@mebike/prisma-user-client';
+import { prisma } from '../../config/prisma';
 
 @Injectable()
-export class UserService extends BaseService<User, never, UpdateUserDto> {
+export class UserService extends BaseService<
+  Profile,
+  CreateProfileDto,
+  UpdateProfileDto
+> {
   constructor() {
-    super(prisma.user);
-  }
-
-  async updatePassword(id: string, password: string) {
-    return this.model.update({
-      where: { id },
-      data: { password },
-    });
+    super(prisma.profile);
   }
 }

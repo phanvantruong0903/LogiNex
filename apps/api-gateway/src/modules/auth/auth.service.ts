@@ -1,7 +1,7 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
 import { Observable, lastValueFrom } from 'rxjs';
-import { CreateUserDto } from './dto/CreateUserDto';
+import { CreateUserDto } from '@mebike/common';
 import { GRPC_PACKAGE, GRPC_SERVICES } from '@mebike/common';
 import { LoginInput } from './graphql/Login';
 import {

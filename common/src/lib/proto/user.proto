@@ -4,35 +4,22 @@ package user;
 
 message User {
   string id = 1;
-  string email = 2;
+  string accountId = 2;
   string name = 3;
   int32 YOB = 4;
-  string password = 5;
-  int32 verify = 6;
-  string role = 7;
+  int32 verify = 5;
+  string role = 6;
 }
 
 
 message UpdateUserRequest {
   string id = 1;
-  optional string email = 2;
-  optional string name = 3;
-  optional string password = 4;
-  optional int32 YOB = 5;
-}
-
-message GetAllUserRequest {
-  optional int32 page = 1;
-  optional int32 limit = 2;
+  optional string name = 2;
+  optional int32 YOB = 3;
 }
 
 message GetUserRequest {
   string id = 1;
-}
-
-message ChangePasswordRequest {
-  string id = 1;
-  string password = 2;
 }
 
 message UpdateUserResponse {
@@ -51,23 +38,24 @@ message UserDetailResponse {
 message UsersResponse {
   bool success = 1;
   string message = 2;
-  repeated User data = 3; 
+  repeated User data = 3;
 }
 
-message GetAllUserResponse {
+message CreateProfileRequest {
+  string name = 1;
+  string accountId = 2;
+  int32 YOB = 3;
+}
+
+message CreateProfileResponse {
   bool success = 1;
   string message = 2;
-  repeated User data = 3;
-  int32 total = 4;
-  int32 page = 5;
-  int32 limit = 6;
-  int32 totalPages = 7;
+  User data = 3;
+  repeated string errors = 4;
 }
-
 
 service UserService {
   rpc GetUser(GetUserRequest) returns (UserDetailResponse);
   rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
-  rpc GetAllUsers(GetAllUserRequest) returns (GetAllUserResponse);
-  rpc ChangePassword(ChangePasswordRequest) returns (UserDetailResponse);
+  rpc CreateProfile(CreateProfileRequest) returns (CreateProfileResponse);
 }

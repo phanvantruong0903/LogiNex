@@ -8,18 +8,32 @@ services:
     command: "agent -dev -client=0.0.0.0"
     networks:
       - mebike-network
-  postgres-db:
+  auth-db:
     image: postgres:16-alpine
-    container_name: postgres-db
+    container_name: auth-db
     restart: "unless-stopped"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: truongdz002 
-      POSTGRES_DB: test-nestjs
+      POSTGRES_DB: auth-db
     ports:
       - "5433:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - auth_data:/var/lib/postgresql/data
+    networks:
+      - mebike-network
+  user-db:
+    image: postgres:16-alpine
+    container_name: user-db
+    restart: "unless-stopped"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: truongdz002 
+      POSTGRES_DB: user-db
+    ports:
+      - "5434:5432"
+    volumes:
+      - user_data:/var/lib/postgresql/data
     networks:
       - mebike-network
   nginx:
@@ -45,7 +59,12 @@ services:
     container_name: api-gateway
     restart: "unless-stopped"
     depends_on:
+      - consul
       - auth-service
+      - user-service
+    environment:
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500
     env_file:
       - ./apps/api-gateway/.env
     networks:
@@ -58,9 +77,10 @@ services:
     restart: "unless-stopped"
     depends_on:
       - consul
-      - postgres-db
+      - auth-db
     environment:
-      - DATABASE_URL=${DATABASE_URL}  
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500
     env_file:
       - ./apps/auth-service/.env
     networks:
@@ -73,9 +93,10 @@ services:
     restart: "unless-stopped"
     depends_on:
       - consul
-      - postgres-db
+      - user-db
     environment:
-      - DATABASE_URL=${DATABASE_URL}  
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500
     env_file:
       - ./apps/user-service/.env
     networks:
@@ -85,4 +106,5 @@ networks:
   mebike-network:
     driver: bridge
 volumes:
-  postgres_data:
+  auth_data:
+  user_data:

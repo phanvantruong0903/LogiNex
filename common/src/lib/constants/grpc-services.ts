@@ -16,4 +16,5 @@ export const USER_METHODS = {
   LOGIN: 'LoginUser',
   REFRESH_TOKEN: 'RefreshToken',
   CHANGE_PASSWORD: 'ChangePassword',
+  CREATE_PROFILE: 'CreateProfile',
 } as const;
