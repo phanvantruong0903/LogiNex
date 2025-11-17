@@ -3,12 +3,12 @@ import type { ClientGrpc } from '@nestjs/microservices';
 import { Observable, lastValueFrom } from 'rxjs';
 import { CreateUserDto } from '@mebike/common';
 import { GRPC_PACKAGE, GRPC_SERVICES } from '@mebike/common';
-import { LoginInput } from './graphql/Login';
+import { LoginInput } from '@mebike/common';
 import {
   LoginResponse,
   ResfreshTokenResponse,
   UserResponse,
-} from './graphql/UserResponse';
+} from '@mebike/common';
 
 interface AuthServiceClient {
   LoginUser(data: LoginInput): Observable<LoginResponse>;

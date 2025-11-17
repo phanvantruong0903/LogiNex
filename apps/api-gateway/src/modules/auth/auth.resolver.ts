@@ -4,10 +4,10 @@ import {
   LoginResponse,
   ResfreshTokenResponse,
   UserResponse,
-} from './graphql/UserResponse';
+} from '@mebike/common';
 import { GRAPHQL_NAME } from '@mebike/common';
-import { CreateUserInput } from './graphql/CreateUserInput';
-import { LoginInput } from './graphql/Login';
+import { CreateUserInput } from '@mebike/common';
+import { LoginInput } from '@mebike/common';
 
 @Resolver()
 export class AuthResolver {

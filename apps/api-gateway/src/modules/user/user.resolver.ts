@@ -1,8 +1,8 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { UserResponse, UserListResponse } from '../auth/graphql/UserResponse';
+import { UserResponse, UserListResponse } from '@mebike/common';
 import { GRAPHQL_NAME } from '@mebike/common';
 import { UserService } from './user.service';
-import { UpdateUserInput } from '../auth/graphql/UpdateUserInput';
+import { UpdateUserInput } from '@mebike/common';
 import { GetUsersInput } from './graphql/GetUserInput';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -10,7 +10,7 @@ import { Roles } from '../auth/role.decorator';
 import { RoleGuard } from '../auth/role.guard';
 import { Role } from '@mebike/common';
 import { CurrentUser } from '../auth/current-user.decorator';
-import type { User } from '@prisma/client/edge';
+import { UserProfile } from '@mebike/common';
 
 @Resolver()
 export class UserResolver {
@@ -43,7 +43,7 @@ export class UserResolver {
   @Mutation(() => UserResponse, { name: GRAPHQL_NAME.UPDATE })
   @UseGuards(JwtAuthGuard)
   async updateUser(
-    @CurrentUser() user: User,
+    @CurrentUser() user: UserProfile,
     @Args('data') data: UpdateUserInput,
   ): Promise<UserResponse> {
     const id = user?.id;
@@ -53,7 +53,7 @@ export class UserResolver {
   @Mutation(() => UserResponse, { name: GRAPHQL_NAME.CHANGE_PASSWORD })
   @UseGuards(JwtAuthGuard)
   async changePassword(
-    @CurrentUser() user: User,
+    @CurrentUser() user: UserProfile,
     @Args('password') password: string,
   ): Promise<UserResponse> {
     const id = user?.id;

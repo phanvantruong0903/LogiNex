@@ -1,7 +1,7 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { UserResponse } from './graphql/UserResponse';
+import { UserResponse } from '@mebike/common';
 import { firstValueFrom, Observable } from 'rxjs';
 import {
   GRPC_PACKAGE,
