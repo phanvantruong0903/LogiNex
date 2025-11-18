@@ -12,6 +12,16 @@
     },
     "./package.json": "./package.json"
   },
+  "nx": {
+    "targets": {
+      "typecheck": {
+        "dependsOn": [
+          "@mebike/auth-service:prisma:generate",
+          "@mebike/user-service:prisma:generate"
+        ]
+      }
+    }
+  },
   "dependencies": {
     "@nestjs/common": "^11.1.6",
     "@nestjs/core": "^11.1.6",
