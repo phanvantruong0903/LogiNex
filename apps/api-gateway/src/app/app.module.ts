@@ -14,11 +14,15 @@ import { UserModule } from '../modules/user/user.module';
       driver: ApolloDriver,
       autoSchemaFile: true,
       playground: false,
+      introspection: true,
       csrfPrevention: false,
       plugins: [
         process.env.NODE_ENV === 'production'
           ? (ApolloServerPluginLandingPageDisabled() as any)
-          : (ApolloServerPluginLandingPageLocalDefault() as any),
+          : ApolloServerPluginLandingPageLocalDefault({
+              embed: true,
+              includeCookies: true,
+            }),
       ],
     }),
     AuthModule,

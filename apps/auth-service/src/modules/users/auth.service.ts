@@ -10,8 +10,10 @@ import {
   UserProfile,
   UserResponse,
   throwGrpcError,
+  CreateUserDto,
+  CreateProfileDto,
+  LoginUserDto,
 } from '@mebike/common';
-import { LoginUserDto } from '@mebike/common';
 import { plainToInstance } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import * as bcrypt from 'bcrypt';
@@ -19,8 +21,6 @@ import { RpcException } from '@nestjs/microservices';
 import type { ClientGrpc } from '@nestjs/microservices';
 import { prisma } from '../../config/prisma';
 import { User } from '@mebike/prisma-auth-client';
-import { CreateUserDto } from '@mebike/common';
-import { CreateProfileDto } from '@mebike/common';
 import { firstValueFrom, Observable } from 'rxjs';
 
 interface UserServiceClient {
@@ -76,8 +76,6 @@ export class AuthService
 
         const userProfile = await this.getUserProfile(findUser.id);
         const userData = userProfile.data as UserProfile;
-
-        console.log(userData);
 
         return {
           user_id: findUser.id,

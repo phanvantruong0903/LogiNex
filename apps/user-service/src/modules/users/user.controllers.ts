@@ -8,9 +8,9 @@ import {
   throwGrpcError,
   USER_MESSAGES,
   USER_METHODS,
+  UpdateProfileDto,
 } from '@mebike/common';
 import { Profile } from '@mebike/prisma-user-client';
-import { UpdateProfileDto } from '@mebike/common';
 import { UserService } from './user.services';
 import { prisma } from '../../config/prisma';
 

@@ -1,7 +1,6 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { UserResponse } from '@mebike/common';
 import { firstValueFrom, Observable } from 'rxjs';
 import {
   GRPC_PACKAGE,
@@ -11,6 +10,7 @@ import {
   throwGrpcError,
   TokenPayload,
   USER_MESSAGES,
+  UserResponse,
 } from '@mebike/common';
 import type { ClientGrpc } from '@nestjs/microservices';
 

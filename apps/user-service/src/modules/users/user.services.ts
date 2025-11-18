@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { BaseService, CreateProfileDto } from '@mebike/common';
-import { UpdateProfileDto } from '@mebike/common';
+import {
+  BaseService,
+  CreateProfileDto,
+  UpdateProfileDto,
+} from '@mebike/common';
 import { Profile } from '@mebike/prisma-user-client';
 import { prisma } from '../../config/prisma';
 

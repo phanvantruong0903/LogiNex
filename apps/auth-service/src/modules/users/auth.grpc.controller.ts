@@ -11,11 +11,11 @@ import {
   USER_MESSAGES,
   UserDto,
   CreateProfileDto,
+  LoginUserDto,
+  CreateUserDto,
 } from '@mebike/common';
-import { LoginUserDto } from '@mebike/common';
 import * as bcrypt from 'bcrypt';
 import { User } from '@mebike/prisma-auth-client';
-import { CreateUserDto } from '@mebike/common';
 import { prisma } from '../../config/prisma';
 
 @Controller()
