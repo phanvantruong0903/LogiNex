@@ -15,7 +15,6 @@ import {
   CreateUserDto,
   prismaAuth,
   User,
-  Profile,
 } from '@mebike/common';
 import * as bcrypt from 'bcrypt';
 
@@ -34,7 +33,7 @@ export class AuthGrpcController {
     let user: User | null = null;
     try {
       // Step 1 : Create User Account Record
-      const hashPassword = bcrypt.hashSync(data.password, 10);
+      const hashPassword = await bcrypt.hash(data.password, 10);
 
       const userData: UserDto = {
         email: data.email,

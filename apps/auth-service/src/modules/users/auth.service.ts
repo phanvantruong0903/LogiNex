@@ -167,23 +167,17 @@ export class AuthService
   }
 
   async createProfile(data: CreateProfileDto) {
-    if (data) {
-      const dtoInstance = plainToInstance(CreateProfileDto, data);
-      try {
-        await validateOrReject(dtoInstance);
-        const profile = await this.createUserProfile({
-          name: data.name,
-          accountId: data.accountId,
-          YOB: data.YOB,
-        });
+    try {
+      const profile = await this.createUserProfile({
+        name: data.name,
+        accountId: data.accountId,
+        YOB: data.YOB,
+      });
 
-        return profile;
-      } catch (error) {
-        const err = error as Error;
-        throwGrpcError(SERVER_MESSAGE.INTERNAL_SERVER, [err?.message]);
-      }
-    } else {
-      throwGrpcError(SERVER_MESSAGE.BAD_REQUEST, [USER_MESSAGES.INVALID_DATA]);
+      return profile;
+    } catch (error) {
+      const err = error as Error;
+      throwGrpcError(SERVER_MESSAGE.INTERNAL_SERVER, [err?.message]);
     }
   }
 
