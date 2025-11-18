@@ -9,10 +9,10 @@ import {
   USER_MESSAGES,
   USER_METHODS,
   UpdateProfileDto,
+  prismaUser,
+  Profile,
 } from '@mebike/common';
-import { Profile } from '@mebike/prisma-user-client';
 import { UserService } from './user.services';
-import { prisma } from '../../config/prisma';
 
 @Controller()
 export class UserController {
@@ -31,11 +31,13 @@ export class UserController {
   }
 
   @GrpcMethod(GRPC_SERVICES.USER, USER_METHODS.UPDATE)
-  async updateProfile(data: UpdateProfileDto & { id: string }) {
+  async updateProfile(
+    data: UpdateProfileDto & { id: string },
+  ): Promise<ReturnType<typeof grpcResponse>> {
     try {
       const { id, ...updateData } = data;
 
-      const findUser = await prisma.profile.findUnique({
+      const findUser = await prismaUser.profile.findUnique({
         where: { accountId: id },
       });
       if (!findUser) {
@@ -54,9 +56,13 @@ export class UserController {
   }
 
   @GrpcMethod(GRPC_SERVICES.USER, USER_METHODS.GET_ONE)
-  async getUserDetail({ id }: { id: string }) {
+  async getUserDetail({
+    id,
+  }: {
+    id: string;
+  }): Promise<ReturnType<typeof grpcResponse>> {
     try {
-      const result = await prisma.profile.findUnique({
+      const result = await prismaUser.profile.findUnique({
         where: { accountId: id },
       });
       if (!result) {
@@ -71,7 +77,9 @@ export class UserController {
   }
 
   @GrpcMethod(GRPC_SERVICES.USER, USER_METHODS.CREATE_PROFILE)
-  async createProfile(data: CreateProfileDto) {
+  async createProfile(
+    data: CreateProfileDto,
+  ): Promise<ReturnType<typeof grpcResponse>> {
     try {
       const profile = await this.baseHandler.createLogic(data);
       return grpcResponse(profile, USER_MESSAGES.CREATE_SCUCCESS);

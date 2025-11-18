@@ -3,9 +3,9 @@ import {
   BaseService,
   CreateProfileDto,
   UpdateProfileDto,
+  prismaUser,
+  Profile,
 } from '@mebike/common';
-import { Profile } from '@mebike/prisma-user-client';
-import { prisma } from '../../config/prisma';
 
 @Injectable()
 export class UserService extends BaseService<
@@ -14,6 +14,6 @@ export class UserService extends BaseService<
   UpdateProfileDto
 > {
   constructor() {
-    super(prisma.profile);
+    super(prismaUser.profile);
   }
 }

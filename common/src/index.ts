@@ -7,3 +7,4 @@ export * from './lib/graphql';
 export * from './lib/consul';
 export * from './lib/jwt';
 export * from './lib/schema';
+export * from './lib/prisma';

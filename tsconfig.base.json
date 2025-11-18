@@ -20,15 +20,6 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "useDefineForClassFields": false,
-    "esModuleInterop": true,
-    "baseUrl": ".",
-    "paths": {
-      "@mebike/prisma-auth-client": [
-        "apps/auth-service/generated/prisma-client-auth-service"
-      ],
-      "@mebike/prisma-user-client": [
-        "apps/user-service/generated/prisma-client-user-service"
-      ]
-    }
+    "esModuleInterop": true
   }
 }

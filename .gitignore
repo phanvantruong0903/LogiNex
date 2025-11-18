@@ -52,4 +52,7 @@ test-output
 !.env.example
 
 # Prisma CLient
-.generated/*
+apps/*/generated/
+apps/**/generated/
+generated/
+prisma/generated/

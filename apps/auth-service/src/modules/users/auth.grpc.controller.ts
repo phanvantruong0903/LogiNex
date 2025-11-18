@@ -13,10 +13,11 @@ import {
   CreateProfileDto,
   LoginUserDto,
   CreateUserDto,
+  prismaAuth,
+  User,
+  Profile,
 } from '@mebike/common';
 import * as bcrypt from 'bcrypt';
-import { User } from '@mebike/prisma-auth-client';
-import { prisma } from '../../config/prisma';
 
 @Controller()
 export class AuthGrpcController {
@@ -27,7 +28,9 @@ export class AuthGrpcController {
   }
 
   @GrpcMethod(GRPC_SERVICES.AUTH, USER_METHODS.CREATE)
-  async createUser(data: CreateUserDto) {
+  async createUser(
+    data: CreateUserDto,
+  ): Promise<ReturnType<typeof grpcResponse>> {
     let user: User | null = null;
     try {
       // Step 1 : Create User Account Record
@@ -55,7 +58,7 @@ export class AuthGrpcController {
       // Rollback User Account Creation
       if (user) {
         try {
-          await prisma.user.delete({ where: { id: user.id } });
+          await prismaAuth.user.delete({ where: { id: user.id } });
         } catch (rollbackError) {
           const error = rollbackError as Error;
           throwGrpcError(error.message, [error.message]);
@@ -69,7 +72,7 @@ export class AuthGrpcController {
   }
 
   @GrpcMethod(GRPC_SERVICES.AUTH, USER_METHODS.LOGIN)
-  async login(data: LoginUserDto) {
+  async login(data: LoginUserDto): Promise<ReturnType<typeof grpcResponse>> {
     const result = await this.authService.validateUser(data);
 
     const { accessToken, refreshToken } = await this.authService.generateToken(
@@ -83,7 +86,9 @@ export class AuthGrpcController {
   }
 
   @GrpcMethod(GRPC_SERVICES.AUTH, USER_METHODS.REFRESH_TOKEN)
-  async refreshToken(data: { refreshToken: string }) {
+  async refreshToken(data: {
+    refreshToken: string;
+  }): Promise<ReturnType<typeof grpcResponse>> {
     const { refreshToken } = data;
 
     if (!refreshToken) {
