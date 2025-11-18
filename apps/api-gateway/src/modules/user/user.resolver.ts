@@ -1,16 +1,22 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { UserResponse, UserListResponse } from '@mebike/common';
-import { GRAPHQL_NAME } from '@mebike/common';
-import { UserService } from './user.service';
-import { UpdateUserInput } from '@mebike/common';
-import { GetUsersInput } from './graphql/GetUserInput';
 import { UseGuards } from '@nestjs/common';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+
+import {
+  GRAPHQL_NAME,
+  Role,
+  UpdateUserInput,
+  UserListResponse,
+  UserProfile,
+  UserResponse,
+} from '@mebike/common';
+
+import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/role.decorator';
 import { RoleGuard } from '../auth/role.guard';
-import { Role } from '@mebike/common';
-import { CurrentUser } from '../auth/current-user.decorator';
-import { UserProfile } from '@mebike/common';
+
+import { GetUsersInput } from './graphql/GetUserInput';
+import { UserService } from './user.service';
 
 @Resolver()
 export class UserResolver {

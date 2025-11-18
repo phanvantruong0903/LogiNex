@@ -1,4 +1,4 @@
-import { Role, UserVerifyStatus } from '@mebike/prisma-user-client';
+import { Role, UserVerifyStatus } from '../prisma/user/generated';
 
 export interface TokenPayload {
   user_id: string;

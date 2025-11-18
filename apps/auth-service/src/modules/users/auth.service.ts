@@ -16,8 +16,6 @@ import {
   prismaAuth,
   User,
 } from '@mebike/common';
-import { plainToInstance } from 'class-transformer';
-import { validateOrReject } from 'class-validator';
 import * as bcrypt from 'bcrypt';
 import { RpcException } from '@nestjs/microservices';
 import type { ClientGrpc } from '@nestjs/microservices';
@@ -51,7 +49,7 @@ export class AuthService
     );
   }
 
-  async validateUser(data: LoginUserDto) {
+  async validateUser(data: LoginUserDto): Promise<TokenPayload> {
     try {
       const findUser = await prismaAuth.user.findUnique({
         where: { email: data.email },

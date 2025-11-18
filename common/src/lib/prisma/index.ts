@@ -7,5 +7,6 @@ export * as UserPrisma from './user/generated';
 export const prismaAuth = new AuthPrismaInternal.PrismaClient();
 export const prismaUser = new UserPrismaInternal.PrismaClient();
 
-export type User = AuthPrismaInternal.User; // Cho auth models
-export type Profile = UserPrismaInternal.Profile; // Cho user models, thêm nếu cần
+export type User = AuthPrismaInternal.User;
+export type Profile = UserPrismaInternal.Profile;
+export type { Role, UserVerifyStatus } from './user/generated';
