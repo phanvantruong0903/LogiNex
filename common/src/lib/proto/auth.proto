@@ -5,10 +5,7 @@ package auth;
 message User {
   string id = 1;
   string email = 2;
-  string name = 3;
-  int32 YOB = 4;
-  int32 verify = 5;
-  string role = 6;
+  string password = 3;
 }
 
 message LoginUserRequest{
@@ -45,7 +42,7 @@ message CreateUserResponse {
 message UsersResponse {
   bool success = 1;
   string message = 2;
-  repeated User data = 3; 
+  repeated User data = 3;
 }
 
 message RefreshTokenRequest {

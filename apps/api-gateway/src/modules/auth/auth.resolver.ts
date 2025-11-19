@@ -2,19 +2,21 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import {
   LoginResponse,
+  RegisterResponse,
   ResfreshTokenResponse,
-  UserResponse,
-} from './graphql/UserResponse';
-import { GRAPHQL_NAME } from '@mebike/common';
-import { CreateUserInput } from './graphql/CreateUserInput';
-import { LoginInput } from './graphql/Login';
+  GRAPHQL_NAME,
+  CreateUserInput,
+  LoginInput,
+} from '@mebike/common';
 
 @Resolver()
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
-  @Mutation(() => UserResponse, { name: GRAPHQL_NAME.CREATE })
-  async register(@Args('body') body: CreateUserInput): Promise<UserResponse> {
+  @Mutation(() => RegisterResponse, { name: GRAPHQL_NAME.CREATE })
+  async register(
+    @Args('body') body: CreateUserInput,
+  ): Promise<RegisterResponse> {
     return this.authService.register(body);
   }
 

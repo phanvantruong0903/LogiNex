@@ -4,7 +4,8 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "prepare": "husky"
+    "prepare": "husky",
+    "postinstall": "nx run-many -t generate"
   },
   "private": true,
   "dependencies": {
@@ -18,7 +19,6 @@
     "@nestjs/microservices": "^11.1.6",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.0",
-    "@nestjs/swagger": "^11.2.0",
     "@prisma/client": "^6.16.2",
     "apollo-server-core": "^3.13.0",
     "axios": "^1.6.0",
@@ -30,8 +30,7 @@
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.0",
-    "swagger-ui-express": "^5.0.1"
+    "rxjs": "^7.8.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.0.0",

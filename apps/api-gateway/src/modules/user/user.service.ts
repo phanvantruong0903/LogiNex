@@ -1,9 +1,13 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
 import { Observable, lastValueFrom } from 'rxjs';
-import { GRPC_PACKAGE, GRPC_SERVICES } from '@mebike/common';
-import { UserListResponse, UserResponse } from '../auth/graphql/UserResponse';
-import { UpdateUserDto } from '../auth/dto/UpdateUserDto';
+import {
+  GRPC_PACKAGE,
+  GRPC_SERVICES,
+  UserListResponse,
+  UserResponse,
+  UpdateUserInput,
+} from '@mebike/common';
 
 interface UserServiceClient {
   GetAllUsers(data: {
@@ -11,7 +15,7 @@ interface UserServiceClient {
     limit: number;
   }): Observable<UserListResponse>;
   GetUser(data: { id: string }): Observable<UserResponse>;
-  UpdateUser(data: { id: string } & UpdateUserDto): Observable<UserResponse>;
+  UpdateUser(data: { id: string } & UpdateUserInput): Observable<UserResponse>;
   ChangePassword(data: {
     id: string;
     password: string;
@@ -38,7 +42,7 @@ export class UserService implements OnModuleInit {
     return await lastValueFrom(this.userService.GetUser({ id }));
   }
 
-  async updateUser(id: string, data: UpdateUserDto) {
+  async updateUser(id: string, data: UpdateUserInput) {
     const payload = { id, ...data };
     return await lastValueFrom(this.userService.UpdateUser(payload));
   }

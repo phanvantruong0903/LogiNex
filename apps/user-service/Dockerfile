@@ -1,34 +1,52 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 
+COPY package.json package-lock.json* nx.json tsconfig.base.json ./
+
+COPY common ./common
+
+RUN npm pkg delete scripts.postinstall
+
+COPY apps/user-service/prisma ./apps/user-service/prisma
+COPY apps/auth-service/prisma ./apps/auth-service/prisma
+
+RUN npm ci --legacy-peer-deps
+
 COPY . .
 
-RUN npm install
+RUN npx prisma generate --schema=apps/user-service/prisma/schema.prisma
+RUN npx prisma generate --schema=apps/auth-service/prisma/schema.prisma
 
-WORKDIR /app/common
-RUN npm install
-WORKDIR /app
-RUN npx nx build user-service --prod
+RUN npx nx run user-service:prune --configuration=production
 
 FROM node:20-alpine AS runner
 WORKDIR /app
 
-COPY --from=builder /app/apps/user-service/dist ./dist
-COPY package*.json ./
-COPY common/package.json ./common/
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/common ./common
-
-RUN npm pkg delete scripts.prepare && npm ci --omit=dev
-
-WORKDIR /app/common
-RUN npm install --omit=dev
-
-WORKDIR /app
-RUN npx prisma generate
-
+ENV NODE_ENV=production
 ENV USER_SERVICE_PORT=50052
 
-EXPOSE 50052
+COPY --from=builder /app/apps/user-service/dist/package.json ./
+COPY --from=builder /app/apps/user-service/dist/package-lock.json ./
+COPY --from=builder /app/apps/user-service/dist/workspace_modules ./workspace_modules
 
-CMD ["node", "dist/main.js"]
+RUN npm pkg delete scripts.postinstall && \
+  npm install --omit=dev --legacy-peer-deps && \
+  npm install \
+  @nestjs/core @nestjs/common @nestjs/platform-express @nestjs/microservices @nestjs/config @nestjs/passport \
+  @nestjs/graphql @nestjs/apollo graphql apollo-server-core \
+  @grpc/grpc-js @grpc/proto-loader \
+  class-validator class-transformer \
+  consul axios bcrypt passport passport-jwt \
+  rxjs reflect-metadata @nestjs/jwt dotenv \
+  --legacy-peer-deps
+
+COPY --from=builder /app/apps/user-service/dist/main.js ./
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+
+COPY --from=builder /app/common ./common
+COPY --from=builder /app/common/src/lib/prisma/user/generated/libquery_engine-linux-musl-openssl-3.0.x.so.node ./
+
+COPY --from=builder /app/apps/user-service/prisma ./apps/user-service/prisma
+
+EXPOSE 50052
+CMD ["node", "main.js"]

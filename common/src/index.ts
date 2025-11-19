@@ -1,4 +1,3 @@
-export * from './lib/config/prisma';
 export * from './lib/constants/index';
 export * from './lib/filters/grpc-exception.filter';
 export * from './lib/interfaces';
@@ -6,4 +5,6 @@ export * from './lib/utils';
 export * from './lib/abstract';
 export * from './lib/graphql';
 export * from './lib/consul';
-export * from './lib/jwt'
+export * from './lib/jwt';
+export * from './lib/schema';
+export * from './lib/prisma';
