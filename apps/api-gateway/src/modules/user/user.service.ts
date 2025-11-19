@@ -1,9 +1,13 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
 import { Observable, lastValueFrom } from 'rxjs';
-import { GRPC_PACKAGE, GRPC_SERVICES } from '@mebike/common';
-import { UserListResponse, UserResponse } from '../auth/graphql/UserResponse';
-import { UpdateUserInput } from '../auth/graphql/UpdateUserInput';
+import {
+  GRPC_PACKAGE,
+  GRPC_SERVICES,
+  UserListResponse,
+  UserResponse,
+  UpdateUserInput,
+} from '@mebike/common';
 
 interface UserServiceClient {
   GetAllUsers(data: {
