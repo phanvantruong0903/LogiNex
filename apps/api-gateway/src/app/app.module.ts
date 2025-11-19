@@ -7,6 +7,7 @@ import {
   ApolloServerPluginLandingPageLocalDefault,
 } from 'apollo-server-core';
 import { UserModule } from '../modules/user/user.module';
+import '../modules/user/graphql/enum';
 
 @Module({
   imports: [

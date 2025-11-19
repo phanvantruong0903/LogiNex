@@ -3,61 +3,65 @@ services:
     image: hashicorp/consul:1.16
     container_name: consul
     restart: "unless-stopped"
-    ports:
+    ports:  
       - "8500:8500"
     command: "agent -dev -client=0.0.0.0"
     networks:
       - mebike-network
+
   auth-db:
     image: postgres:16-alpine
     container_name: auth-db
     restart: "unless-stopped"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: truongdz002 
-      POSTGRES_DB: auth-db
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${AUTH_DB_NAME}     
     ports:
       - "5433:5432"
     volumes:
       - auth_data:/var/lib/postgresql/data
     networks:
       - mebike-network
+
   user-db:
     image: postgres:16-alpine
     container_name: user-db
     restart: "unless-stopped"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: truongdz002 
-      POSTGRES_DB: user-db
+      POSTGRES_USER: ${DB_USER}         # Lấy từ .env
+      POSTGRES_PASSWORD: ${DB_PASSWORD} # Lấy từ .env
+      POSTGRES_DB: ${USER_DB_NAME}      # Lấy từ .env
     ports:
       - "5434:5432"
     volumes:
       - user_data:/var/lib/postgresql/data
     networks:
       - mebike-network
+
   nginx:
     image: nginx:1.25-alpine
     container_name: nginx
     restart: "unless-stopped"
     ports:
       - "80:80"   
-      # - "443:443" 
     volumes:
       - ./nginx/default.conf.template:/etc/nginx/templates/default.conf.template
-      # - ./nginx/ssl:/etc/nginx/ssl
     env_file:
       - ./.env
     depends_on:
       - api-gateway
     networks:
       - mebike-network
+
   api-gateway:
     build: 
       context: .
       dockerfile: ./apps/api-gateway/Dockerfile
     container_name: api-gateway
     restart: "unless-stopped"
+    ports:
+      - "3000:3000"
     depends_on:
       - consul
       - auth-service
@@ -69,6 +73,7 @@ services:
       - ./apps/api-gateway/.env
     networks:
       - mebike-network
+
   auth-service:
     build: 
       context: .
@@ -81,10 +86,11 @@ services:
     environment:
       - CONSUL_HOST=consul
       - CONSUL_PORT=8500
-    env_file:
-      - ./apps/auth-service/.env
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@auth-db:5432/${AUTH_DB_NAME}?schema=public
+      - AUTH_SERVICE_PORT=50051
     networks:
       - mebike-network
+
   user-service:
     build: 
       context: .
@@ -97,14 +103,15 @@ services:
     environment:
       - CONSUL_HOST=consul
       - CONSUL_PORT=8500
-    env_file:
-      - ./apps/user-service/.env
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@user-db:5432/${USER_DB_NAME}?schema=public
+      - USER_SERVICE_PORT=50052
     networks:
       - mebike-network
 
 networks:
   mebike-network:
     driver: bridge
+
 volumes:
   auth_data:
   user_data:

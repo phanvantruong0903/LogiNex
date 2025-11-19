@@ -1,12 +1,28 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { GrpcExceptionFilter } from '@mebike/common';
+import {
+  ConsulService,
+  CONSULT_SERVICE_ID,
+  GrpcExceptionFilter,
+} from '@mebike/common';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-import { join } from 'path';
+import { join } from 'node:path';
 import { config as dotenvConfig } from 'dotenv';
 async function bootstrap() {
   dotenvConfig();
+
+  const consulService = new ConsulService();
+  const port = Number(process.env.AUTH_SERVICE_PORT) || 50051;
+  const host = consulService.getLocalIp();
+
+  await consulService.registerService(
+    CONSULT_SERVICE_ID.AUTH,
+    CONSULT_SERVICE_ID.AUTH,
+    host,
+    port,
+  );
+
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AppModule,
     {

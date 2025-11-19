@@ -1,35 +1,50 @@
+# --- STAGE 1: BUILDER ---
 FROM node:20-alpine AS builder
 WORKDIR /app
 
+COPY package.json package-lock.json* nx.json tsconfig.base.json ./
+
+COPY common ./common
+
+RUN npm pkg delete scripts.postinstall
+
+COPY apps/auth-service/prisma ./apps/auth-service/prisma
+COPY apps/user-service/prisma ./apps/user-service/prisma
+
+RUN npm ci --legacy-peer-deps
+
 COPY . .
-COPY common/package.json ./common/
 
-RUN npm install
+RUN npx prisma generate --schema=apps/auth-service/prisma/schema.prisma
+RUN npx prisma generate --schema=apps/user-service/prisma/schema.prisma
 
-RUN npx nx build api-gateway --prod
-
-RUN npx prisma generate
+RUN npx nx run api-gateway:prune --configuration=production
 
 FROM node:20-alpine AS runner
 WORKDIR /app
 
-COPY --from=builder /app/apps/api-gateway/dist ./dist
-COPY package*.json ./
-COPY common/package.json ./common/
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/common ./common
-
-RUN npm pkg delete scripts.prepare && npm install --omit=dev
-
-WORKDIR /app/common
-RUN npm install --omit=dev
-
-WORKDIR /app
-
-RUN npx prisma generate
-
-ENV NODE_ENV=development
+ENV NODE_ENV=production 
 ENV PORT=3000
 
+COPY --from=builder /app/apps/api-gateway/dist/package.json ./
+COPY --from=builder /app/apps/api-gateway/dist/package-lock.json ./
+COPY --from=builder /app/apps/api-gateway/dist/workspace_modules ./workspace_modules
+
+RUN npm pkg delete scripts.postinstall && \
+  npm install --omit=dev --legacy-peer-deps && \
+  npm install \
+  @nestjs/core @nestjs/common @nestjs/platform-express @nestjs/microservices @nestjs/config @nestjs/passport \
+  @nestjs/graphql @nestjs/apollo graphql apollo-server-core \
+  @grpc/grpc-js @grpc/proto-loader \
+  class-validator class-transformer \
+  consul axios bcrypt passport passport-jwt \
+  rxjs reflect-metadata @nestjs/jwt dotenv \
+  @apollo/server \
+  --legacy-peer-deps
+
+COPY --from=builder /app/apps/api-gateway/dist/main.js ./
+
+COPY --from=builder /app/common ./common
+
 EXPOSE 3000
-CMD ["node","dist/main.js"]
+CMD ["node","main.js"]

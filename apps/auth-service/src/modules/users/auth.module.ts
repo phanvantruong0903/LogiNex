@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { AuthGrpcController } from './auth.grpc.controller';
-import { AuthConsulRegistrar } from '../../consul/consul.service';
 import {
   ConsuleModule,
   ConsulService,
@@ -31,13 +30,7 @@ import { join } from 'node:path';
             transport: Transport.GRPC,
             options: {
               package: 'user',
-              protoPath: join(
-                __dirname,
-                '..',
-                '..',
-                '..',
-                'common/src/lib/proto/user.proto',
-              ),
+              protoPath: join(process.cwd(), 'common/src/lib/proto/user.proto'),
               url: `${userService.address}:${userService.port}`,
             },
           };
@@ -46,6 +39,6 @@ import { join } from 'node:path';
     ]),
   ],
   controllers: [AuthGrpcController],
-  providers: [AuthService, AuthConsulRegistrar],
+  providers: [AuthService],
 })
 export class AuthModule {}

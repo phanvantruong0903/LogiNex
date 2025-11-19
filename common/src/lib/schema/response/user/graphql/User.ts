@@ -1,5 +1,5 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import type { Role, UserVerifyStatus } from 'src/lib/prisma';
+import { Role, UserVerifyStatus } from '../../../../prisma/index';
 
 @ObjectType()
 export class UserProfile {
@@ -15,9 +15,9 @@ export class UserProfile {
   @Field()
   YOB!: number;
 
-  @Field()
+  @Field(() => Role)
   role!: Role;
 
-  @Field()
+  @Field(() => UserVerifyStatus)
   verify!: UserVerifyStatus;
 }
