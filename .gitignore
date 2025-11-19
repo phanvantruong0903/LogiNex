@@ -48,3 +48,11 @@ test-output
 /generated/prisma
 
 .env
+.env.*
+!.env.example
+
+# Prisma CLient
+apps/*/generated/
+apps/**/generated/
+generated/
+prisma/generated/

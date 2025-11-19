@@ -9,7 +9,8 @@
         "options": {
           "command": "webpack-cli build",
           "args": [
-            "--node-env=production"
+            "--node-env=production",
+            "--output-path=../../apps/api-gateway/dist"
           ],
           "cwd": "apps/api-gateway"
         },
@@ -83,6 +84,7 @@
     }
   },
   "dependencies": {
+    "@as-integrations/express5": "^1.1.2",
     "@nestjs/platform-express": "^11.1.6"
   }
 }

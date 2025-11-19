@@ -1,64 +1,104 @@
-import { Injectable } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import {
   BaseService,
+  GRPC_PACKAGE,
+  GRPC_SERVICES,
   JwtServiceCustom,
   SERVER_MESSAGE,
   TokenPayload,
-  prisma,
   USER_MESSAGES,
+  UserProfile,
+  UserResponse,
   throwGrpcError,
+  CreateUserDto,
+  CreateProfileDto,
+  LoginUserDto,
+  prismaAuth,
+  User,
 } from '@mebike/common';
-import { CreateUserDto } from './dto/CreateUserDto';
-import { LoginUserDto } from './dto/LoginUserDto';
-import { plainToInstance } from 'class-transformer';
-import { validateOrReject } from 'class-validator';
 import * as bcrypt from 'bcrypt';
 import { RpcException } from '@nestjs/microservices';
+import type { ClientGrpc } from '@nestjs/microservices';
+import { firstValueFrom, Observable } from 'rxjs';
 
+interface UserServiceClient {
+  CreateProfile(data: {
+    name: string;
+    YOB: number;
+    accountId: string;
+  }): Observable<UserResponse>;
+  GetUser(data: { id: string }): Observable<UserResponse>;
+}
 @Injectable()
-export class AuthService extends BaseService<User, CreateUserDto, never> {
-  constructor(private readonly jwtService: JwtServiceCustom) {
-    super(prisma.user);
+export class AuthService
+  extends BaseService<User, CreateUserDto, never>
+  implements OnModuleInit
+{
+  private userService!: UserServiceClient;
+
+  constructor(
+    private readonly jwtService: JwtServiceCustom,
+    @Inject(GRPC_PACKAGE.USER) private readonly client: ClientGrpc,
+  ) {
+    super(prismaAuth.user);
   }
 
-  async validateUser(data: LoginUserDto) {
-    if (data) {
-      const dtoInstance = plainToInstance(LoginUserDto, data);
-      try {
-        await validateOrReject(dtoInstance);
-        const findUser = await prisma.user.findUnique({
-          where: { email: dtoInstance.email },
-        });
-        if (!findUser) {
-          throwGrpcError(SERVER_MESSAGE.NOT_FOUND, [USER_MESSAGES.NOT_FOUND]);
-        }
+  onModuleInit() {
+    this.userService = this.client.getService<UserServiceClient>(
+      GRPC_SERVICES.USER,
+    );
+  }
 
-        const isMatch = await bcrypt.compare(
-          dtoInstance.password,
-          findUser?.password,
-        );
-
-        if (!isMatch) {
-          throwGrpcError(SERVER_MESSAGE.NOT_FOUND, [
-            USER_MESSAGES.VALIDATION_FAILED,
-          ]);
-        }
-        return {
-          user_id: findUser.id,
-          verify: findUser.verify,
-          role: findUser.role,
-        };
-      } catch (error: unknown) {
-        if (error instanceof RpcException) {
-          throw error;
-        }
-        const err = error as Error;
-        throwGrpcError(SERVER_MESSAGE.INTERNAL_SERVER, [err?.message]);
+  async validateUser(data: LoginUserDto): Promise<TokenPayload> {
+    try {
+      const findUser = await prismaAuth.user.findUnique({
+        where: { email: data.email },
+        select: {
+          id: true,
+          password: true,
+        },
+      });
+      if (!findUser) {
+        throwGrpcError(SERVER_MESSAGE.NOT_FOUND, [USER_MESSAGES.NOT_FOUND]);
       }
-    } else {
-      throwGrpcError(SERVER_MESSAGE.BAD_REQUEST, [USER_MESSAGES.INVALID_DATA]);
+
+      const isMatchPassword = bcrypt.compare(data.password, findUser.password);
+
+      const profile = this.getUserProfile(findUser.id);
+
+      const [isMatch, userProfile] = await Promise.all([
+        isMatchPassword,
+        profile,
+      ]);
+
+      if (!isMatch) {
+        throwGrpcError(SERVER_MESSAGE.NOT_FOUND, [
+          USER_MESSAGES.VALIDATION_FAILED,
+        ]);
+      }
+
+      const userData = userProfile.data as UserProfile;
+
+      return {
+        user_id: findUser.id,
+        verify: userData.verify,
+        role: userData.role,
+      };
+    } catch (error: unknown) {
+      if (error instanceof RpcException) {
+        throw error;
+      }
+      const err = error as Error;
+      throwGrpcError(SERVER_MESSAGE.INTERNAL_SERVER, [err?.message]);
     }
+  }
+
+  async createUserProfile(payload: CreateProfileDto) {
+    return await firstValueFrom(this.userService.CreateProfile(payload));
+  }
+
+  async getUserById(id: string) {
+    return await firstValueFrom(this.userService.GetUser({ id }));
   }
 
   async generateToken(payload: TokenPayload) {
@@ -86,7 +126,9 @@ export class AuthService extends BaseService<User, CreateUserDto, never> {
         ]);
       }
 
-      const findUser = await prisma.user.findUnique({ where: { id: user_id } });
+      const findUser = await prismaAuth.user.findUnique({
+        where: { id: user_id },
+      });
       if (!findUser) {
         throwGrpcError(SERVER_MESSAGE.NOT_FOUND, [USER_MESSAGES.NOT_FOUND]);
       }
@@ -120,5 +162,34 @@ export class AuthService extends BaseService<User, CreateUserDto, never> {
 
   async verifyToken(token: string) {
     return this.jwtService.verifyToken(token);
+  }
+
+  async createProfile(data: CreateProfileDto) {
+    try {
+      const profile = await this.createUserProfile({
+        name: data.name,
+        accountId: data.accountId,
+        YOB: data.YOB,
+      });
+
+      return profile;
+    } catch (error) {
+      const err = error as Error;
+      throwGrpcError(SERVER_MESSAGE.INTERNAL_SERVER, [err?.message]);
+    }
+  }
+
+  async getUserProfile(id: string): Promise<UserResponse> {
+    try {
+      const user = await this.getUserById(id);
+      if (!user) {
+        throwGrpcError(SERVER_MESSAGE.NOT_FOUND, [USER_MESSAGES.NOT_FOUND]);
+      }
+
+      return user;
+    } catch (error) {
+      const err = error as Error;
+      throwGrpcError(SERVER_MESSAGE.INTERNAL_SERVER, [err?.message]);
+    }
   }
 }

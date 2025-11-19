@@ -1,18 +1,19 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
 import { Observable, lastValueFrom } from 'rxjs';
-import { CreateUserDto } from './dto/CreateUserDto';
-import { GRPC_PACKAGE, GRPC_SERVICES } from '@mebike/common';
-import { LoginInput } from './graphql/Login';
 import {
+  CreateUserDto,
+  RegisterResponse,
   LoginResponse,
   ResfreshTokenResponse,
-  UserResponse,
-} from './graphql/UserResponse';
+  GRPC_PACKAGE,
+  GRPC_SERVICES,
+  LoginInput,
+} from '@mebike/common';
 
 interface AuthServiceClient {
   LoginUser(data: LoginInput): Observable<LoginResponse>;
-  CreateUser(data: CreateUserDto): Observable<UserResponse>;
+  CreateUser(data: CreateUserDto): Observable<RegisterResponse>;
   RefreshToken(refreshToken: object): Observable<ResfreshTokenResponse>;
 }
 

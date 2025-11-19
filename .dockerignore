@@ -5,10 +5,12 @@ tmp
 .cache
 .git
 .gitignore
+.nx
 Dockerfile
 docker-compose.yaml
 nx-cache
 *.log
+coverage
 
 # Optional: ignore VSCode, OS stuff
 .vscode
@@ -16,3 +18,4 @@ nx-cache
 
 # Nx cache folders
 nx-cache
+apps/api-gateway/dist
