@@ -1,24 +1,25 @@
+version: '3.8'
 services:
-  consul: 
+  consul:
     image: hashicorp/consul:1.16
     container_name: consul
-    restart: "unless-stopped"
-    ports:  
-      - "8500:8500"
-    command: "agent -dev -client=0.0.0.0"
+    restart: 'unless-stopped'
+    ports:
+      - '8500:8500'
+    command: 'agent -dev -client=0.0.0.0'
     networks:
       - mebike-network
 
   auth-db:
     image: postgres:16-alpine
     container_name: auth-db
-    restart: "unless-stopped"
+    restart: 'unless-stopped'
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${AUTH_DB_NAME}     
+      POSTGRES_DB: ${AUTH_DB_NAME}
     ports:
-      - "5433:5432"
+      - '5433:5432'
     volumes:
       - auth_data:/var/lib/postgresql/data
     networks:
@@ -27,41 +28,43 @@ services:
   user-db:
     image: postgres:16-alpine
     container_name: user-db
-    restart: "unless-stopped"
+    restart: 'unless-stopped'
     environment:
-      POSTGRES_USER: ${DB_USER}         # Lấy từ .env
-      POSTGRES_PASSWORD: ${DB_PASSWORD} # Lấy từ .env
-      POSTGRES_DB: ${USER_DB_NAME}      # Lấy từ .env
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${USER_DB_NAME}
     ports:
-      - "5434:5432"
+      - '5434:5432'
     volumes:
       - user_data:/var/lib/postgresql/data
     networks:
       - mebike-network
 
-  nginx:
-    image: nginx:1.25-alpine
-    container_name: nginx
-    restart: "unless-stopped"
+  traefik:
+    image: traefik:v2.10
+    container_name: traefik
+    restart: 'unless-stopped'
+    command:
+      - '--api.insecure=true'
+      - '--providers.docker=true'
+      - '--providers.docker.exposedbydefault=false'
+      - '--entrypoints.web.address=:80'
+      - '--entrypoints.websecure.address=:443'
     ports:
-      - "80:80"   
+      - '80:80'
+      - '8080:8080'
+      - '443:443'
     volumes:
-      - ./nginx/default.conf.template:/etc/nginx/templates/default.conf.template
-    env_file:
-      - ./.env
-    depends_on:
-      - api-gateway
+      - '/var/run/docker.sock:/var/run/docker.sock:ro'
     networks:
       - mebike-network
 
   api-gateway:
-    build: 
+    build:
       context: .
       dockerfile: ./apps/api-gateway/Dockerfile
     container_name: api-gateway
-    restart: "unless-stopped"
-    ports:
-      - "3000:3000"
+    restart: 'unless-stopped'
     depends_on:
       - consul
       - auth-service
@@ -69,17 +72,24 @@ services:
     environment:
       - CONSUL_HOST=consul
       - CONSUL_PORT=8500
+      - PORT=3000
+      - NODE_ENV=development
     env_file:
       - ./apps/api-gateway/.env
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.api-gateway.rule=(Host(`localhost`) || Host(`${DOMAIN:-mebike.local}`)) && PathPrefix(`/graphql`)'
+      - 'traefik.http.routers.api-gateway.entrypoints=web,websecure'
+      - 'traefik.http.services.api-gateway.loadbalancer.server.port=3000'
     networks:
       - mebike-network
 
   auth-service:
-    build: 
+    build:
       context: .
       dockerfile: ./apps/auth-service/Dockerfile
     container_name: auth-service
-    restart: "unless-stopped"
+    restart: 'unless-stopped'
     depends_on:
       - consul
       - auth-db
@@ -92,11 +102,11 @@ services:
       - mebike-network
 
   user-service:
-    build: 
+    build:
       context: .
       dockerfile: ./apps/user-service/Dockerfile
     container_name: user-service
-    restart: "unless-stopped"
+    restart: 'unless-stopped'
     depends_on:
       - consul
       - user-db
