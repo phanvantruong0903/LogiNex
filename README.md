@@ -1,82 +1,116 @@
 # Mebike
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+**Mebike** is a microservices-based application built with [Nx](https://nx.dev), [NestJS](https://nestjs.com/), and [Docker](https://www.docker.com/). It uses a modern tech stack to ensure scalability and maintainability.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
+## 🚀 Tech Stack
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/node?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+- **Monorepo Tool**: [Nx](https://nx.dev)
+- **Backend Framework**: [NestJS](https://nestjs.com/)
+- **Database**: [PostgreSQL](https://www.postgresql.org/)
+- **ORM**: [Prisma](https://www.prisma.io/)
+- **Service Discovery**: [Consul](https://www.consul.io/)
+- **Reverse Proxy / API Gateway**: [Traefik](https://traefik.io/)
+- **Containerization**: Docker & Docker Compose
 
-## Finish your CI setup
+## 🏗 Architecture
 
-[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/24GkAhsj6d)
+The project consists of the following main services:
 
+- **API Gateway**: Entry point for client requests, routing them to appropriate microservices.
+- **Auth Service**: Handles user authentication and authorization (JWT, Passport).
+- **User Service**: Manages user profiles and data.
+- **Consul**: Used for service discovery and configuration.
+- **Traefik**: Acts as the edge router and load balancer.
 
-## Run tasks
+## 🛠 Prerequisites
 
-To run the dev server for your app, use:
+Ensure you have the following installed:
 
-```sh
-npx nx serve Mebike
+- [Node.js](https://nodejs.org/) (LTS recommended)
+- [Docker](https://www.docker.com/) & Docker Compose
+- [Git](https://git-scm.com/)
+
+## 🏁 Getting Started
+
+### 1. Clone the repository
+
+```bash
+git clone <repository-url>
+cd Mebike
 ```
 
-To create a production bundle:
+### 2. Install dependencies
 
-```sh
-npx nx build Mebike
+```bash
+npm install
 ```
 
-To see all available targets to run for a project, run:
+### 3. Environment Configuration
 
-```sh
-npx nx show project Mebike
+Copy the example environment file and configure it:
+
+```bash
+cp .env.example .env
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+> **Note:** Update the `.env` file with your specific database credentials and other secrets.
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+### 4. Start Infrastructure (Docker)
 
-## Add new projects
+Start the databases, Consul, and Traefik using Docker Compose:
 
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
-
-Use the plugin's generator to create new projects.
-
-To generate a new application, use:
-
-```sh
-npx nx g @nx/node:app demo
+```bash
+docker-compose up -d
 ```
 
-To generate a new library, use:
+### 5. Run Applications
 
-```sh
-npx nx g @nx/node:lib mylib
+You can run the microservices locally using Nx:
+
+```bash
+# Start the API Gateway
+npx nx serve api-gateway
+
+# Start the Auth Service
+npx nx serve auth-service
+
+# Start the User Service
+npx nx serve user-service
 ```
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+## 📦 Build
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+To build the project for production:
 
+```bash
+npx nx build api-gateway
+npx nx build auth-service
+npx nx build user-service
+```
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## 🧪 Testing
 
-## Install Nx Console
+Run unit tests:
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+```bash
+npx nx test api-gateway
+npx nx test auth-service
+```
 
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## 📂 Project Structure
 
-## Useful links
+```
+Mebike/
+├── apps/               # Application services
+│   ├── api-gateway/    # API Gateway service
+│   ├── auth-service/   # Authentication service
+│   └── user-service/   # User management service
+├── common/             # Shared libraries and modules
+├── docker-compose.yaml # Docker infrastructure config
+├── nx.json             # Nx configuration
+└── package.json        # Project dependencies
+```
 
-Learn more:
+## 📄 License
 
-- [Learn more about this workspace setup](https://nx.dev/nx-api/node?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+This project is licensed under the MIT License.
