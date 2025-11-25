@@ -47,7 +47,7 @@ export class AuthResolver {
     @Args('body') body: ChangePasswordInput,
   ): Promise<ChangePasswordResponse> {
     return this.authService.changePassword({
-      accountId: user.id,
+      accountId: user.accountId,
       ...body,
     });
   }
