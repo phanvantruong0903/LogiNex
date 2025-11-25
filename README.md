@@ -1,4 +1,4 @@
-# Mebike
+# LogiNex
 
 **Mebike** is a microservices-based application built with [Nx](https://nx.dev), [NestJS](https://nestjs.com/), and [Docker](https://www.docker.com/). It uses a modern tech stack to ensure scalability and maintainability.
 

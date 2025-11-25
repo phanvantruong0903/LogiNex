@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from '../modules/users/auth.module';
 import { HealthController } from '../health/health.controller';
-import { ConsuleModule } from '@mebike/common';
+import { ConsuleModule } from '@loginex/common';
 
 @Module({
   imports: [AuthModule, ConsuleModule],

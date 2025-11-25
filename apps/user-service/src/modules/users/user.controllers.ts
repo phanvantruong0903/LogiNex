@@ -13,7 +13,7 @@ import {
   Profile,
   grpcPaginateResponse,
   UserProfile,
-} from '@mebike/common';
+} from '@loginex/common';
 import { UserService } from './user.services';
 
 @Controller()

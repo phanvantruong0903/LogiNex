@@ -1,10 +1,10 @@
 {
-  "name": "@mebike/auth-service-e2e",
+  "name": "@loginex/auth-service-e2e",
   "version": "0.0.1",
   "private": true,
   "nx": {
     "implicitDependencies": [
-      "@mebike/auth-service"
+      "@loginex/auth-service"
     ],
     "targets": {
       "e2e": {
@@ -17,8 +17,8 @@
           "passWithNoTests": true
         },
         "dependsOn": [
-          "@mebike/auth-service:build",
-          "@mebike/auth-service:serve"
+          "@loginex/auth-service:build",
+          "@loginex/auth-service:serve"
         ]
       }
     }

@@ -6,7 +6,7 @@ import {
   ConsulService,
   CONSULT_SERVICE_ID,
   GRPC_PACKAGE,
-} from '@mebike/common';
+} from '@loginex/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule } from '@nestjs/config';
 import { join } from 'node:path';

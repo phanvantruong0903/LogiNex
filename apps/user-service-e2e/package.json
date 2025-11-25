@@ -1,10 +1,10 @@
 {
-  "name": "@mebike/user-service-e2e",
+  "name": "@loginex/user-service-e2e",
   "version": "0.0.1",
   "private": true,
   "nx": {
     "implicitDependencies": [
-      "@mebike/user-service"
+      "@loginex/user-service"
     ],
     "targets": {
       "e2e": {
@@ -17,8 +17,8 @@
           "passWithNoTests": true
         },
         "dependsOn": [
-          "@mebike/user-service:build",
-          "@mebike/user-service:serve"
+          "@loginex/user-service:build",
+          "@loginex/user-service:serve"
         ]
       }
     }

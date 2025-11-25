@@ -7,7 +7,7 @@ import {
   UserListResponse,
   UserResponse,
   UpdateUserInput,
-} from '@mebike/common';
+} from '@loginex/common';
 
 interface UserServiceClient {
   GetAllUsers(data: {

@@ -11,7 +11,7 @@ import {
   LoginInput,
   ChangePasswordInput,
   ChangePasswordResponse,
-} from '@mebike/common';
+} from '@loginex/common';
 
 interface AuthServiceClient {
   LoginUser(data: LoginInput): Observable<LoginResponse>;

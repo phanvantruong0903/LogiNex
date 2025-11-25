@@ -9,7 +9,7 @@ import {
   UserListResponse,
   UserProfile,
   UserResponse,
-} from '@mebike/common';
+} from '@loginex/common';
 
 import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';

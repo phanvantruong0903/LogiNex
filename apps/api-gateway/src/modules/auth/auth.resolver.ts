@@ -12,8 +12,8 @@ import {
   LoginInput,
   ChangePasswordResponse,
   ChangePasswordInput,
-} from '@mebike/common';
-import type { User, UserProfile } from '@mebike/common';
+} from '@loginex/common';
+import type { User, UserProfile } from '@loginex/common';
 
 @Resolver()
 export class AuthResolver {

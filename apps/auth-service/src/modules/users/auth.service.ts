@@ -16,7 +16,7 @@ import {
   prismaAuth,
   User,
   ChangePasswordDto,
-} from '@mebike/common';
+} from '@loginex/common';
 import * as bcrypt from 'bcrypt';
 import { RpcException } from '@nestjs/microservices';
 import type { ClientGrpc } from '@nestjs/microservices';
