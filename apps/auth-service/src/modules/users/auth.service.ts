@@ -15,6 +15,7 @@ import {
   LoginUserDto,
   prismaAuth,
   User,
+  ChangePasswordDto,
 } from '@mebike/common';
 import * as bcrypt from 'bcrypt';
 import { RpcException } from '@nestjs/microservices';
@@ -80,7 +81,7 @@ export class AuthService
       const userData = userProfile.data as UserProfile;
 
       return {
-        user_id: findUser.id,
+        user_id: userData.accountId,
         verify: userData.verify,
         role: userData.role,
       };
@@ -174,6 +175,9 @@ export class AuthService
 
       return profile;
     } catch (error) {
+      if (error instanceof RpcException) {
+        throw error;
+      }
       const err = error as Error;
       throwGrpcError(SERVER_MESSAGE.INTERNAL_SERVER, [err?.message]);
     }
@@ -188,6 +192,46 @@ export class AuthService
 
       return user;
     } catch (error) {
+      if (error instanceof RpcException) {
+        throw error;
+      }
+      const err = error as Error;
+      throwGrpcError(SERVER_MESSAGE.INTERNAL_SERVER, [err?.message]);
+    }
+  }
+
+  async changePassword(data: ChangePasswordDto) {
+    try {
+      const findUser = await prismaAuth.user.findUnique({
+        where: { id: data.accountId },
+      });
+
+      if (!findUser) {
+        throwGrpcError(USER_MESSAGES.NOT_FOUND, [USER_MESSAGES.NOT_FOUND]);
+      }
+
+      const isMatchPassword = await bcrypt.compare(
+        data.oldPassword,
+        findUser.password,
+      );
+
+      if (!isMatchPassword) {
+        throwGrpcError(SERVER_MESSAGE.UNAUTHORIZED, [
+          USER_MESSAGES.INVALID_PASSWORD,
+        ]);
+      }
+
+      const hashedPassword = await bcrypt.hash(data.newPassword, 10);
+      const user = await prismaAuth.user.update({
+        where: { id: data.accountId },
+        data: { password: hashedPassword, updatedAt: new Date() },
+      });
+
+      return user;
+    } catch (error) {
+      if (error instanceof RpcException) {
+        throw error;
+      }
       const err = error as Error;
       throwGrpcError(SERVER_MESSAGE.INTERNAL_SERVER, [err?.message]);
     }

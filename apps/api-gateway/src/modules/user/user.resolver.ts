@@ -24,7 +24,7 @@ export class UserResolver {
 
   @Query(() => UserListResponse, { name: GRAPHQL_NAME.GET_ALL })
   @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.USER)
+  @Roles(Role.ADMIN)
   async getAllUser(
     @Args('params', {
       nullable: true,
@@ -52,18 +52,8 @@ export class UserResolver {
     @CurrentUser() user: UserProfile,
     @Args('data') data: UpdateUserInput,
   ): Promise<UserResponse> {
-    const id = user?.id;
+    const id = user?.accountId;
     return this.userService.updateUser(id, data);
-  }
-
-  @Mutation(() => UserResponse, { name: GRAPHQL_NAME.CHANGE_PASSWORD })
-  @UseGuards(JwtAuthGuard)
-  async changePassword(
-    @CurrentUser() user: UserProfile,
-    @Args('password') password: string,
-  ): Promise<UserResponse> {
-    const id = user?.id;
-    return this.userService.changePassword(id, password);
   }
 
   @Query(() => String)

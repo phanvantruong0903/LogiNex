@@ -60,10 +60,24 @@ message ResfreshTokenResponse {
   repeated string errors = 4;
 }
 
+message ChangePasswordRequest {
+  string accountId = 1;
+  string oldPassword = 2;
+  string newPassword = 3;
+}
+
+message ChangePasswordResponse {
+  bool success = 1;
+  string message = 2;
+  User data = 3;
+  repeated string errors = 4;
+}
+
 service AuthService {
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
   rpc LoginUser(LoginUserRequest) returns (LoginUserResponse);
   rpc RefreshToken(RefreshTokenRequest) returns (ResfreshTokenResponse);
+  rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse);
 }
 
 message Empty {}
