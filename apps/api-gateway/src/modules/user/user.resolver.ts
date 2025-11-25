@@ -1,10 +1,11 @@
-import { UseGuards } from '@nestjs/common';
+import { BadRequestException, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 import {
   GRAPHQL_NAME,
   Role,
   UpdateUserInput,
+  USER_MESSAGES,
   UserListResponse,
   UserProfile,
   UserResponse,
@@ -42,8 +43,22 @@ export class UserResolver {
   @Query(() => UserResponse, { name: GRAPHQL_NAME.GET_ONE })
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.ADMIN, Role.USER)
-  async getUserDetail(@Args('params') id: string): Promise<UserResponse> {
-    return this.userService.getUserDetail(id);
+  async getUserDetail(
+    @Args('params', { type: () => String, nullable: true })
+    id: string | undefined,
+    @CurrentUser() user: UserProfile,
+  ): Promise<UserResponse> {
+    let userId = '';
+    if (user.role === Role.ADMIN) {
+      if (!id) {
+        throw new BadRequestException(USER_MESSAGES.ID_REQUIRED);
+      }
+      userId = id;
+    } else {
+      userId = user.accountId;
+    }
+
+    return this.userService.getUserDetail(userId);
   }
 
   @Mutation(() => UserResponse, { name: GRAPHQL_NAME.UPDATE })
