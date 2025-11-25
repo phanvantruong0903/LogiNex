@@ -52,6 +52,9 @@ export class UserController {
       );
       return grpcResponse<UserProfile>(result, USER_MESSAGES.UPDATE_SUCCESS);
     } catch (error) {
+      if (error instanceof RpcException) {
+        throw error;
+      }
       const err = error as Error;
       throw new RpcException(err?.message || USER_MESSAGES.UPDATE_FAIL);
     }
@@ -76,6 +79,9 @@ export class UserController {
         USER_MESSAGES.GET_DETAIL_SUCCESS,
       );
     } catch (error) {
+      if (error instanceof RpcException) {
+        throw error;
+      }
       const err = error as Error;
       throw new RpcException(err?.message || USER_MESSAGES.UPDATE_FAIL);
     }
@@ -89,6 +95,9 @@ export class UserController {
       const profile = await this.baseHandler.createLogic(data);
       return grpcResponse<UserProfile>(profile, USER_MESSAGES.CREATE_SCUCCESS);
     } catch (error) {
+      if (error instanceof RpcException) {
+        throw error;
+      }
       const err = error as Error;
       throw new RpcException(err?.message || USER_MESSAGES.CREATE_FAILED);
     }
@@ -104,6 +113,9 @@ export class UserController {
       const result = await this.baseHandler.getAllLogic(page, limit);
       return grpcPaginateResponse(result, USER_MESSAGES.GET_ALL_SUCCESS);
     } catch (error) {
+      if (error instanceof RpcException) {
+        throw error;
+      }
       const err = error as Error;
       throw new RpcException(err?.message || USER_MESSAGES.GET_ALL_FAILED);
     }

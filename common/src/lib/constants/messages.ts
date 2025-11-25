@@ -24,6 +24,7 @@ export const USER_MESSAGES = {
   GET_ALL_FAILED: 'Get all users failed',
   INVALID_PASSWORD: 'Invalid Password',
   CHANGE_PASSWORD_SUCCESS: 'Change password successfully',
+  PASSWORD_SAME: 'Password same',
 };
 
 export const SERVER_MESSAGE = {

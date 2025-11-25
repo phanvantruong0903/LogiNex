@@ -202,29 +202,37 @@ export class AuthService
 
   async changePassword(data: ChangePasswordDto) {
     try {
+      if (data.oldPassword === data.newPassword) {
+        throwGrpcError(SERVER_MESSAGE.BAD_REQUEST, [
+          USER_MESSAGES.PASSWORD_SAME,
+        ]);
+      }
+
       const findUser = await prismaAuth.user.findUnique({
         where: { id: data.accountId },
+        select: { password: true },
       });
 
       if (!findUser) {
         throwGrpcError(USER_MESSAGES.NOT_FOUND, [USER_MESSAGES.NOT_FOUND]);
       }
 
-      const isMatchPassword = await bcrypt.compare(
-        data.oldPassword,
-        findUser.password,
-      );
+      const [isMatch, newHashedPassword] = await Promise.all([
+        bcrypt.compare(data.oldPassword, findUser.password),
+        bcrypt.hash(data.newPassword, 10),
+      ]);
 
-      if (!isMatchPassword) {
+      if (!isMatch) {
         throwGrpcError(SERVER_MESSAGE.UNAUTHORIZED, [
           USER_MESSAGES.INVALID_PASSWORD,
         ]);
       }
 
-      const hashedPassword = await bcrypt.hash(data.newPassword, 10);
       const user = await prismaAuth.user.update({
         where: { id: data.accountId },
-        data: { password: hashedPassword, updatedAt: new Date() },
+        data: {
+          password: newHashedPassword,
+        },
       });
 
       return user;
