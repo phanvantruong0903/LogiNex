@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   consul:
     image: hashicorp/consul:1.16
@@ -8,7 +7,7 @@ services:
       - '8500:8500'
     command: 'agent -dev -client=0.0.0.0'
     networks:
-      - mebike-network
+      - loginex-network
 
   auth-db:
     image: postgres:16-alpine
@@ -23,7 +22,7 @@ services:
     volumes:
       - auth_data:/var/lib/postgresql/data
     networks:
-      - mebike-network
+      - loginex-network
 
   user-db:
     image: postgres:16-alpine
@@ -38,10 +37,10 @@ services:
     volumes:
       - user_data:/var/lib/postgresql/data
     networks:
-      - mebike-network
+      - loginex-network
 
   traefik:
-    image: traefik:v2.10
+    image: traefik:latest
     container_name: traefik
     restart: 'unless-stopped'
     command:
@@ -57,7 +56,7 @@ services:
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock:ro'
     networks:
-      - mebike-network
+      - loginex-network
 
   api-gateway:
     build:
@@ -78,11 +77,11 @@ services:
       - ./apps/api-gateway/.env
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.api-gateway.rule=(Host(`localhost`) || Host(`${DOMAIN:-mebike.local}`)) && PathPrefix(`/graphql`)'
+      - 'traefik.http.routers.api-gateway.rule=(Host(`localhost`) || Host(`${DOMAIN:-loginex.local}`)) && PathPrefix(`/graphql`)'
       - 'traefik.http.routers.api-gateway.entrypoints=web,websecure'
       - 'traefik.http.services.api-gateway.loadbalancer.server.port=3000'
     networks:
-      - mebike-network
+      - loginex-network
 
   auth-service:
     build:
@@ -99,7 +98,7 @@ services:
       - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@auth-db:5432/${AUTH_DB_NAME}?schema=public
       - AUTH_SERVICE_PORT=50051
     networks:
-      - mebike-network
+      - loginex-network
 
   user-service:
     build:
@@ -116,10 +115,10 @@ services:
       - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@user-db:5432/${USER_DB_NAME}?schema=public
       - USER_SERVICE_PORT=50052
     networks:
-      - mebike-network
+      - loginex-network
 
 networks:
-  mebike-network:
+  loginex-network:
     driver: bridge
 
 volumes:

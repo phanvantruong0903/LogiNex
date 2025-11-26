@@ -1,7 +1,5 @@
-import { validateOrReject } from 'class-validator';
 import { throwGrpcError } from '../utils/grpc-response';
 import { BaseService } from './base.service';
-import { plainToInstance } from 'class-transformer';
 import { SERVER_MESSAGE, USER_MESSAGES } from '../constants/messages';
 
 export class BaseGrpcHandler<
@@ -11,8 +9,8 @@ export class BaseGrpcHandler<
 > {
   constructor(
     protected readonly service: BaseService<T, CreateDto, UpdateDto>,
-    private readonly createDtoClass?: new () => CreateDto,
-    private readonly updateDtoClass?: new () => UpdateDto,
+    _createDtoClass?: new () => CreateDto, // eslint-disable-line @typescript-eslint/no-unused-vars
+    _updateDtoClass?: new () => UpdateDto, // eslint-disable-line @typescript-eslint/no-unused-vars
   ) {}
 
   async createLogic(dto: CreateDto): Promise<T> {
@@ -22,20 +20,6 @@ export class BaseGrpcHandler<
         'Create method is not implemented.',
       ]);
     }
-
-    if (this.createDtoClass) {
-      const dtoInstance = plainToInstance(this.createDtoClass, dto as object);
-
-      try {
-        await validateOrReject(dtoInstance);
-      } catch (errors) {
-        const messages: string[] = (errors as any[]).flatMap((err) =>
-          Object.values(err.constraints ?? {}),
-        );
-        throwGrpcError(SERVER_MESSAGE.VALIDATION_FAILED, messages);
-      }
-    }
-
     try {
       const result = await this.service.create(dto);
       return result;
@@ -92,20 +76,6 @@ export class BaseGrpcHandler<
         SERVER_MESSAGE.UPDATED_NOT_IMPLEMENTED,
       ]);
     }
-
-    if (this.updateDtoClass) {
-      const dtoInstance = plainToInstance(this.updateDtoClass, dto);
-
-      try {
-        await validateOrReject(dtoInstance);
-      } catch (errors: any) {
-        const messages: string[] = (errors as any[]).flatMap((err) =>
-          Object.values(err.constraints ?? {}),
-        );
-        throwGrpcError(SERVER_MESSAGE.VALIDATION_FAILED, messages);
-      }
-    }
-
     try {
       const result = await this.service.update(id, dto);
       return result;

@@ -7,7 +7,7 @@ import {
   ConsulService,
   CONSULT_SERVICE_ID,
   GRPC_PACKAGE,
-} from '@mebike/common';
+} from '@loginex/common';
 import { AuthResolver } from './auth.resolver';
 import { ConfigModule } from '@nestjs/config';
 import { JwtStrategy } from './jwt.strategy';

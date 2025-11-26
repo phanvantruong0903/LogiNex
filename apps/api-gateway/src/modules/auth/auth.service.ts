@@ -1,6 +1,6 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
-import { Observable, lastValueFrom } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import {
   CreateUserDto,
   RegisterResponse,
@@ -9,12 +9,17 @@ import {
   GRPC_PACKAGE,
   GRPC_SERVICES,
   LoginInput,
-} from '@mebike/common';
+  ChangePasswordInput,
+  ChangePasswordResponse,
+} from '@loginex/common';
 
 interface AuthServiceClient {
   LoginUser(data: LoginInput): Observable<LoginResponse>;
   CreateUser(data: CreateUserDto): Observable<RegisterResponse>;
   RefreshToken(refreshToken: object): Observable<ResfreshTokenResponse>;
+  ChangePassword(
+    data: ChangePasswordInput & { accountId: string },
+  ): Observable<ChangePasswordResponse>;
 }
 
 @Injectable()
@@ -30,14 +35,20 @@ export class AuthService implements OnModuleInit {
   }
 
   async login(data: LoginInput) {
-    return await lastValueFrom(this.userService.LoginUser(data));
+    return await firstValueFrom(this.userService.LoginUser(data));
   }
 
   async register(data: CreateUserDto) {
-    return await lastValueFrom(this.userService.CreateUser(data));
+    return await firstValueFrom(this.userService.CreateUser(data));
   }
 
   async refreshToken(refreshToken: string) {
-    return await lastValueFrom(this.userService.RefreshToken({ refreshToken }));
+    return await firstValueFrom(
+      this.userService.RefreshToken({ refreshToken }),
+    );
+  }
+
+  async changePassword(data: ChangePasswordInput & { accountId: string }) {
+    return await firstValueFrom(this.userService.ChangePassword(data));
   }
 }

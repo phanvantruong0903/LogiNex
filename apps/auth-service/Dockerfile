@@ -1,4 +1,4 @@
-FROM node:20-alpine AS builder
+FROM node:18-alpine AS builder
 WORKDIR /app
 
 COPY package.json package-lock.json* pnpm-lock.yaml* nx.json tsconfig.base.json ./
@@ -19,8 +19,10 @@ RUN npx prisma generate --schema=apps/user-service/prisma/schema.prisma
 
 RUN npx nx run auth-service:prune --configuration=production
 
-FROM node:20-alpine AS runner
+FROM node:18-alpine AS runner
 WORKDIR /app
+
+RUN apk add --no-cache openssl
 
 ENV NODE_ENV=production
 ENV AUTH_SERVICE_PORT=50051
@@ -32,12 +34,12 @@ COPY --from=builder /app/apps/auth-service/dist/workspace_modules ./workspace_mo
 RUN npm pkg delete scripts.postinstall && \
   npm install --omit=dev --legacy-peer-deps && \
   npm install \
-  @nestjs/core @nestjs/common @nestjs/platform-express @nestjs/microservices @nestjs/config @nestjs/passport \
+  @nestjs/core@^11.1.6 @nestjs/common@^11.1.6 @nestjs/platform-express@^11.1.6 @nestjs/microservices@^11.1.6 @nestjs/config @nestjs/passport \
   @nestjs/graphql @nestjs/apollo graphql apollo-server-core \
   @grpc/grpc-js @grpc/proto-loader \
   class-validator class-transformer \
   consul axios bcrypt passport passport-jwt \
-  rxjs reflect-metadata @nestjs/jwt dotenv \
+  rxjs reflect-metadata @nestjs/jwt dotenv prisma@5.22.0 \
   --legacy-peer-deps
 
 COPY --from=builder /app/apps/auth-service/dist/main.js ./
@@ -50,4 +52,4 @@ COPY --from=builder /app/apps/auth-service/prisma ./apps/auth-service/prisma
 
 EXPOSE 50051
 
-CMD ["node", "main.js"]
+CMD ["sh", "-c", "npx prisma db push --skip-generate --schema=./apps/auth-service/prisma/schema.prisma && node main.js"]

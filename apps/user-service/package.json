@@ -1,5 +1,5 @@
 {
-  "name": "@mebike/user-service",
+  "name": "@loginex/user-service",
   "version": "0.0.1",
   "private": true,
   "nx": {
@@ -77,15 +77,15 @@
           "build"
         ],
         "options": {
-          "buildTarget": "@mebike/user-service:build",
+          "buildTarget": "@loginex/user-service:build",
           "runBuildTargetDependencies": false
         },
         "configurations": {
           "development": {
-            "buildTarget": "@mebike/user-service:build:development"
+            "buildTarget": "@loginex/user-service:build:development"
           },
           "production": {
-            "buildTarget": "@mebike/user-service:build:production"
+            "buildTarget": "@loginex/user-service:build:production"
           }
         }
       },

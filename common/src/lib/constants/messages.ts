@@ -21,6 +21,10 @@ export const USER_MESSAGES = {
   ID_REQUIRED: 'User ID is required',
   PASSWORRD_NOT_CHANGED: 'Password must be changed',
   USER_NOT_FOUND: 'User not found',
+  GET_ALL_FAILED: 'Get all users failed',
+  INVALID_PASSWORD: 'Invalid Password',
+  CHANGE_PASSWORD_SUCCESS: 'Change password successfully',
+  PASSWORD_SAME: 'Password same',
 };
 
 export const SERVER_MESSAGE = {

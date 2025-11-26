@@ -6,7 +6,7 @@ import {
   CONSULT_SERVICE_ID,
   GRPC_PACKAGE,
   JwtSharedModule,
-} from '@mebike/common';
+} from '@loginex/common';
 import { AuthService } from './auth.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule } from '@nestjs/config';
