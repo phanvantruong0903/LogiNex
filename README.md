@@ -9,14 +9,14 @@
 - **Database**: [PostgreSQL](https://www.postgresql.org/)
 - **ORM**: [Prisma](https://www.prisma.io/)
 - **Service Discovery**: [Consul](https://www.consul.io/)
-- **Reverse Proxy / API Gateway**: [Traefik](https://traefik.io/)
+- **Reverse Proxy**: [Traefik](https://traefik.io/)
 - **Containerization**: Docker & Docker Compose
 
 ## 🏗 Architecture
 
 The project consists of the following main services:
 
-- **API Gateway**: Entry point for client requests, routing them to appropriate microservices.
+- **API Gateway (Custom Nestjs)**: A custom-built gateway service using NestJS. It acts as the single entry point for client requests, handling routing, request aggregation, and authentication guards before forwarding traffic to internal microservices.
 - **Auth Service**: Handles user authentication and authorization (JWT, Passport).
 - **User Service**: Manages user profiles and data.
 - **Consul**: Used for service discovery and configuration.
