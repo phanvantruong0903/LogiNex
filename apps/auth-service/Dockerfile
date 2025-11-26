@@ -37,7 +37,7 @@ RUN npm pkg delete scripts.postinstall && \
   @grpc/grpc-js @grpc/proto-loader \
   class-validator class-transformer \
   consul axios bcrypt passport passport-jwt \
-  rxjs reflect-metadata @nestjs/jwt dotenv prisma \
+  rxjs reflect-metadata @nestjs/jwt dotenv prisma@5.22.0 \
   --legacy-peer-deps
 
 COPY --from=builder /app/apps/auth-service/dist/main.js ./
