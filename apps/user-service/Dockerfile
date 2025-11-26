@@ -51,4 +51,4 @@ COPY --from=builder /app/common/src/lib/prisma/user/generated/libquery_engine-li
 COPY --from=builder /app/apps/user-service/prisma ./apps/user-service/prisma
 
 EXPOSE 50052
-CMD ["sh", "-c", "npx prisma db push --schema=./apps/user-service/prisma/schema.prisma && node main.js"]
+CMD ["sh", "-c", "npx prisma db push --skip-generate --schema=./apps/user-service/prisma/schema.prisma && node main.js"]
