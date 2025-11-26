@@ -56,3 +56,7 @@ apps/*/generated/
 apps/**/generated/
 generated/
 prisma/generated/
+
+# Traefik
+traefik/logs
+
