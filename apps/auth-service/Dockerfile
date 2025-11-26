@@ -34,7 +34,7 @@ COPY --from=builder /app/apps/auth-service/dist/workspace_modules ./workspace_mo
 RUN npm pkg delete scripts.postinstall && \
   npm install --omit=dev --legacy-peer-deps && \
   npm install \
-  @nestjs/core @nestjs/common @nestjs/platform-express @nestjs/microservices @nestjs/config @nestjs/passport \
+  @nestjs/core@^11.1.6 @nestjs/common@^11.1.6 @nestjs/platform-express@^11.1.6 @nestjs/microservices@^11.1.6 @nestjs/config @nestjs/passport \
   @nestjs/graphql @nestjs/apollo graphql apollo-server-core \
   @grpc/grpc-js @grpc/proto-loader \
   class-validator class-transformer \
