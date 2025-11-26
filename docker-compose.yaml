@@ -43,18 +43,23 @@ services:
     image: traefik:latest
     container_name: traefik
     restart: 'unless-stopped'
-    command:
-      - '--api.insecure=true'
-      - '--providers.docker=true'
-      - '--providers.docker.exposedbydefault=false'
-      - '--entrypoints.web.address=:80'
-      - '--entrypoints.websecure.address=:443'
-    ports:
-      - '80:80'
-      - '8080:8080'
-      - '443:443'
+    environment:
+      - CF_API_EMAIL=${CF_API_EMAIL}
+      - CLOUDFLARE_DNS_API_TOKEN=${CLOUDFLARE_DNS_API_TOKEN}
+      - TRAEFIK_DASHBOARD_USERS=${TRAEFIK_DASHBOARD_USERS}
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock:ro'
+      - './traefik/traefik.yml:/etc/traefik/traefik.yml'
+      - './traefik/acme.json:/acme.json'
+      - './traefik/logs:/var/log/traefik'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.localhost`) || Host(`traefik.${DOMAIN:-loginex.local}`)"
+      - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+      - "traefik.http.routers.traefik-dashboard.tls.certresolver=cloudflare"
+      - "traefik.http.routers.traefik-dashboard.middlewares=dashboard-auth"
+      - "traefik.http.middlewares.dashboard-auth.basicauth.users=${TRAEFIK_DASHBOARD_USERS}"
     networks:
       - loginex-network
 
@@ -82,6 +87,7 @@ services:
       - 'traefik.enable=true'
       - 'traefik.http.routers.api-gateway.rule=(Host(`localhost`) || Host(`${DOMAIN:-loginex.local}`)) && PathPrefix(`/graphql`)'
       - 'traefik.http.routers.api-gateway.entrypoints=web,websecure'
+      - 'traefik.http.routers.api-gateway.tls.certresolver=cloudflare'
       - 'traefik.http.services.api-gateway.loadbalancer.server.port=3000'
     networks:
       - loginex-network
