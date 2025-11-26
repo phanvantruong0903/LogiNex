@@ -37,7 +37,7 @@ RUN npm pkg delete scripts.postinstall && \
   @grpc/grpc-js @grpc/proto-loader \
   class-validator class-transformer \
   consul axios bcrypt passport passport-jwt \
-  rxjs reflect-metadata @nestjs/jwt dotenv \
+  rxjs reflect-metadata @nestjs/jwt dotenv prisma \
   --legacy-peer-deps
 
 COPY --from=builder /app/apps/user-service/dist/main.js ./
@@ -49,4 +49,4 @@ COPY --from=builder /app/common/src/lib/prisma/user/generated/libquery_engine-li
 COPY --from=builder /app/apps/user-service/prisma ./apps/user-service/prisma
 
 EXPOSE 50052
-CMD ["node", "main.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy --schema=./apps/user-service/prisma/schema.prisma && node main.js"]
