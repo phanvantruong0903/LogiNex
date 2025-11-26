@@ -15,7 +15,8 @@ import {
   CreateUserDto,
   prismaAuth,
   User,
-} from '@mebike/common';
+  ChangePasswordDto,
+} from '@loginex/common';
 import * as bcrypt from 'bcrypt';
 
 @Controller()
@@ -52,6 +53,9 @@ export class AuthGrpcController {
 
       return grpcResponse(user, USER_MESSAGES.CREATE_SCUCCESS);
     } catch (error) {
+      if (error instanceof RpcException) {
+        throw error;
+      }
       const err = error as Error;
 
       // Rollback User Account Creation
@@ -105,6 +109,23 @@ export class AuthGrpcController {
       const profile = await this.authService.createProfile(data);
       return profile;
     } catch (error) {
+      if (error instanceof RpcException) {
+        throw error;
+      }
+      const err = error as Error;
+      throw new RpcException(err?.message);
+    }
+  }
+
+  @GrpcMethod(GRPC_SERVICES.AUTH, USER_METHODS.CHANGE_PASSWORD)
+  async changePassword(data: ChangePasswordDto) {
+    try {
+      const user = await this.authService.changePassword(data);
+      return grpcResponse(user, USER_MESSAGES.CHANGE_PASSWORD_SUCCESS);
+    } catch (error) {
+      if (error instanceof RpcException) {
+        throw error;
+      }
       const err = error as Error;
       throw new RpcException(err?.message);
     }

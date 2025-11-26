@@ -11,7 +11,7 @@ import {
   TokenPayload,
   USER_MESSAGES,
   UserResponse,
-} from '@mebike/common';
+} from '@loginex/common';
 import type { ClientGrpc } from '@nestjs/microservices';
 
 interface IUserServiceClient {

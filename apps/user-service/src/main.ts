@@ -5,7 +5,7 @@ import {
   ConsulService,
   CONSULT_SERVICE_ID,
   GrpcExceptionFilter,
-} from '@mebike/common';
+} from '@loginex/common';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { join } from 'node:path';
 import { config as dotenvConfig } from 'dotenv';

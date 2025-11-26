@@ -15,7 +15,8 @@ import {
   LoginUserDto,
   prismaAuth,
   User,
-} from '@mebike/common';
+  ChangePasswordDto,
+} from '@loginex/common';
 import * as bcrypt from 'bcrypt';
 import { RpcException } from '@nestjs/microservices';
 import type { ClientGrpc } from '@nestjs/microservices';
@@ -80,7 +81,7 @@ export class AuthService
       const userData = userProfile.data as UserProfile;
 
       return {
-        user_id: findUser.id,
+        user_id: userData.accountId,
         verify: userData.verify,
         role: userData.role,
       };
@@ -174,6 +175,9 @@ export class AuthService
 
       return profile;
     } catch (error) {
+      if (error instanceof RpcException) {
+        throw error;
+      }
       const err = error as Error;
       throwGrpcError(SERVER_MESSAGE.INTERNAL_SERVER, [err?.message]);
     }
@@ -188,6 +192,54 @@ export class AuthService
 
       return user;
     } catch (error) {
+      if (error instanceof RpcException) {
+        throw error;
+      }
+      const err = error as Error;
+      throwGrpcError(SERVER_MESSAGE.INTERNAL_SERVER, [err?.message]);
+    }
+  }
+
+  async changePassword(data: ChangePasswordDto) {
+    try {
+      if (data.oldPassword === data.newPassword) {
+        throwGrpcError(SERVER_MESSAGE.BAD_REQUEST, [
+          USER_MESSAGES.PASSWORD_SAME,
+        ]);
+      }
+
+      const findUser = await prismaAuth.user.findUnique({
+        where: { id: data.accountId },
+        select: { password: true },
+      });
+
+      if (!findUser) {
+        throwGrpcError(USER_MESSAGES.NOT_FOUND, [USER_MESSAGES.NOT_FOUND]);
+      }
+
+      const [isMatch, newHashedPassword] = await Promise.all([
+        bcrypt.compare(data.oldPassword, findUser.password),
+        bcrypt.hash(data.newPassword, 10),
+      ]);
+
+      if (!isMatch) {
+        throwGrpcError(SERVER_MESSAGE.UNAUTHORIZED, [
+          USER_MESSAGES.INVALID_PASSWORD,
+        ]);
+      }
+
+      const user = await prismaAuth.user.update({
+        where: { id: data.accountId },
+        data: {
+          password: newHashedPassword,
+        },
+      });
+
+      return user;
+    } catch (error) {
+      if (error instanceof RpcException) {
+        throw error;
+      }
       const err = error as Error;
       throwGrpcError(SERVER_MESSAGE.INTERNAL_SERVER, [err?.message]);
     }

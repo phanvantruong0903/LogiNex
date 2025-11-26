@@ -1,5 +1,5 @@
 import { registerEnumType } from '@nestjs/graphql';
-import { Role, UserVerifyStatus } from '@mebike/common'; // Thay thế bằng đường dẫn chính xác
+import { Role, UserVerifyStatus } from '@loginex/common';
 
 registerEnumType(Role, {
   name: 'Role',

@@ -1,5 +1,8 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { JwtAuthGuard } from './jwt-auth.guard';
+import { CurrentUser } from './current-user.decorator';
 import {
   LoginResponse,
   RegisterResponse,
@@ -7,7 +10,10 @@ import {
   GRAPHQL_NAME,
   CreateUserInput,
   LoginInput,
-} from '@mebike/common';
+  ChangePasswordResponse,
+  ChangePasswordInput,
+} from '@loginex/common';
+import type { UserProfile } from '@loginex/common';
 
 @Resolver()
 export class AuthResolver {
@@ -30,6 +36,20 @@ export class AuthResolver {
     @Args('refreshToken') refreshToken: string,
   ): Promise<ResfreshTokenResponse> {
     return this.authService.refreshToken(refreshToken);
+  }
+
+  @Mutation(() => ChangePasswordResponse, {
+    name: GRAPHQL_NAME.CHANGE_PASSWORD,
+  })
+  @UseGuards(JwtAuthGuard)
+  async changePassword(
+    @CurrentUser() user: UserProfile,
+    @Args('body') body: ChangePasswordInput,
+  ): Promise<ChangePasswordResponse> {
+    return this.authService.changePassword({
+      accountId: user.accountId,
+      ...body,
+    });
   }
 
   @Query(() => String)

@@ -1,14 +1,15 @@
-import { UseGuards } from '@nestjs/common';
+import { BadRequestException, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 import {
   GRAPHQL_NAME,
   Role,
   UpdateUserInput,
+  USER_MESSAGES,
   UserListResponse,
   UserProfile,
   UserResponse,
-} from '@mebike/common';
+} from '@loginex/common';
 
 import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -24,7 +25,7 @@ export class UserResolver {
 
   @Query(() => UserListResponse, { name: GRAPHQL_NAME.GET_ALL })
   @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.USER)
+  @Roles(Role.ADMIN)
   async getAllUser(
     @Args('params', {
       nullable: true,
@@ -42,8 +43,22 @@ export class UserResolver {
   @Query(() => UserResponse, { name: GRAPHQL_NAME.GET_ONE })
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.ADMIN, Role.USER)
-  async getUserDetail(@Args('params') id: string): Promise<UserResponse> {
-    return this.userService.getUserDetail(id);
+  async getUserDetail(
+    @Args('params', { type: () => String, nullable: true })
+    id: string | undefined,
+    @CurrentUser() user: UserProfile,
+  ): Promise<UserResponse> {
+    let userId = '';
+    if (user.role === Role.ADMIN) {
+      if (!id) {
+        throw new BadRequestException(USER_MESSAGES.ID_REQUIRED);
+      }
+      userId = id;
+    } else {
+      userId = user.accountId;
+    }
+
+    return this.userService.getUserDetail(userId);
   }
 
   @Mutation(() => UserResponse, { name: GRAPHQL_NAME.UPDATE })
@@ -52,18 +67,8 @@ export class UserResolver {
     @CurrentUser() user: UserProfile,
     @Args('data') data: UpdateUserInput,
   ): Promise<UserResponse> {
-    const id = user?.id;
+    const id = user?.accountId;
     return this.userService.updateUser(id, data);
-  }
-
-  @Mutation(() => UserResponse, { name: GRAPHQL_NAME.CHANGE_PASSWORD })
-  @UseGuards(JwtAuthGuard)
-  async changePassword(
-    @CurrentUser() user: UserProfile,
-    @Args('password') password: string,
-  ): Promise<UserResponse> {
-    const id = user?.id;
-    return this.userService.changePassword(id, password);
   }
 
   @Query(() => String)
