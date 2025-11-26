@@ -52,4 +52,4 @@ COPY --from=builder /app/apps/auth-service/prisma ./apps/auth-service/prisma
 
 EXPOSE 50051
 
-CMD ["sh", "-c", "npx prisma migrate deploy --schema=./apps/auth-service/prisma/schema.prisma && node main.js"]
+CMD ["sh", "-c", "npx prisma db push --schema=./apps/auth-service/prisma/schema.prisma && node main.js"]
