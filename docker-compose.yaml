@@ -65,9 +65,12 @@ services:
     container_name: api-gateway
     restart: 'unless-stopped'
     depends_on:
-      - consul
-      - auth-service
-      - user-service
+      consul:
+        condition: service_started
+      auth-service:
+        condition: service_healthy
+      user-service:
+        condition: service_healthy
     environment:
       - CONSUL_HOST=consul
       - CONSUL_PORT=8500
@@ -90,13 +93,21 @@ services:
     container_name: auth-service
     restart: 'unless-stopped'
     depends_on:
-      - consul
-      - auth-db
+      consul:
+        condition: service_started
+      auth-db:
+        condition: service_started
     environment:
       - CONSUL_HOST=consul
       - CONSUL_PORT=8500
       - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@auth-db:5432/${AUTH_DB_NAME}?schema=public
       - AUTH_SERVICE_PORT=50051
+    healthcheck:
+      test: ['CMD', 'nc', '-z', '127.0.0.1', '50051']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
     networks:
       - loginex-network
 
@@ -107,13 +118,21 @@ services:
     container_name: user-service
     restart: 'unless-stopped'
     depends_on:
-      - consul
-      - user-db
+      consul:
+        condition: service_started
+      user-db:
+        condition: service_started
     environment:
       - CONSUL_HOST=consul
       - CONSUL_PORT=8500
       - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@user-db:5432/${USER_DB_NAME}?schema=public
       - USER_SERVICE_PORT=50052
+    healthcheck:
+      test: ['CMD', 'nc', '-z', '127.0.0.1', '50052']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
     networks:
       - loginex-network
 
