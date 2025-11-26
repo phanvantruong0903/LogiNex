@@ -13,6 +13,22 @@ COPY apps/auth-service/prisma ./apps/auth-service/prisma
 RUN npm ci --legacy-peer-deps
 
 COPY . .
+
+RUN npx prisma generate --schema=apps/user-service/prisma/schema.prisma
+RUN npx prisma generate --schema=apps/auth-service/prisma/schema.prisma
+
+RUN npx nx run user-service:prune --configuration=production
+
+FROM node:18-alpine AS runner
+WORKDIR /app
+
+RUN apk add --no-cache openssl
+
+ENV NODE_ENV=production
+ENV USER_SERVICE_PORT=50052
+
+COPY --from=builder /app/apps/user-service/dist/package.json ./
+COPY --from=builder /app/apps/user-service/dist/package-lock.json ./
 COPY --from=builder /app/apps/user-service/dist/workspace_modules ./workspace_modules
 
 RUN npm pkg delete scripts.postinstall && \
