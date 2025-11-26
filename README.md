@@ -83,7 +83,6 @@ npx nx serve user-service
 To build the project for production:
 
 ```bash
-npx nx build api-gateway
 npx nx build auth-service
 npx nx build user-service
 ```
@@ -93,8 +92,8 @@ npx nx build user-service
 Run unit tests:
 
 ```bash
-npx nx test api-gateway
 npx nx test auth-service
+npx nx test user-service
 ```
 
 ## 📂 Project Structure
