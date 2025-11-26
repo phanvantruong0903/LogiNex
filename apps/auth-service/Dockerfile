@@ -1,4 +1,4 @@
-FROM node:20-alpine AS builder
+FROM node:18-alpine AS builder
 WORKDIR /app
 
 COPY package.json package-lock.json* pnpm-lock.yaml* nx.json tsconfig.base.json ./
@@ -13,20 +13,6 @@ RUN npm pkg delete scripts.postinstall
 RUN npm ci --legacy-peer-deps
 
 COPY . .
-
-RUN npx prisma generate --schema=apps/auth-service/prisma/schema.prisma
-RUN npx prisma generate --schema=apps/user-service/prisma/schema.prisma
-
-RUN npx nx run auth-service:prune --configuration=production
-
-FROM node:20-alpine AS runner
-WORKDIR /app
-
-ENV NODE_ENV=production
-ENV AUTH_SERVICE_PORT=50051
-
-COPY --from=builder /app/apps/auth-service/dist/package.json ./
-COPY --from=builder /app/apps/auth-service/dist/package-lock.json ./
 COPY --from=builder /app/apps/auth-service/dist/workspace_modules ./workspace_modules
 
 RUN npm pkg delete scripts.postinstall && \
