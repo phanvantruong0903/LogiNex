@@ -46,7 +46,7 @@ COPY --from=builder /app/apps/user-service/dist/main.js ./
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
 COPY --from=builder /app/common ./common
-COPY --from=builder /app/common/src/lib/prisma/user/generated/libquery_engine-linux-musl-openssl-1.1.x.so.node ./
+COPY --from=builder /app/common/src/lib/prisma/user/generated/libquery_engine-linux-musl-openssl-3.0.x.so.node ./
 
 COPY --from=builder /app/apps/user-service/prisma ./apps/user-service/prisma
 
