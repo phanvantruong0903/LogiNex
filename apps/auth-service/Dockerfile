@@ -30,7 +30,7 @@ COPY --from=builder /app/apps/auth-service/dist/main.js ./
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
 COPY --from=builder /app/common ./common
-COPY --from=builder /app/common/src/lib/prisma/auth/generated/libquery_engine-linux-musl-openssl-3.0.x.so.node ./
+COPY --from=builder /app/common/src/lib/prisma/auth/generated/libquery_engine-linux-musl-openssl-1.1.x.so.node ./
 
 COPY --from=builder /app/apps/auth-service/prisma ./apps/auth-service/prisma
 
