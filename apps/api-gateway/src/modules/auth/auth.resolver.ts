@@ -13,7 +13,7 @@ import {
   ChangePasswordResponse,
   ChangePasswordInput,
 } from '@loginex/common';
-import type { User, UserProfile } from '@loginex/common';
+import type { UserProfile } from '@loginex/common';
 
 @Resolver()
 export class AuthResolver {
