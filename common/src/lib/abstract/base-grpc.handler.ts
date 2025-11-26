@@ -9,8 +9,8 @@ export class BaseGrpcHandler<
 > {
   constructor(
     protected readonly service: BaseService<T, CreateDto, UpdateDto>,
-    private readonly createDtoClass?: new () => CreateDto,
-    private readonly updateDtoClass?: new () => UpdateDto,
+    _createDtoClass?: new () => CreateDto, // eslint-disable-line @typescript-eslint/no-unused-vars
+    _updateDtoClass?: new () => UpdateDto, // eslint-disable-line @typescript-eslint/no-unused-vars
   ) {}
 
   async createLogic(dto: CreateDto): Promise<T> {
