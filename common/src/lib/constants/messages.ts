@@ -27,6 +27,31 @@ export const USER_MESSAGES = {
   PASSWORD_SAME: 'Password same',
 };
 
+export const PRODUCT_MESSAGES = {
+  CREATE_SCUCCESS: 'Product created successfully',
+  UPDATE_SUCCESS: 'Product updated successfully',
+  UPDATE_FAIL: 'Product updated failed',
+  GET_ALL_SUCCESS: 'Products retrieved successfully',
+  GET_ALL_FAIL: 'Products retrieved failed',
+  GET_DETAIL_SUCCESS: 'Product details retrieved successfully',
+  DELETE_SUCCESS: 'Product deleted successfully',
+  NOT_FOUND: 'Product not found',
+  VALIDATION_ERROR: 'Validation error',
+  CREATE_FAILED: 'Create Product failed',
+  VALIDATION_FAILED: 'Product validation failed',
+  FRAGILE_MUST_BE_BOOLEAN: 'isFragile must be a boolean',
+  HAS_BATTERY_MUST_BE_BOOLEAN: 'hasBattery must be a boolean',
+  IS_HIGH_VALUE_MUST_BE_BOOLEAN: 'isHighValue must be a boolean',
+  SKU_REQUIRED: 'SKU is required',
+  NAME_REQUIRED: 'Name is required',
+  WIDTH_MUST_BE_NUMBER: 'Width must be a number',
+  HEIGHT_MUST_BE_NUMBER: 'Height must be a number',
+  LENGTH_MUST_BE_NUMBER: 'Length must be a number',
+  WEIGHT_MUST_BE_NUMBER: 'Weight must be a number',
+  VOLUMN_MUST_BE_NUMBER: 'Volume must be a number',
+  GET_DETAIL_FAIL: 'Product details retrieved failed',
+};
+
 export const SERVER_MESSAGE = {
   INTERNAL_SERVER: 'Interal Server Error',
   VALIDATION_FAILED: 'Validation Failed',

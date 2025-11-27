@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { InventoryModule } from '../modules/inventory/inventory.module';
 import { HealthController } from '../health/health.controller';
 import { ConsuleModule } from '@loginex/common';
+import { ProductsModule } from '../modules/products/products.module';
 
 @Module({
-  imports: [InventoryModule, ConsuleModule],
+  imports: [ProductsModule, ConsuleModule],
   controllers: [AppController, HealthController],
   providers: [AppService],
 })

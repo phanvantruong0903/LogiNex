@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "prepare": "husky",
-    "postinstall": "nx run-many -t generate"
+    "postinstall": "nx run-many -t prisma:generate"
   },
   "private": true,
   "dependencies": {
@@ -19,7 +19,7 @@
     "@nestjs/microservices": "^11.1.6",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.0",
-    "@prisma/client": "^6.16.2",
+    "@prisma/client": "^6.17.0",
     "apollo-server-core": "^3.13.0",
     "axios": "^1.6.0",
     "bcrypt": "^6.0.0",

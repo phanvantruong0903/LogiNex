@@ -17,8 +17,8 @@ async function bootstrap() {
   const host = consulService.getLocalIp();
 
   await consulService.registerService(
-    CONSULT_SERVICE_ID.INVENTORY,
-    CONSULT_SERVICE_ID.INVENTORY,
+    CONSULT_SERVICE_ID.PRODUCT,
+    CONSULT_SERVICE_ID.PRODUCT,
     host,
     port,
   );
@@ -28,12 +28,12 @@ async function bootstrap() {
     {
       transport: Transport.GRPC,
       options: {
-        package: ['inventory', 'grpc.health.v1'],
+        package: ['product', 'grpc.health.v1'],
         protoPath: [
-          join(process.cwd(), 'common/src/lib/proto/inventory.proto'),
+          join(process.cwd(), 'common/src/lib/proto/product.proto'),
           join(process.cwd(), 'common/src/lib/proto/health.proto'),
         ],
-        url: `0.0.0.0:${process.env.INVENTORY_SERVICE_PORT}`,
+        url: `0.0.0.0:${process.env.PRODUCT_SERVICE_PORT}`,
       },
     },
   );

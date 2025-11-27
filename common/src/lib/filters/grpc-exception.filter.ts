@@ -29,7 +29,6 @@ export class GrpcExceptionFilter implements ExceptionFilter {
       let response: any;
       try {
         response = typeof error === 'string' ? JSON.parse(error) : error;
-        console.log(response);
       } catch {
         response = {
           success: false,

@@ -24,7 +24,7 @@ model Product {
   height      Float
   length      Float
   weight      Float
-  volumn      Float
+  volume      Float
 
   isFragile   Boolean @default(false)
   hasBattery  Boolean @default(false)

@@ -15,6 +15,8 @@ import {
   UserProfile,
 } from '@loginex/common';
 import { UserService } from './user.services';
+import { validate } from 'class-validator';
+import { plainToInstance } from 'class-transformer';
 
 @Controller()
 export class UserController {
@@ -37,10 +39,24 @@ export class UserController {
     data: UpdateProfileDto & { id: string },
   ): Promise<ReturnType<typeof grpcResponse>> {
     try {
+      // Validate input
+      const dto = plainToInstance(UpdateProfileDto, data);
+      const errors = await validate(dto);
+
+      if (errors.length > 0) {
+        const messages = errors.flatMap((error) =>
+          Object.values(error.constraints || {}),
+        );
+        throwGrpcError(USER_MESSAGES.VALIDATION_FAILED, messages);
+      }
+
       const { id, ...updateData } = data;
 
       const findUser = await prismaUser.profile.findUnique({
         where: { accountId: id },
+        select: {
+          id: true,
+        },
       });
       if (!findUser) {
         throwGrpcError(USER_MESSAGES.NOT_FOUND, [USER_MESSAGES.NOT_FOUND]);
@@ -92,6 +108,16 @@ export class UserController {
     data: CreateProfileDto,
   ): Promise<ReturnType<typeof grpcResponse>> {
     try {
+      const dto = plainToInstance(CreateProfileDto, data);
+      const errors = await validate(dto);
+
+      if (errors.length > 0) {
+        const messages = errors.flatMap((error) =>
+          Object.values(error.constraints || {}),
+        );
+        throwGrpcError(USER_MESSAGES.VALIDATION_FAILED, messages);
+      }
+
       const profile = await this.baseHandler.createLogic(data);
       return grpcResponse<UserProfile>(profile, USER_MESSAGES.CREATE_SCUCCESS);
     } catch (error) {
