@@ -8,6 +8,8 @@ export abstract class BaseService<T, CreateDto = never, UpdateDto = never> {
   async findAll(
     page = 1,
     limit = 10,
+    filter?: any,
+    orderBy?: any,
   ): Promise<{
     data: T[];
     total: number;
@@ -16,13 +18,18 @@ export abstract class BaseService<T, CreateDto = never, UpdateDto = never> {
     totalPages: number;
   }> {
     const skip = (page - 1) * limit;
+
+    const sort = orderBy || { createdAt: 'desc' };
     const [data, total] = await Promise.all([
       this.model.findMany({
+        where: filter,
         skip,
         take: limit,
-        orderBy: { createdAt: 'desc' },
+        orderBy: sort,
       }),
-      this.model.count(),
+      this.model.count({
+        where: filter,
+      }),
     ]);
 
     return {

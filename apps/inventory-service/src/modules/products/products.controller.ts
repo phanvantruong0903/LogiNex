@@ -7,18 +7,16 @@ import {
   PRODUCT_METHODS,
   throwGrpcError,
   PRODUCT_MESSAGES,
-  prismaInventory,
   grpcResponse,
   grpcPaginateResponse,
-  SERVER_MESSAGE,
+  buildSearchFilter,
 } from '@loginex/common';
-import { Controller } from '@nestjs/common';
+import { Controller, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
-import { validate } from 'class-validator';
-import { plainToInstance } from 'class-transformer';
 
 @Controller()
+@UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
 export class ProductsController {
   private readonly baseHandler: BaseGrpcHandler<
     Product,
@@ -38,16 +36,6 @@ export class ProductsController {
     data: CreateProductDto,
   ): Promise<ReturnType<typeof grpcResponse<Product>>> {
     try {
-      const dto = plainToInstance(CreateProductDto, data);
-      const errors = await validate(dto);
-
-      if (errors.length > 0) {
-        const messages = errors.flatMap((error) =>
-          Object.values(error.constraints || {}),
-        );
-        throwGrpcError(PRODUCT_MESSAGES.VALIDATION_FAILED, messages);
-      }
-
       const volume = data.width * data.height * data.length;
 
       const payload = {
@@ -72,34 +60,9 @@ export class ProductsController {
     data: UpdateProductDto & { id: string },
   ): Promise<ReturnType<typeof grpcResponse<Product>>> {
     try {
-      const dto = plainToInstance(UpdateProductDto, data);
-      const errors = await validate(dto);
-
-      if (errors.length > 0) {
-        const messages = errors.flatMap((error) =>
-          Object.values(error.constraints || {}),
-        );
-        throwGrpcError(SERVER_MESSAGE.VALIDATION_FAILED, messages);
-      }
-
       const { id, ...updateData } = data;
 
-      const findProduct = await prismaInventory.product.findUnique({
-        where: { id },
-        select: {
-          id: true,
-        },
-      });
-      if (!findProduct) {
-        throwGrpcError(PRODUCT_MESSAGES.NOT_FOUND, [
-          PRODUCT_MESSAGES.NOT_FOUND,
-        ]);
-      }
-
-      const result = await this.baseHandler.updateLogic(
-        findProduct.id,
-        updateData,
-      );
+      const result = await this.baseHandler.updateLogic(id, updateData);
 
       return grpcResponse<Product>(result, PRODUCT_MESSAGES.UPDATE_SUCCESS);
     } catch (error) {
@@ -115,10 +78,20 @@ export class ProductsController {
   async getAllProducts(data: {
     page: number;
     limit: number;
+    search?: string;
   }): Promise<ReturnType<typeof grpcPaginateResponse<Product>>> {
     try {
-      const { page, limit } = data;
-      const result = await this.baseHandler.getAllLogic(page, limit);
+      const { page, limit, search } = data;
+
+      const searchFields = ['sku', 'name'];
+
+      const searchFilter = buildSearchFilter(search, searchFields);
+
+      const result = await this.baseHandler.getAllLogic(
+        page,
+        limit,
+        searchFilter,
+      );
 
       return grpcPaginateResponse<Product>(
         result,

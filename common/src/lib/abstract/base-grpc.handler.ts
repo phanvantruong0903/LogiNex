@@ -57,6 +57,8 @@ export class BaseGrpcHandler<
   async getAllLogic(
     page = 1,
     limit = 10,
+    filter?: any,
+    orderBy?: any,
   ): Promise<{
     data: T[];
     total: number;
@@ -64,7 +66,7 @@ export class BaseGrpcHandler<
     limit: number;
     totalPages: number;
   }> {
-    return await this.service.findAll(page, limit);
+    return await this.service.findAll(page, limit, filter, orderBy);
   }
 
   async getOneById(id: string): Promise<T | null> {
@@ -100,6 +102,10 @@ export class BaseGrpcHandler<
         throwGrpcError(SERVER_MESSAGE.FOREIGN_KEY_FAILED, [
           SERVER_MESSAGE.FOREIGN_KEY_INVALID(field),
         ]);
+      }
+
+      if (error?.code === 'P2025') {
+        throwGrpcError(SERVER_MESSAGE.NOT_FOUND, [SERVER_MESSAGE.NOT_FOUND]);
       }
 
       throwGrpcError(SERVER_MESSAGE.DATABASE_ERROR, [
