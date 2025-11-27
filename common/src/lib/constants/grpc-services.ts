@@ -1,11 +1,13 @@
 export const GRPC_SERVICES = {
   AUTH: 'AuthService',
   USER: 'UserService',
+  INVENTORY: 'InventoryService',
 } as const;
 
 export const GRPC_PACKAGE = {
   AUTH: 'AUTH_PACKAGE',
   USER: 'USER_PACKAGE',
+  INVENTORY: 'INVENTORY_PACKAGE',
 };
 
 export const USER_METHODS = {

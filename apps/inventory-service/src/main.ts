@@ -1,21 +1,50 @@
-/**
- * This is not a production server yet!
- * This is only a minimal backend to get started.
- */
-
-import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
-
+import { ValidationPipe } from '@nestjs/common';
+import {
+  ConsulService,
+  CONSULT_SERVICE_ID,
+  GrpcExceptionFilter,
+} from '@loginex/common';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { join } from 'node:path';
+import { config as dotenvConfig } from 'dotenv';
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  const globalPrefix = 'api';
-  app.setGlobalPrefix(globalPrefix);
-  const port = process.env.PORT || 3000;
-  await app.listen(port);
-  Logger.log(
-    `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`,
-  );
-}
+  dotenvConfig();
 
+  const consulService = new ConsulService();
+  const port = Number(process.env.INVENTORY_SERVICE_PORT) || 50053;
+  const host = consulService.getLocalIp();
+
+  await consulService.registerService(
+    CONSULT_SERVICE_ID.INVENTORY,
+    CONSULT_SERVICE_ID.INVENTORY,
+    host,
+    port,
+  );
+
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+    AppModule,
+    {
+      transport: Transport.GRPC,
+      options: {
+        package: ['inventory', 'grpc.health.v1'],
+        protoPath: [
+          join(process.cwd(), 'common/src/lib/proto/inventory.proto'),
+          join(process.cwd(), 'common/src/lib/proto/health.proto'),
+        ],
+        url: `0.0.0.0:${process.env.INVENTORY_SERVICE_PORT}`,
+      },
+    },
+  );
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
+  app.useGlobalFilters(new GrpcExceptionFilter());
+  await app.listen();
+}
 bootstrap();
