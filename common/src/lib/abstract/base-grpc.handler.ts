@@ -46,8 +46,6 @@ export class BaseGrpcHandler<
         ]);
       }
 
-      console.log(error);
-
       throwGrpcError(SERVER_MESSAGE.DATABASE_ERROR, [
         error.message ?? SERVER_MESSAGE.UNEXPECTED_ERROR,
       ]);

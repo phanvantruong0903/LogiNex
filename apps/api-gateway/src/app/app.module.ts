@@ -8,6 +8,7 @@ import {
 } from 'apollo-server-core';
 import { UserModule } from '../modules/user/user.module';
 import '../modules/user/graphql/enum';
+import { ProductModule } from '../modules/product/product.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import '../modules/user/graphql/enum';
     }),
     AuthModule,
     UserModule,
+    ProductModule,
   ],
 })
 export class AppModule {}

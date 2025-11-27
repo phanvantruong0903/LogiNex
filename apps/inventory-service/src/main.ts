@@ -33,7 +33,7 @@ async function bootstrap() {
           join(process.cwd(), 'common/src/lib/proto/product.proto'),
           join(process.cwd(), 'common/src/lib/proto/health.proto'),
         ],
-        url: `0.0.0.0:${process.env.PRODUCT_SERVICE_PORT}`,
+        url: `0.0.0.0:${process.env.INVENTORY_SERVICE_PORT}`,
       },
     },
   );

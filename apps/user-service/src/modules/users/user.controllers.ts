@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import { Controller, UsePipes, ValidationPipe } from '@nestjs/common';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
 import {
   BaseGrpcHandler,
@@ -15,10 +15,9 @@ import {
   UserProfile,
 } from '@loginex/common';
 import { UserService } from './user.services';
-import { validate } from 'class-validator';
-import { plainToInstance } from 'class-transformer';
 
 @Controller()
+@UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
 export class UserController {
   private readonly baseHandler: BaseGrpcHandler<
     Profile,
@@ -39,17 +38,6 @@ export class UserController {
     data: UpdateProfileDto & { id: string },
   ): Promise<ReturnType<typeof grpcResponse>> {
     try {
-      // Validate input
-      const dto = plainToInstance(UpdateProfileDto, data);
-      const errors = await validate(dto);
-
-      if (errors.length > 0) {
-        const messages = errors.flatMap((error) =>
-          Object.values(error.constraints || {}),
-        );
-        throwGrpcError(USER_MESSAGES.VALIDATION_FAILED, messages);
-      }
-
       const { id, ...updateData } = data;
 
       const findUser = await prismaUser.profile.findUnique({
@@ -108,16 +96,6 @@ export class UserController {
     data: CreateProfileDto,
   ): Promise<ReturnType<typeof grpcResponse>> {
     try {
-      const dto = plainToInstance(CreateProfileDto, data);
-      const errors = await validate(dto);
-
-      if (errors.length > 0) {
-        const messages = errors.flatMap((error) =>
-          Object.values(error.constraints || {}),
-        );
-        throwGrpcError(USER_MESSAGES.VALIDATION_FAILED, messages);
-      }
-
       const profile = await this.baseHandler.createLogic(data);
       return grpcResponse<UserProfile>(profile, USER_MESSAGES.CREATE_SCUCCESS);
     } catch (error) {

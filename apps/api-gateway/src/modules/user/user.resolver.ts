@@ -2,13 +2,14 @@ import { BadRequestException, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 
 import {
-  GRAPHQL_NAME,
+  GRAPHQL_NAME_USER,
   Role,
   UpdateUserInput,
   USER_MESSAGES,
   UserListResponse,
   UserProfile,
   UserResponse,
+  GetUsersInput,
 } from '@loginex/common';
 
 import { CurrentUser } from '../auth/current-user.decorator';
@@ -16,14 +17,13 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/role.decorator';
 import { RoleGuard } from '../auth/role.guard';
 
-import { GetUsersInput } from './graphql/GetUserInput';
 import { UserService } from './user.service';
 
 @Resolver()
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
-  @Query(() => UserListResponse, { name: GRAPHQL_NAME.GET_ALL })
+  @Query(() => UserListResponse, { name: GRAPHQL_NAME_USER.GET_ALL })
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.ADMIN)
   async getAllUser(
@@ -40,7 +40,7 @@ export class UserResolver {
     return this.userService.getAllUser({ page, limit });
   }
 
-  @Query(() => UserResponse, { name: GRAPHQL_NAME.GET_ONE })
+  @Query(() => UserResponse, { name: GRAPHQL_NAME_USER.GET_ONE })
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.ADMIN, Role.USER)
   async getUserDetail(
@@ -61,7 +61,7 @@ export class UserResolver {
     return this.userService.getUserDetail(userId);
   }
 
-  @Mutation(() => UserResponse, { name: GRAPHQL_NAME.UPDATE })
+  @Mutation(() => UserResponse, { name: GRAPHQL_NAME_USER.UPDATE })
   @UseGuards(JwtAuthGuard)
   async updateUser(
     @CurrentUser() user: UserProfile,

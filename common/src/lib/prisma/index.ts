@@ -6,9 +6,36 @@ export * as AuthPrisma from './auth/generated';
 export * as UserPrisma from './user/generated';
 export * as InventoryPrisma from './inventory/generated';
 
-export const prismaAuth = new AuthPrismaInternal.PrismaClient();
-export const prismaUser = new UserPrismaInternal.PrismaClient();
-export const prismaInventory = new InventoryPrismaInternal.PrismaClient();
+// Singleton pattern to prevent multiple instances during hot reload
+const globalForPrisma = global as unknown as {
+  prismaAuth: AuthPrismaInternal.PrismaClient | undefined;
+  prismaUser: UserPrismaInternal.PrismaClient | undefined;
+  prismaInventory: InventoryPrismaInternal.PrismaClient | undefined;
+};
+
+export const prismaAuth =
+  globalForPrisma.prismaAuth ??
+  new AuthPrismaInternal.PrismaClient({
+    log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
+  });
+
+export const prismaUser =
+  globalForPrisma.prismaUser ??
+  new UserPrismaInternal.PrismaClient({
+    log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
+  });
+
+export const prismaInventory =
+  globalForPrisma.prismaInventory ??
+  new InventoryPrismaInternal.PrismaClient({
+    log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
+  });
+
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prismaAuth = prismaAuth;
+  globalForPrisma.prismaUser = prismaUser;
+  globalForPrisma.prismaInventory = prismaInventory;
+}
 
 export type User = AuthPrismaInternal.User;
 export type Profile = UserPrismaInternal.Profile;

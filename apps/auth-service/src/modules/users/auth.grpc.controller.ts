@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import { Controller, UsePipes, ValidationPipe } from '@nestjs/common';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
 import {
@@ -22,6 +22,7 @@ import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
 
 @Controller()
+@UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
 export class AuthGrpcController {
   private readonly baseHandler: BaseGrpcHandler<User, UserDto, never>;
 
@@ -35,16 +36,6 @@ export class AuthGrpcController {
   ): Promise<ReturnType<typeof grpcResponse>> {
     let user: User | null = null;
     try {
-      const dto = plainToInstance(CreateUserDto, data);
-      const errors = await validate(dto);
-
-      if (errors.length > 0) {
-        const messages = errors.flatMap((error) =>
-          Object.values(error.constraints || {}),
-        );
-        throwGrpcError(SERVER_MESSAGE.VALIDATION_FAILED, messages);
-      }
-
       // Step 1 : Create User Account Record
       const hashPassword = await bcrypt.hash(data.password, 10);
 
@@ -88,16 +79,6 @@ export class AuthGrpcController {
 
   @GrpcMethod(GRPC_SERVICES.AUTH, USER_METHODS.LOGIN)
   async login(data: LoginUserDto): Promise<ReturnType<typeof grpcResponse>> {
-    const dto = plainToInstance(LoginUserDto, data);
-    const errors = await validate(dto);
-
-    if (errors.length > 0) {
-      const messages = errors.flatMap((error) =>
-        Object.values(error.constraints || {}),
-      );
-      throwGrpcError(USER_MESSAGES.VALIDATION_FAILED, messages);
-    }
-
     const result = await this.authService.validateUser(data);
 
     const { accessToken, refreshToken } = await this.authService.generateToken(
@@ -128,16 +109,6 @@ export class AuthGrpcController {
 
   async createProfile(data: CreateProfileDto) {
     try {
-      const dto = plainToInstance(CreateProfileDto, data);
-      const errors = await validate(dto);
-
-      if (errors.length > 0) {
-        const messages = errors.flatMap((error) =>
-          Object.values(error.constraints || {}),
-        );
-        throwGrpcError(USER_MESSAGES.VALIDATION_FAILED, messages);
-      }
-
       const profile = await this.authService.createProfile(data);
       return profile;
     } catch (error) {
@@ -152,16 +123,6 @@ export class AuthGrpcController {
   @GrpcMethod(GRPC_SERVICES.AUTH, USER_METHODS.CHANGE_PASSWORD)
   async changePassword(data: ChangePasswordDto) {
     try {
-      const dto = plainToInstance(ChangePasswordDto, data);
-      const errors = await validate(dto);
-
-      if (errors.length > 0) {
-        const messages = errors.flatMap((error) =>
-          Object.values(error.constraints || {}),
-        );
-        throwGrpcError(USER_MESSAGES.VALIDATION_FAILED, messages);
-      }
-
       const user = await this.authService.changePassword(data);
       return grpcResponse(user, USER_MESSAGES.CHANGE_PASSWORD_SUCCESS);
     } catch (error) {
