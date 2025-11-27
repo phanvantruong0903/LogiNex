@@ -24,6 +24,8 @@ model Profile {
   verify    UserVerifyStatus @default(Unverified)
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
+
+  @@map("profiles")
 }
 
 enum UserVerifyStatus {
