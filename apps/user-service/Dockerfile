@@ -9,6 +9,7 @@ RUN npm pkg delete scripts.postinstall
 
 COPY apps/user-service/prisma ./apps/user-service/prisma
 COPY apps/auth-service/prisma ./apps/auth-service/prisma
+COPY apps/inventory-service/prisma ./apps/inventory-service/prisma
 
 RUN npm ci --legacy-peer-deps
 
@@ -16,6 +17,7 @@ COPY . .
 
 RUN npx prisma generate --schema=apps/user-service/prisma/schema.prisma
 RUN npx prisma generate --schema=apps/auth-service/prisma/schema.prisma
+RUN npx prisma generate --schema=apps/inventory-service/prisma/schema.prisma
 
 RUN npx nx run user-service:prune --configuration=production
 
@@ -51,4 +53,4 @@ COPY --from=builder /app/common/src/lib/prisma/user/generated/libquery_engine-li
 COPY --from=builder /app/apps/user-service/prisma ./apps/user-service/prisma
 
 EXPOSE 50052
-CMD ["sh", "-c", "npx prisma db push --skip-generate --schema=./apps/user-service/prisma/schema.prisma && node main.js"]
+CMD ["sh", "-c", "npx prisma db push --skip-generate --accept-data-loss --schema=./apps/user-service/prisma/schema.prisma && node main.js"]

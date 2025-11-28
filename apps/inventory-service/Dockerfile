@@ -19,7 +19,7 @@ RUN npx prisma generate --schema=apps/user-service/prisma/schema.prisma
 RUN npx prisma generate --schema=apps/auth-service/prisma/schema.prisma
 RUN npx prisma generate --schema=apps/inventory-service/prisma/schema.prisma
 
-RUN npx nx run user-service:prune --configuration=production
+RUN npx nx run inventory-service:prune --configuration=production
 
 FROM node:18-alpine AS runner
 WORKDIR /app
@@ -48,7 +48,7 @@ COPY --from=builder /app/apps/inventory-service/dist/main.js ./
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
 COPY --from=builder /app/common ./common
-COPY --from=builder /app/common/src/lib/prisma/user/generated/libquery_engine-linux-musl-openssl-3.0.x.so.node ./
+COPY --from=builder /app/common/src/lib/prisma/inventory/generated/libquery_engine-linux-musl-openssl-3.0.x.so.node ./
 
 COPY --from=builder /app/apps/inventory-service/prisma ./apps/inventory-service/prisma
 

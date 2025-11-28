@@ -24,6 +24,21 @@ services:
     networks:
       - loginex-network
 
+  inventory-db:
+    image: postgres:16-alpine
+    container_name: inventory-db
+    restart: 'unless-stopped'
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${INVENTORY_DB_NAME}
+    ports:
+      - '5435:5432'
+    volumes:
+      - inventory_data:/var/lib/postgresql/data
+    networks:
+      - loginex-network
+
   user-db:
     image: postgres:16-alpine
     container_name: user-db
@@ -79,6 +94,8 @@ services:
         condition: service_healthy
       user-service:
         condition: service_healthy
+      inventory-service:
+        condition: service_healthy
     environment:
       - CONSUL_HOST=consul
       - CONSUL_PORT=8500
@@ -91,11 +108,20 @@ services:
       - 'traefik.http.routers.api-gateway.rule=(Host(`localhost`) || Host(`${DOMAIN:-loginex.local}`)) && PathPrefix(`/graphql`)'
       - 'traefik.http.routers.api-gateway.entrypoints=web,websecure'
       - 'traefik.http.routers.api-gateway.tls.certresolver=cloudflare'
-      - 'traefik.http.routers.api-gateway.middlewares=api-ratelimit,api-compress,api-retry'
+
+      - 'traefik.http.routers.api-gateway.middlewares=my-cors,api-ratelimit,api-compress,api-retry'
+
+      - "traefik.http.middlewares.my-cors.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
+      - "traefik.http.middlewares.my-cors.headers.accesscontrolallowheaders=*"
+      - "traefik.http.middlewares.my-cors.headers.accesscontrolalloworiginlist=https://${DOMAIN:-loginex.local},http://localhost:${PORT:-3000},https://studio.apollographql.com"
+      - "traefik.http.middlewares.my-cors.headers.accesscontrolmaxage=100"
+      - "traefik.http.middlewares.my-cors.headers.addvaryheader=true"
+
       - 'traefik.http.middlewares.api-ratelimit.ratelimit.average=100'
       - 'traefik.http.middlewares.api-ratelimit.ratelimit.burst=50'
       - 'traefik.http.middlewares.api-compress.compress=true'
       - 'traefik.http.middlewares.api-retry.retry.attempts=3'
+
       - 'traefik.http.services.api-gateway.loadbalancer.server.port=3000'
     networks:
       - loginex-network
@@ -150,6 +176,31 @@ services:
     networks:
       - loginex-network
 
+  inventory-service:
+    build:
+      context: .
+      dockerfile: ./apps/inventory-service/Dockerfile
+    container_name: inventory-service
+    restart: 'unless-stopped'
+    depends_on:
+      consul:
+        condition: service_started
+      inventory-db:
+        condition: service_started
+    environment:
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@inventory-db:5432/${INVENTORY_DB_NAME}?schema=public
+      - INVENTORY_SERVICE_PORT=50053
+    healthcheck:
+      test: ['CMD', 'nc', '-z', '127.0.0.1', '50053']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - loginex-network
+
 networks:
   loginex-network:
     driver: bridge
@@ -157,3 +208,4 @@ networks:
 volumes:
   auth_data:
   user_data:
+  inventory_data:

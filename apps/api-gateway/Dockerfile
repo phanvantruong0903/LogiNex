@@ -1,4 +1,3 @@
-# --- STAGE 1: BUILDER ---
 FROM node:20-alpine AS builder
 WORKDIR /app
 
@@ -10,6 +9,7 @@ RUN npm pkg delete scripts.postinstall
 
 COPY apps/auth-service/prisma ./apps/auth-service/prisma
 COPY apps/user-service/prisma ./apps/user-service/prisma
+COPY apps/inventory-service/prisma ./apps/inventory-service/prisma
 
 RUN npm ci --legacy-peer-deps
 
@@ -17,11 +17,14 @@ COPY . .
 
 RUN npx prisma generate --schema=apps/auth-service/prisma/schema.prisma
 RUN npx prisma generate --schema=apps/user-service/prisma/schema.prisma
+RUN npx prisma generate --schema=apps/inventory-service/prisma/schema.prisma
 
 RUN npx nx run api-gateway:prune --configuration=production
 
 FROM node:20-alpine AS runner
 WORKDIR /app
+
+RUN apk add --no-cache openssl netcat-openbsd
 
 ENV NODE_ENV=production 
 ENV PORT=3000
@@ -43,8 +46,12 @@ RUN npm pkg delete scripts.postinstall && \
   --legacy-peer-deps
 
 COPY --from=builder /app/apps/api-gateway/dist/main.js ./
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
 COPY --from=builder /app/common ./common
+COPY --from=builder /app/common/src/lib/prisma/auth/generated/libquery_engine-linux-musl-openssl-3.0.x.so.node ./
+COPY --from=builder /app/common/src/lib/prisma/user/generated/libquery_engine-linux-musl-openssl-3.0.x.so.node ./
+COPY --from=builder /app/common/src/lib/prisma/inventory/generated/libquery_engine-linux-musl-openssl-3.0.x.so.node ./
 
 EXPOSE 3000
 CMD ["node","main.js"]

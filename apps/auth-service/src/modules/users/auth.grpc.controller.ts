@@ -56,11 +56,6 @@ export class AuthGrpcController {
 
       return grpcResponse(user, USER_MESSAGES.CREATE_SCUCCESS);
     } catch (error) {
-      if (error instanceof RpcException) {
-        throw error;
-      }
-      const err = error as Error;
-
       // Rollback User Account Creation
       if (user) {
         try {
@@ -70,6 +65,11 @@ export class AuthGrpcController {
           throwGrpcError(error.message, [error.message]);
         }
       }
+
+      if (error instanceof RpcException) {
+        throw error;
+      }
+      const err = error as Error;
 
       throwGrpcError(err?.message || USER_MESSAGES.CREATE_FAILED, [
         err.message,

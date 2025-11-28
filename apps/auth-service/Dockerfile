@@ -5,6 +5,7 @@ COPY package.json package-lock.json* pnpm-lock.yaml* nx.json tsconfig.base.json 
 
 COPY apps/auth-service/prisma ./apps/auth-service/prisma
 COPY apps/user-service/prisma ./apps/user-service/prisma
+COPY apps/inventory-service/prisma ./apps/inventory-service/prisma
 
 COPY common ./common
 
@@ -16,6 +17,7 @@ COPY . .
 
 RUN npx prisma generate --schema=apps/auth-service/prisma/schema.prisma
 RUN npx prisma generate --schema=apps/user-service/prisma/schema.prisma
+RUN npx prisma generate --schema=apps/inventory-service/prisma/schema.prisma
 
 RUN npx nx run auth-service:prune --configuration=production
 
@@ -52,4 +54,4 @@ COPY --from=builder /app/apps/auth-service/prisma ./apps/auth-service/prisma
 
 EXPOSE 50051
 
-CMD ["sh", "-c", "npx prisma db push --skip-generate --schema=./apps/auth-service/prisma/schema.prisma && node main.js"]
+CMD ["sh", "-c", "npx prisma db push --skip-generate --accept-data-loss --schema=./apps/auth-service/prisma/schema.prisma && node main.js"]

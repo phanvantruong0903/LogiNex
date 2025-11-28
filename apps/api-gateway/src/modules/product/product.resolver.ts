@@ -62,6 +62,15 @@ export class ProductResolver {
     return this.productService.getAllProduct({ page, limit });
   }
 
+  @Query(() => ProductResponse, {
+    name: GRAPHQL_NAME_PRODUCT.GET_ONE,
+  })
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
+  async getProductDetail(@Args('id') id: string): Promise<ProductResponse> {
+    return this.productService.getProductDetail(id);
+  }
+
   @Query(() => String)
   _healthCheck(): string {
     return 'API is running';
