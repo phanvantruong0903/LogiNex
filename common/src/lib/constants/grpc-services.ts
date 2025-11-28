@@ -5,6 +5,37 @@ export const GRPC_SERVICES = {
   PRODUCT: 'ProductService',
 } as const;
 
+export const INVENTORY_METHODS = {
+  // Warehouse
+  CREATE_WAREHOUSE: 'CreateWarehouse',
+  UPDATE_WAREHOUSE: 'UpdateWarehouse',
+  GET_WAREHOUSE: 'GetWarehouse',
+  LIST_WAREHOUSES: 'ListWarehouses',
+  DELETE_WAREHOUSE: 'DeleteWarehouse',
+
+  // Zone
+  CREATE_ZONE: 'CreateZone',
+  UPDATE_ZONE: 'UpdateZone',
+  DELETE_ZONE: 'DeleteZone',
+  LIST_ZONES: 'ListZones',
+
+  // Rack
+  CREATE_RACK: 'CreateRack',
+  UPDATE_RACK: 'UpdateRack',
+  DELETE_RACK: 'DeleteRack',
+  LIST_RACKS: 'ListRacks',
+
+  // Bin
+  CREATE_BIN: 'CreateBin',
+  UPDATE_BIN: 'UpdateBin',
+  DELETE_BIN: 'DeleteBin',
+  LIST_BINS: 'ListBins',
+
+  // Stock
+  GET_STOCK_LEVEL: 'GetStockLevel',
+  ADJUST_STOCK: 'AdjustStock',
+} as const;
+
 export const GRPC_PACKAGE = {
   AUTH: 'AUTH_PACKAGE',
   USER: 'USER_PACKAGE',
