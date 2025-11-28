@@ -10,7 +10,7 @@ CREATE TABLE "products" (
     "height" DOUBLE PRECISION NOT NULL,
     "length" DOUBLE PRECISION NOT NULL,
     "weight" DOUBLE PRECISION NOT NULL,
-    "volumn" DOUBLE PRECISION NOT NULL,
+    "volume" DOUBLE PRECISION NOT NULL,
     "isFragile" BOOLEAN NOT NULL DEFAULT false,
     "hasBattery" BOOLEAN NOT NULL DEFAULT false,
     "isHighValue" BOOLEAN NOT NULL DEFAULT false,

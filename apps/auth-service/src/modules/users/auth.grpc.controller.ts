@@ -18,8 +18,6 @@ import {
   ChangePasswordDto,
 } from '@loginex/common';
 import * as bcrypt from 'bcrypt';
-import { validate } from 'class-validator';
-import { plainToInstance } from 'class-transformer';
 
 @Controller()
 @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
@@ -51,16 +49,12 @@ export class AuthGrpcController {
         YOB: data.YOB,
         name: data.name,
         accountId: user.id,
+        role: data.role,
       };
       await this.createProfile(profileData);
 
       return grpcResponse(user, USER_MESSAGES.CREATE_SCUCCESS);
     } catch (error) {
-      if (error instanceof RpcException) {
-        throw error;
-      }
-      const err = error as Error;
-
       // Rollback User Account Creation
       if (user) {
         try {
@@ -70,6 +64,11 @@ export class AuthGrpcController {
           throwGrpcError(error.message, [error.message]);
         }
       }
+
+      if (error instanceof RpcException) {
+        throw error;
+      }
+      const err = error as Error;
 
       throwGrpcError(err?.message || USER_MESSAGES.CREATE_FAILED, [
         err.message,

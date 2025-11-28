@@ -8,7 +8,7 @@ services:
     command: 'agent -dev -client=0.0.0.0'
     networks:
       - loginex-network
-
+  
   auth-db:
     image: postgres:16-alpine
     container_name: auth-db
@@ -21,6 +21,21 @@ services:
       - '5433:5432'
     volumes:
       - auth_data:/var/lib/postgresql/data
+    networks:
+      - loginex-network
+
+  inventory-db:
+    image: postgres:16-alpine
+    container_name: inventory-db
+    restart: 'unless-stopped'
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${INVENTORY_DB_NAME}
+    ports:
+      - '5435:5432'
+    volumes:
+      - inventory_data:/var/lib/postgresql/data
     networks:
       - loginex-network
 
@@ -94,6 +109,8 @@ services:
         condition: service_healthy
       user-service:
         condition: service_healthy
+      inventory-service:
+        condition: service_healthy
     environment:
       - CONSUL_HOST=consul
       - CONSUL_PORT=8500
@@ -106,11 +123,20 @@ services:
       - 'traefik.http.routers.api-gateway.rule=(Host(`localhost`) || Host(`${DOMAIN:-loginex.local}`)) && PathPrefix(`/graphql`)'
       - 'traefik.http.routers.api-gateway.entrypoints=web,websecure'
       - 'traefik.http.routers.api-gateway.tls.certresolver=cloudflare'
-      - 'traefik.http.routers.api-gateway.middlewares=api-ratelimit,api-compress,api-retry'
+
+      - 'traefik.http.routers.api-gateway.middlewares=my-cors,api-ratelimit,api-compress,api-retry'
+
+      - "traefik.http.middlewares.my-cors.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
+      - "traefik.http.middlewares.my-cors.headers.accesscontrolallowheaders=*"
+      - "traefik.http.middlewares.my-cors.headers.accesscontrolalloworiginlist=https://${DOMAIN:-loginex.local},http://localhost:${PORT:-3000},https://studio.apollographql.com"
+      - "traefik.http.middlewares.my-cors.headers.accesscontrolmaxage=100"
+      - "traefik.http.middlewares.my-cors.headers.addvaryheader=true"
+
       - 'traefik.http.middlewares.api-ratelimit.ratelimit.average=100'
       - 'traefik.http.middlewares.api-ratelimit.ratelimit.burst=50'
       - 'traefik.http.middlewares.api-compress.compress=true'
       - 'traefik.http.middlewares.api-retry.retry.attempts=3'
+
       - 'traefik.http.services.api-gateway.loadbalancer.server.port=3000'
     networks:
       - loginex-network

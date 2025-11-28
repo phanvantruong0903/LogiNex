@@ -16,6 +16,7 @@ import {
   prismaAuth,
   User,
   ChangePasswordDto,
+  Role,
 } from '@loginex/common';
 import * as bcrypt from 'bcrypt';
 import { RpcException } from '@nestjs/microservices';
@@ -27,6 +28,7 @@ interface UserServiceClient {
     name: string;
     YOB: number;
     accountId: string;
+    role: Role;
   }): Observable<UserResponse>;
   GetUser(data: { id: string }): Observable<UserResponse>;
 }
@@ -171,6 +173,7 @@ export class AuthService
         name: data.name,
         accountId: data.accountId,
         YOB: data.YOB,
+        role: data.role,
       });
 
       return profile;
