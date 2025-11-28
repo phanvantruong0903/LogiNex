@@ -12,14 +12,19 @@ import {
   LoginInput,
   ChangePasswordResponse,
   ChangePasswordInput,
+  Role,
 } from '@loginex/common';
 import type { UserProfile } from '@loginex/common';
+import { RoleGuard } from './role.guard';
+import { Roles } from './role.decorator';
 
 @Resolver()
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
   @Mutation(() => RegisterResponse, { name: GRAPHQL_NAME_USER.CREATE })
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
   async register(
     @Args('body') body: CreateUserInput,
   ): Promise<RegisterResponse> {

@@ -49,6 +49,7 @@ export class AuthGrpcController {
         YOB: data.YOB,
         name: data.name,
         accountId: user.id,
+        role: data.role,
       };
       await this.createProfile(profileData);
 
