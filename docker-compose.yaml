@@ -39,6 +39,21 @@ services:
     networks:
       - loginex-network
 
+  inventory-db:
+    image: postgres:16-alpine
+    container_name: inventory-db
+    restart: 'unless-stopped'
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${INVENTORY_DB_NAME}
+    ports:
+      - '5435:5432'
+    volumes:
+      - inventory_data:/var/lib/postgresql/data
+    networks:
+      - loginex-network
+
   traefik:
     image: traefik:latest
     container_name: traefik
@@ -150,6 +165,31 @@ services:
     networks:
       - loginex-network
 
+  inventory-service:
+    build:
+      context: .
+      dockerfile: ./apps/inventory-service/Dockerfile
+    container_name: inventory-service
+    restart: 'unless-stopped'
+    depends_on:
+      consul:
+        condition: service_started
+      inventory-db:
+        condition: service_started
+    environment:
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@inventory-db:5432/${INVENTORY_DB_NAME}?schema=public
+      - INVENTORY_SERVICE_PORT=50053
+    healthcheck:
+      test: ['CMD', 'nc', '-z', '127.0.0.1', '50053']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - loginex-network
+
 networks:
   loginex-network:
     driver: bridge
@@ -157,3 +197,4 @@ networks:
 volumes:
   auth_data:
   user_data:
+  inventory_data:

@@ -10,6 +10,7 @@ RUN npm pkg delete scripts.postinstall
 
 COPY apps/auth-service/prisma ./apps/auth-service/prisma
 COPY apps/user-service/prisma ./apps/user-service/prisma
+COPY apps/inventory-service/prisma ./apps/inventory-service/prisma
 
 RUN npm ci --legacy-peer-deps
 
@@ -17,6 +18,7 @@ COPY . .
 
 RUN npx prisma generate --schema=apps/auth-service/prisma/schema.prisma
 RUN npx prisma generate --schema=apps/user-service/prisma/schema.prisma
+RUN npx prisma generate --schema=apps/inventory-service/prisma/schema.prisma
 
 RUN npx nx run api-gateway:prune --configuration=production
 
