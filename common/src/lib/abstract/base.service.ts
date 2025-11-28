@@ -48,4 +48,8 @@ export abstract class BaseService<T, CreateDto = never, UpdateDto = never> {
   update(id: string, dto: UpdateDto): Promise<T> {
     return this.model.update({ where: { id }, data: dto });
   }
+
+  remove(id: string): Promise<T> {
+    return this.model.delete({ where: { id } });
+  }
 }
