@@ -18,8 +18,6 @@ import {
   ChangePasswordDto,
 } from '@loginex/common';
 import * as bcrypt from 'bcrypt';
-import { validate } from 'class-validator';
-import { plainToInstance } from 'class-transformer';
 
 @Controller()
 @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
