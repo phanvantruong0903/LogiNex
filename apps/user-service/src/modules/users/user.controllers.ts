@@ -1,5 +1,10 @@
 import { Controller, UsePipes, ValidationPipe } from '@nestjs/common';
-import { GrpcMethod, RpcException } from '@nestjs/microservices';
+import {
+  EventPattern,
+  GrpcMethod,
+  Payload,
+  RpcException,
+} from '@nestjs/microservices';
 import {
   BaseGrpcHandler,
   CreateProfileDto,
@@ -13,6 +18,7 @@ import {
   Profile,
   grpcPaginateResponse,
   UserProfile,
+  KAFKA_TOPIC,
 } from '@loginex/common';
 import { UserService } from './user.services';
 
@@ -91,13 +97,13 @@ export class UserController {
     }
   }
 
-  @GrpcMethod(GRPC_SERVICES.USER, USER_METHODS.CREATE_PROFILE)
-  async createProfile(
-    data: CreateProfileDto,
-  ): Promise<ReturnType<typeof grpcResponse>> {
+  @EventPattern(KAFKA_TOPIC.USER_CREATED)
+  async createProfile(@Payload() data: any): Promise<Profile> {
     try {
-      const profile = await this.baseHandler.createLogic(data);
-      return grpcResponse<UserProfile>(profile, USER_MESSAGES.CREATE_SCUCCESS);
+      const profileData = data.value || data;
+      const profile = await this.baseHandler.createLogic(profileData);
+
+      return profile;
     } catch (error) {
       if (error instanceof RpcException) {
         throw error;

@@ -104,6 +104,7 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       KAFKA_NUM_PARTITIONS: 3
+      KAFKAJS_NO_PARTITIONER_WARNING: "1"
 
       CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
     volumes:
@@ -150,6 +151,7 @@ services:
       - CONSUL_PORT=8500
       - PORT=3000
       - NODE_ENV=development
+      - KAFKA_BROKERS=kafka:29092
     env_file:
       - ./apps/api-gateway/.env
     labels:
@@ -191,6 +193,7 @@ services:
       - CONSUL_PORT=8500
       - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@auth-db:5432/${AUTH_DB_NAME}?schema=public
       - AUTH_SERVICE_PORT=50051
+      - KAFKA_BROKERS=kafka:29092
     healthcheck:
       test: ['CMD', 'nc', '-z', '127.0.0.1', '50051']
       interval: 5s
@@ -216,6 +219,7 @@ services:
       - CONSUL_PORT=8500
       - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@user-db:5432/${USER_DB_NAME}?schema=public
       - USER_SERVICE_PORT=50052
+      - KAFKA_BROKERS=kafka:29092
     healthcheck:
       test: ['CMD', 'nc', '-z', '127.0.0.1', '50052']
       interval: 5s
@@ -241,6 +245,7 @@ services:
       - CONSUL_PORT=8500
       - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@inventory-db:5432/${INVENTORY_DB_NAME}?schema=public
       - INVENTORY_SERVICE_PORT=50053
+      - KAFKA_BROKERS=kafka:29092
     healthcheck:
       test: ['CMD', 'nc', '-z', '127.0.0.1', '50053']
       interval: 5s
