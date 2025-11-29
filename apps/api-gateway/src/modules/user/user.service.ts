@@ -7,6 +7,7 @@ import {
   UserListResponse,
   UserResponse,
   UpdateUserInput,
+  UserStatus,
 } from '@loginex/common';
 
 interface UserServiceClient {
@@ -19,6 +20,10 @@ interface UserServiceClient {
   ChangePassword(data: {
     id: string;
     password: string;
+  }): Observable<UserResponse>;
+  ChangeStatus(data: {
+    accountId: string;
+    status: UserStatus;
   }): Observable<UserResponse>;
 }
 
@@ -50,5 +55,9 @@ export class UserService implements OnModuleInit {
   async changePassword(id: string, password: string) {
     const payload = { id, password };
     return await lastValueFrom(this.userService.ChangePassword(payload));
+  }
+
+  async changeStatus(data: { accountId: string; status: UserStatus }) {
+    return await lastValueFrom(this.userService.ChangeStatus(data));
   }
 }

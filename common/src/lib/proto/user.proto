@@ -9,6 +9,7 @@ message User {
   int32 YOB = 4;
   string verify = 5;
   string role = 6;
+  string status = 7;
 }
 
 
@@ -50,8 +51,14 @@ message GetAllUserRequest {
   int32 limit = 2;
 }
 
+message ChangeStatusRequest {
+  string accountId = 1;
+  string status = 2;
+}
+
 service UserService {
   rpc GetUser(GetUserRequest) returns (UserDetailResponse);
   rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
   rpc GetAllUsers(GetAllUserRequest) returns (UsersResponse);
+  rpc ChangeStatus(ChangeStatusRequest) returns (UpdateUserResponse);
 }

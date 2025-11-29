@@ -105,19 +105,6 @@ export class AuthGrpcController {
     return grpcResponse(result, USER_MESSAGES.REFRESH_TOKEN_SUCCESSFULLY);
   }
 
-  async createProfile(data: CreateProfileDto) {
-    try {
-      const profile = await this.authService.createProfile(data);
-      return profile;
-    } catch (error) {
-      if (error instanceof RpcException) {
-        throw error;
-      }
-      const err = error as Error;
-      throw new RpcException(err?.message);
-    }
-  }
-
   @GrpcMethod(GRPC_SERVICES.AUTH, USER_METHODS.CHANGE_PASSWORD)
   async changePassword(data: ChangePasswordDto) {
     try {
