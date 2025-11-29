@@ -52,4 +52,11 @@ export abstract class BaseService<T, CreateDto = never, UpdateDto = never> {
   remove(id: string): Promise<T> {
     return this.model.delete({ where: { id } });
   }
+
+  changeStatus(id: string, fromStatus: string, toStatus: string): Promise<T> {
+    return this.model.update({
+      where: { id, status: fromStatus },
+      data: { status: toStatus },
+    });
+  }
 }

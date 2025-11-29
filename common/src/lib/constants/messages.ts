@@ -65,6 +65,12 @@ export const WAREHOUSE_MESSAGES = {
   WAREHOUSE_LIST_FAILED: 'Warehouses retrieved failed',
   WAREHOUSE_GET_SUCCESS: 'Warehouse retrieved successfully',
   WAREHOUSE_GET_FAILED: 'Warehouse retrieved failed',
+  WAREHOUSE_INACTIVATE: 'Warehouse inactivated successfully',
+  WAREHOUSE_INACTIVATE_FAILED: 'Warehouse inactivated failed',
+  WAREHOUSE_ACTIVATE: 'Warehouse activated successfully',
+  WAREHOUSE_ACTIVATE_FAILED: 'Warehouse activated failed',
+  ACTIVE_WAREHOUSE_NOT_FOUND: 'Active warehouse not found',
+  INACTIVE_WAREHOUSE_NOT_FOUND: 'Inactive warehouse not found',
 
   // Zone
   ZONE_CREATED: 'Zone created successfully',

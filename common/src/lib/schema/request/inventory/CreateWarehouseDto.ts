@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { WarehouseStatus } from '../../../prisma';
 
 export class CreateWarehouseDto {
   @IsString()
@@ -8,4 +9,7 @@ export class CreateWarehouseDto {
   @IsString()
   @IsNotEmpty()
   location!: string;
+
+  @IsOptional()
+  status?: WarehouseStatus;
 }

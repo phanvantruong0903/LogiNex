@@ -1,4 +1,5 @@
 import { IsOptional, IsString } from 'class-validator';
+import { WarehouseStatus } from '../../../prisma';
 
 export class UpdateWarehouseDto {
   @IsString()
@@ -8,4 +9,7 @@ export class UpdateWarehouseDto {
   @IsString()
   @IsOptional()
   location?: string;
+
+  @IsOptional()
+  status?: WarehouseStatus;
 }

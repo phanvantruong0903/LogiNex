@@ -5,6 +5,7 @@ import {
   prismaInventory,
   UpdateWarehouseDto,
   WareHouse,
+  WarehouseStatus,
 } from '@loginex/common';
 import { Injectable, NotFoundException } from '@nestjs/common';
 
@@ -18,11 +19,41 @@ export class WarehousesService extends BaseService<
     super(prismaInventory.wareHouse);
   }
 
-  override async remove(id: string): Promise<WareHouse> {
-    const warehouse = await this.findOne(id);
+  override async changeStatus(
+    id: string,
+    fromStatus: WarehouseStatus,
+    toStatus: WarehouseStatus,
+  ): Promise<WareHouse> {
+    const warehouse = await this.model.findUnique({
+      where: { id, status: fromStatus },
+    });
     if (!warehouse) {
-      throw new NotFoundException(WAREHOUSE_MESSAGES.WAREHOUSE_NOT_FOUND);
+      throw new NotFoundException(
+        fromStatus === WarehouseStatus.ACTIVE
+          ? WAREHOUSE_MESSAGES.ACTIVE_WAREHOUSE_NOT_FOUND
+          : WAREHOUSE_MESSAGES.INACTIVE_WAREHOUSE_NOT_FOUND,
+      );
     }
-    return super.remove(id);
+
+    return this.model.update({
+      where: { id, status: fromStatus },
+      data: { status: toStatus },
+    });
+  }
+
+  async inactivate(id: string): Promise<WareHouse> {
+    return this.changeStatus(
+      id,
+      WarehouseStatus.ACTIVE,
+      WarehouseStatus.INACTIVE,
+    );
+  }
+
+  async activate(id: string): Promise<WareHouse> {
+    return this.changeStatus(
+      id,
+      WarehouseStatus.INACTIVE,
+      WarehouseStatus.ACTIVE,
+    );
   }
 }
