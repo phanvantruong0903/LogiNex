@@ -54,21 +54,6 @@ services:
     networks:
       - loginex-network
 
-  inventory-db:
-    image: postgres:16-alpine
-    container_name: inventory-db
-    restart: 'unless-stopped'
-    environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${INVENTORY_DB_NAME}
-    ports:
-      - '5435:5432'
-    volumes:
-      - inventory_data:/var/lib/postgresql/data
-    networks:
-      - loginex-network
-
   traefik:
     image: traefik:latest
     container_name: traefik
