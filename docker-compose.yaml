@@ -214,7 +214,6 @@ services:
       start_period: 30s
     networks:
       - loginex-network
-
   user-service:
     build:
       context: .

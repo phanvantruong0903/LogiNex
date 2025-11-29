@@ -45,17 +45,23 @@ export class ConsulService {
 
   async discoverService(
     name: string,
+    retries = 10,
+    delay = 3000,
   ): Promise<{ address: string; port: number }> {
-    const services = await this.consul.catalog.service.nodes(name);
-    if (!services || services.length === 0) {
-      throw new Error(`[Consul] No service found with name ${name}`);
+    for (let i = 0; i < retries; i++) {
+      const services = await this.consul.catalog.service.nodes(name);
+      if (services && services.length > 0) {
+        const svc = services[0];
+        return {
+          address: svc.ServiceAddress || svc.Address,
+          port: svc.ServicePort,
+        };
+      }
+      await new Promise((resolve) => setTimeout(resolve, delay));
     }
-
-    const svc = services[0];
-    return {
-      address: svc.ServiceAddress || svc.Address,
-      port: svc.ServicePort,
-    };
+    throw new Error(
+      `[Consul] No service found with name ${name} after ${retries} retries`,
+    );
   }
 
   getLocalIp(): string {
