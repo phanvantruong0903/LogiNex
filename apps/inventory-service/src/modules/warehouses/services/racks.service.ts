@@ -1,7 +1,7 @@
 import {
   BaseService,
   CreateRackDto,
-  INVENTORY_MESSAGES,
+  WAREHOUSE_MESSAGES,
   prismaInventory,
   Rack,
   UpdateRackDto,
@@ -21,7 +21,7 @@ export class RacksService extends BaseService<
   override async remove(id: string): Promise<Rack> {
     const rack = await this.findOne(id);
     if (!rack) {
-      throw new NotFoundException(INVENTORY_MESSAGES.RACK_NOT_FOUND);
+      throw new NotFoundException(WAREHOUSE_MESSAGES.RACK_NOT_FOUND);
     }
     return super.remove(id);
   }

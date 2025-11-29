@@ -2,9 +2,9 @@ import {
   BaseService,
   Bin,
   CreateBinDto,
-  INVENTORY_MESSAGES,
   prismaInventory,
   UpdateBinDto,
+  WAREHOUSE_MESSAGES,
 } from '@loginex/common';
 import {
   BadRequestException,
@@ -23,7 +23,7 @@ export class BinsService extends BaseService<Bin, CreateBinDto, UpdateBinDto> {
       where: { code: data.code },
     });
     if (existing) {
-      throw new BadRequestException(INVENTORY_MESSAGES.BIN_CODE_EXISTS);
+      throw new BadRequestException(WAREHOUSE_MESSAGES.BIN_CODE_EXISTS);
     }
     return super.create(data);
   }
@@ -31,7 +31,7 @@ export class BinsService extends BaseService<Bin, CreateBinDto, UpdateBinDto> {
   override async remove(id: string): Promise<Bin> {
     const bin = await this.findOne(id);
     if (!bin) {
-      throw new NotFoundException(INVENTORY_MESSAGES.BIN_NOT_FOUND);
+      throw new NotFoundException(WAREHOUSE_MESSAGES.BIN_NOT_FOUND);
     }
     return super.remove(id);
   }

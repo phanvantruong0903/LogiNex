@@ -1,7 +1,7 @@
 import {
   BaseService,
   CreateZoneDto,
-  INVENTORY_MESSAGES,
+  WAREHOUSE_MESSAGES,
   prismaInventory,
   UpdateZoneDto,
   Zone,
@@ -21,7 +21,7 @@ export class ZonesService extends BaseService<
   override async remove(id: string): Promise<Zone> {
     const zone = await this.findOne(id);
     if (!zone) {
-      throw new NotFoundException(INVENTORY_MESSAGES.ZONE_NOT_FOUND);
+      throw new NotFoundException(WAREHOUSE_MESSAGES.ZONE_NOT_FOUND);
     }
     return super.remove(id);
   }

@@ -1,7 +1,7 @@
 import {
   BaseService,
   CreateWarehouseDto,
-  INVENTORY_MESSAGES,
+  WAREHOUSE_MESSAGES,
   prismaInventory,
   UpdateWarehouseDto,
   WareHouse,
@@ -21,7 +21,7 @@ export class WarehousesService extends BaseService<
   override async remove(id: string): Promise<WareHouse> {
     const warehouse = await this.findOne(id);
     if (!warehouse) {
-      throw new NotFoundException(INVENTORY_MESSAGES.WAREHOUSE_NOT_FOUND);
+      throw new NotFoundException(WAREHOUSE_MESSAGES.WAREHOUSE_NOT_FOUND);
     }
     return super.remove(id);
   }
