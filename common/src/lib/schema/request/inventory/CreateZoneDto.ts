@@ -1,10 +1,5 @@
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
-
-export enum ZoneType {
-  STANDARD = 'STANDARD',
-  SECURE = 'SECURE',
-  HAZARD = 'HAZARD',
-}
+import { ZoneType } from '../../../prisma/index';
 
 export class CreateZoneDto {
   @IsString()
