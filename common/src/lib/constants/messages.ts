@@ -52,6 +52,44 @@ export const PRODUCT_MESSAGES = {
   GET_DETAIL_FAIL: 'Product details retrieved failed',
 };
 
+export const INVENTORY_MESSAGES = {
+  // Warehouse
+  WAREHOUSE_CREATED: 'Warehouse created successfully',
+  WAREHOUSE_UPDATED: 'Warehouse updated successfully',
+  WAREHOUSE_DELETED: 'Warehouse deleted successfully',
+  WAREHOUSE_NOT_FOUND: 'Warehouse not found',
+  WAREHOUSE_LIST_SUCCESS: 'Warehouses retrieved successfully',
+  WAREHOUSE_GET_SUCCESS: 'Warehouse retrieved successfully',
+
+  // Zone
+  ZONE_CREATED: 'Zone created successfully',
+  ZONE_UPDATED: 'Zone updated successfully',
+  ZONE_DELETED: 'Zone deleted successfully',
+  ZONE_NOT_FOUND: 'Zone not found',
+  ZONE_LIST_SUCCESS: 'Zones retrieved successfully',
+
+  // Rack
+  RACK_CREATED: 'Rack created successfully',
+  RACK_UPDATED: 'Rack updated successfully',
+  RACK_DELETED: 'Rack deleted successfully',
+  RACK_NOT_FOUND: 'Rack not found',
+  RACK_LIST_SUCCESS: 'Racks retrieved successfully',
+
+  // Bin
+  BIN_CREATED: 'Bin created successfully',
+  BIN_UPDATED: 'Bin updated successfully',
+  BIN_DELETED: 'Bin deleted successfully',
+  BIN_NOT_FOUND: 'Bin not found',
+  BIN_LIST_SUCCESS: 'Bins retrieved successfully',
+  BIN_CODE_EXISTS: 'Bin code already exists',
+
+  // Stock
+  STOCK_LEVEL_SUCCESS: 'Stock level retrieved successfully',
+  STOCK_ADJUSTED: 'Stock adjusted successfully',
+  INSUFFICIENT_STOCK: 'Insufficient stock',
+  BIN_CAPACITY_EXCEEDED: 'Bin capacity exceeded',
+};
+
 export const SERVER_MESSAGE = {
   INTERNAL_SERVER: 'Interal Server Error',
   VALIDATION_FAILED: 'Validation Failed',
