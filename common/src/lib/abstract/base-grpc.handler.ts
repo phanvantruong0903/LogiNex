@@ -111,4 +111,25 @@ export class BaseGrpcHandler<
       ]);
     }
   }
+
+  async deleteLogic(id: string): Promise<T> {
+    // Check if the delete method is imp  lemented in the service
+    if (!this.service.remove) {
+      throwGrpcError(SERVER_MESSAGE.UNSUPPORTED_OPERATION, [
+        SERVER_MESSAGE.DELETED_NOT_IMPLEMENTED,
+      ]);
+    }
+    try {
+      const result = await this.service.remove(id);
+      return result;
+    } catch (error: any) {
+      if (error?.code === 'P2025') {
+        throwGrpcError(SERVER_MESSAGE.NOT_FOUND, [SERVER_MESSAGE.NOT_FOUND]);
+      }
+
+      throwGrpcError(SERVER_MESSAGE.DATABASE_ERROR, [
+        error.message ?? SERVER_MESSAGE.UNEXPECTED_ERROR,
+      ]);
+    }
+  }
 }

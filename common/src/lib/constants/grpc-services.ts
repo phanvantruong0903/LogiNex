@@ -1,11 +1,11 @@
 export const GRPC_SERVICES = {
   AUTH: 'AuthService',
   USER: 'UserService',
-  INVENTORY: 'InventoryService',
+  WAREHOUSE: 'WarehouseService',
   PRODUCT: 'ProductService',
 } as const;
 
-export const INVENTORY_METHODS = {
+export const WAREHOUSE_METHODS = {
   // Warehouse
   CREATE_WAREHOUSE: 'CreateWarehouse',
   UPDATE_WAREHOUSE: 'UpdateWarehouse',
@@ -30,10 +30,6 @@ export const INVENTORY_METHODS = {
   UPDATE_BIN: 'UpdateBin',
   DELETE_BIN: 'DeleteBin',
   LIST_BINS: 'ListBins',
-
-  // Stock
-  GET_STOCK_LEVEL: 'GetStockLevel',
-  ADJUST_STOCK: 'AdjustStock',
 } as const;
 
 export const GRPC_PACKAGE = {

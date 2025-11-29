@@ -52,36 +52,55 @@ export const PRODUCT_MESSAGES = {
   GET_DETAIL_FAIL: 'Product details retrieved failed',
 };
 
-export const INVENTORY_MESSAGES = {
+export const WAREHOUSE_MESSAGES = {
   // Warehouse
   WAREHOUSE_CREATED: 'Warehouse created successfully',
+  WAREHOUSE_CREATED_FAILED: 'Warehouse created failed',
   WAREHOUSE_UPDATED: 'Warehouse updated successfully',
+  WAREHOUSE_UPDATED_FAILED: 'Warehouse updated failed',
   WAREHOUSE_DELETED: 'Warehouse deleted successfully',
+  WAREHOUSE_DELETED_FAILED: 'Warehouse deleted failed',
   WAREHOUSE_NOT_FOUND: 'Warehouse not found',
   WAREHOUSE_LIST_SUCCESS: 'Warehouses retrieved successfully',
+  WAREHOUSE_LIST_FAILED: 'Warehouses retrieved failed',
   WAREHOUSE_GET_SUCCESS: 'Warehouse retrieved successfully',
+  WAREHOUSE_GET_FAILED: 'Warehouse retrieved failed',
 
   // Zone
   ZONE_CREATED: 'Zone created successfully',
+  ZONE_CREATED_FAILED: 'Zone created failed',
   ZONE_UPDATED: 'Zone updated successfully',
+  ZONE_UPDATED_FAILED: 'Zone updated failed',
   ZONE_DELETED: 'Zone deleted successfully',
+  ZONE_DELETED_FAILED: 'Zone deleted failed',
   ZONE_NOT_FOUND: 'Zone not found',
   ZONE_LIST_SUCCESS: 'Zones retrieved successfully',
+  ZONE_LIST_FAILED: 'Zones retrieved failed',
 
   // Rack
   RACK_CREATED: 'Rack created successfully',
+  RACK_CREATED_FAILED: 'Rack created failed',
   RACK_UPDATED: 'Rack updated successfully',
+  RACK_UPDATED_FAILED: 'Rack updated failed',
   RACK_DELETED: 'Rack deleted successfully',
+  RACK_DELETED_FAILED: 'Rack deleted failed',
   RACK_NOT_FOUND: 'Rack not found',
   RACK_LIST_SUCCESS: 'Racks retrieved successfully',
+  RACK_LIST_FAILED: 'Racks retrieved failed',
 
   // Bin
   BIN_CREATED: 'Bin created successfully',
+  BIN_CREATED_FAILED: 'Bin created failed',
   BIN_UPDATED: 'Bin updated successfully',
+  BIN_UPDATED_FAILED: 'Bin updated failed',
   BIN_DELETED: 'Bin deleted successfully',
+  BIN_DELETED_FAILED: 'Bin deleted failed',
   BIN_NOT_FOUND: 'Bin not found',
   BIN_LIST_SUCCESS: 'Bins retrieved successfully',
+  BIN_LIST_FAILED: 'Bins retrieved failed',
   BIN_CODE_EXISTS: 'Bin code already exists',
+  BIN_GET_SUCCESS: 'Bin retrieved successfully',
+  BIN_GET_FAILED: 'Bin retrieved failed',
 
   // Stock
   STOCK_LEVEL_SUCCESS: 'Stock level retrieved successfully',
@@ -102,6 +121,7 @@ export const SERVER_MESSAGE = {
   NOT_FOUND: 'Not Found',
   UNSUPPORTED_OPERATION: 'Unsupported Operation',
   UPDATED_NOT_IMPLEMENTED: 'Update method is not implemented',
+  DELETED_NOT_IMPLEMENTED: 'Delete method is not implemented',
   BAD_REQUEST: 'Bad Request',
   UNAUTHORIZED: 'Unauthorized',
 };
