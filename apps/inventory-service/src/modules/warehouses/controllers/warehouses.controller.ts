@@ -124,20 +124,38 @@ export class WarehousesController {
     }
   }
 
-  @GrpcMethod(GRPC_SERVICES.WAREHOUSE, WAREHOUSE_METHODS.DELETE_WAREHOUSE)
-  async deleteWarehouse(data: {
+  @GrpcMethod(GRPC_SERVICES.WAREHOUSE, WAREHOUSE_METHODS.INACTIVATE_WAREHOUSE)
+  async inactiveWarehouse(data: {
     id: string;
-  }): Promise<ReturnType<typeof grpcResponse<null>>> {
+  }): Promise<ReturnType<typeof grpcResponse<WareHouse>>> {
     try {
-      await this.baseHandler.deleteLogic(data.id);
-      return grpcResponse(null, WAREHOUSE_MESSAGES.WAREHOUSE_DELETED);
+      const result = await this.warehousesService.inactivate(data.id);
+      return grpcResponse(result, WAREHOUSE_MESSAGES.WAREHOUSE_INACTIVATE);
     } catch (error) {
       if (error instanceof RpcException) {
         throw error;
       }
       const err = error as Error;
       throw new RpcException(
-        err?.message || WAREHOUSE_MESSAGES.WAREHOUSE_DELETED_FAILED,
+        err?.message || WAREHOUSE_MESSAGES.WAREHOUSE_INACTIVATE_FAILED,
+      );
+    }
+  }
+
+  @GrpcMethod(GRPC_SERVICES.WAREHOUSE, WAREHOUSE_METHODS.ACTIVATE_WAREHOUSE)
+  async activateWarehouse(data: {
+    id: string;
+  }): Promise<ReturnType<typeof grpcResponse<WareHouse>>> {
+    try {
+      const result = await this.warehousesService.activate(data.id);
+      return grpcResponse(result, WAREHOUSE_MESSAGES.WAREHOUSE_ACTIVATE);
+    } catch (error) {
+      if (error instanceof RpcException) {
+        throw error;
+      }
+      const err = error as Error;
+      throw new RpcException(
+        err?.message || WAREHOUSE_MESSAGES.WAREHOUSE_ACTIVATE_FAILED,
       );
     }
   }
