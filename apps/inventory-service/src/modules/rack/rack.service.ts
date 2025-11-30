@@ -9,7 +9,7 @@ import {
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
-export class RacksService extends BaseService<
+export class RackService extends BaseService<
   Rack,
   CreateRackDto,
   UpdateRackDto

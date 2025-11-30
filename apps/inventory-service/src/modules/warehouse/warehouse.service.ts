@@ -10,7 +10,7 @@ import {
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
-export class WarehousesService extends BaseService<
+export class WarehouseService extends BaseService<
   WareHouse,
   CreateWarehouseDto,
   UpdateWarehouseDto

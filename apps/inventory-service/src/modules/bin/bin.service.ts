@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 
 @Injectable()
-export class BinsService extends BaseService<Bin, CreateBinDto, UpdateBinDto> {
+export class BinService extends BaseService<Bin, CreateBinDto, UpdateBinDto> {
   constructor() {
     super(prismaInventory.bin);
   }

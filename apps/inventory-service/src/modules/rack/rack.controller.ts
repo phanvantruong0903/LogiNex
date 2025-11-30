@@ -1,108 +1,108 @@
 import { Controller } from '@nestjs/common';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
-import { BinsService } from '../services/bins.service';
+import { RackService } from './rack.service';
 import {
   GRPC_SERVICES,
   WAREHOUSE_MESSAGES,
-  CreateBinDto,
-  UpdateBinDto,
+  CreateRackDto,
+  UpdateRackDto,
   grpcResponse,
   grpcPaginateResponse,
   WAREHOUSE_METHODS,
   BaseGrpcHandler,
-  Bin,
+  Rack,
   buildSearchFilter,
 } from '@loginex/common';
 
 @Controller()
-export class BinsController {
+export class RackController {
   private readonly baseHandler: BaseGrpcHandler<
-    Bin,
-    CreateBinDto,
-    UpdateBinDto
+    Rack,
+    CreateRackDto,
+    UpdateRackDto
   >;
-  constructor(private readonly binsService: BinsService) {
+  constructor(private readonly rackService: RackService) {
     this.baseHandler = new BaseGrpcHandler(
-      this.binsService,
-      CreateBinDto,
-      UpdateBinDto,
+      this.rackService,
+      CreateRackDto,
+      UpdateRackDto,
     );
   }
 
-  @GrpcMethod(GRPC_SERVICES.WAREHOUSE, WAREHOUSE_METHODS.CREATE_BIN)
-  async createBin(
-    data: CreateBinDto,
-  ): Promise<ReturnType<typeof grpcResponse<Bin>>> {
+  @GrpcMethod(GRPC_SERVICES.RACK, WAREHOUSE_METHODS.CREATE_RACK)
+  async createRack(
+    data: CreateRackDto,
+  ): Promise<ReturnType<typeof grpcResponse<Rack>>> {
     try {
       const result = await this.baseHandler.createLogic(data);
-      return grpcResponse(result, WAREHOUSE_MESSAGES.BIN_CREATED);
+      return grpcResponse(result, WAREHOUSE_MESSAGES.RACK_CREATED);
     } catch (error) {
       if (error instanceof RpcException) {
         throw error;
       }
       const err = error as Error;
       throw new RpcException(
-        err?.message || WAREHOUSE_MESSAGES.BIN_CREATED_FAILED,
+        err?.message || WAREHOUSE_MESSAGES.RACK_CREATED_FAILED,
       );
     }
   }
 
-  @GrpcMethod(GRPC_SERVICES.WAREHOUSE, WAREHOUSE_METHODS.UPDATE_BIN)
-  async updateBin(
-    data: UpdateBinDto & { id: string },
-  ): Promise<ReturnType<typeof grpcResponse<Bin>>> {
+  @GrpcMethod(GRPC_SERVICES.RACK, WAREHOUSE_METHODS.UPDATE_RACK)
+  async updateRack(
+    data: UpdateRackDto & { id: string },
+  ): Promise<ReturnType<typeof grpcResponse<Rack>>> {
     try {
       const { id, ...updateData } = data;
       const result = await this.baseHandler.updateLogic(id, updateData);
-      return grpcResponse(result, WAREHOUSE_MESSAGES.BIN_UPDATED);
+      return grpcResponse(result, WAREHOUSE_MESSAGES.RACK_UPDATED);
     } catch (error) {
       if (error instanceof RpcException) {
         throw error;
       }
       const err = error as Error;
       throw new RpcException(
-        err?.message || WAREHOUSE_MESSAGES.BIN_UPDATED_FAILED,
+        err?.message || WAREHOUSE_MESSAGES.RACK_UPDATED_FAILED,
       );
     }
   }
 
-  @GrpcMethod(GRPC_SERVICES.WAREHOUSE, WAREHOUSE_METHODS.DELETE_BIN)
-  async deleteBin(data: {
+  @GrpcMethod(GRPC_SERVICES.RACK, WAREHOUSE_METHODS.DELETE_RACK)
+  async deleteRack(data: {
     id: string;
   }): Promise<ReturnType<typeof grpcResponse<null>>> {
     try {
       await this.baseHandler.deleteLogic(data.id);
-      return grpcResponse(null, WAREHOUSE_MESSAGES.BIN_DELETED);
+      return grpcResponse(null, WAREHOUSE_MESSAGES.RACK_DELETED);
     } catch (error) {
       if (error instanceof RpcException) {
         throw error;
       }
       const err = error as Error;
       throw new RpcException(
-        err?.message || WAREHOUSE_MESSAGES.BIN_DELETED_FAILED,
+        err?.message || WAREHOUSE_MESSAGES.RACK_DELETED_FAILED,
       );
     }
   }
 
-  @GrpcMethod(GRPC_SERVICES.WAREHOUSE, WAREHOUSE_METHODS.LIST_BINS)
-  async listBins(data: {
-    rackId: string;
+  @GrpcMethod(GRPC_SERVICES.RACK, WAREHOUSE_METHODS.LIST_RACKS)
+  async listRacks(data: {
+    zoneId: string;
     page: number;
     limit: number;
     search?: string;
-  }): Promise<ReturnType<typeof grpcPaginateResponse<Bin>>> {
+  }): Promise<ReturnType<typeof grpcPaginateResponse<Rack>>> {
     try {
       const searchFields = ['code'];
       const searchFilter = buildSearchFilter(data.search, searchFields);
 
-      const { data: bins, ...meta } = await this.baseHandler.getAllLogic(
+      const { data: racks, ...meta } = await this.baseHandler.getAllLogic(
         data.page,
         data.limit,
-        { rackId: data.rackId, ...searchFilter },
+        { zoneId: data.zoneId, ...searchFilter },
       );
       return grpcPaginateResponse(
-        { data: bins, ...meta },
-        WAREHOUSE_MESSAGES.BIN_LIST_SUCCESS,
+        { data: racks, ...meta },
+        WAREHOUSE_MESSAGES.RACK_LIST_SUCCESS,
       );
     } catch (error) {
       if (error instanceof RpcException) {
@@ -110,7 +110,7 @@ export class BinsController {
       }
       const err = error as Error;
       throw new RpcException(
-        err?.message || WAREHOUSE_MESSAGES.BIN_LIST_FAILED,
+        err?.message || WAREHOUSE_MESSAGES.RACK_LIST_FAILED,
       );
     }
   }

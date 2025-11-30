@@ -1,107 +1,108 @@
 import { Controller } from '@nestjs/common';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
-import { ZonesService } from '../services/zones.service';
+import { BinService } from './bin.service';
 import {
   GRPC_SERVICES,
   WAREHOUSE_MESSAGES,
-  CreateZoneDto,
-  UpdateZoneDto,
+  CreateBinDto,
+  UpdateBinDto,
   grpcResponse,
   grpcPaginateResponse,
   WAREHOUSE_METHODS,
   BaseGrpcHandler,
-  Zone,
+  Bin,
   buildSearchFilter,
 } from '@loginex/common';
 
 @Controller()
-export class ZonesController {
+export class BinController {
   private readonly baseHandler: BaseGrpcHandler<
-    Zone,
-    CreateZoneDto,
-    UpdateZoneDto
+    Bin,
+    CreateBinDto,
+    UpdateBinDto
   >;
-  constructor(private readonly zonesService: ZonesService) {
+  constructor(private readonly binService: BinService) {
     this.baseHandler = new BaseGrpcHandler(
-      this.zonesService,
-      CreateZoneDto,
-      UpdateZoneDto,
+      this.binService,
+      CreateBinDto,
+      UpdateBinDto,
     );
   }
-  @GrpcMethod(GRPC_SERVICES.WAREHOUSE, WAREHOUSE_METHODS.CREATE_ZONE)
-  async createZone(
-    data: CreateZoneDto,
-  ): Promise<ReturnType<typeof grpcResponse<Zone>>> {
+
+  @GrpcMethod(GRPC_SERVICES.BIN, WAREHOUSE_METHODS.CREATE_BIN)
+  async createBin(
+    data: CreateBinDto,
+  ): Promise<ReturnType<typeof grpcResponse<Bin>>> {
     try {
       const result = await this.baseHandler.createLogic(data);
-      return grpcResponse(result, WAREHOUSE_MESSAGES.ZONE_CREATED);
+      return grpcResponse(result, WAREHOUSE_MESSAGES.BIN_CREATED);
     } catch (error) {
       if (error instanceof RpcException) {
         throw error;
       }
       const err = error as Error;
       throw new RpcException(
-        err?.message || WAREHOUSE_MESSAGES.ZONE_CREATED_FAILED,
+        err?.message || WAREHOUSE_MESSAGES.BIN_CREATED_FAILED,
       );
     }
   }
 
-  @GrpcMethod(GRPC_SERVICES.WAREHOUSE, WAREHOUSE_METHODS.UPDATE_ZONE)
-  async updateZone(
-    data: UpdateZoneDto & { id: string },
-  ): Promise<ReturnType<typeof grpcResponse<Zone>>> {
+  @GrpcMethod(GRPC_SERVICES.BIN, WAREHOUSE_METHODS.UPDATE_BIN)
+  async updateBin(
+    data: UpdateBinDto & { id: string },
+  ): Promise<ReturnType<typeof grpcResponse<Bin>>> {
     try {
       const { id, ...updateData } = data;
       const result = await this.baseHandler.updateLogic(id, updateData);
-      return grpcResponse(result, WAREHOUSE_MESSAGES.ZONE_UPDATED);
+      return grpcResponse(result, WAREHOUSE_MESSAGES.BIN_UPDATED);
     } catch (error) {
       if (error instanceof RpcException) {
         throw error;
       }
       const err = error as Error;
       throw new RpcException(
-        err?.message || WAREHOUSE_MESSAGES.ZONE_UPDATED_FAILED,
+        err?.message || WAREHOUSE_MESSAGES.BIN_UPDATED_FAILED,
       );
     }
   }
 
-  @GrpcMethod(GRPC_SERVICES.WAREHOUSE, WAREHOUSE_METHODS.DELETE_ZONE)
-  async deleteZone(data: {
+  @GrpcMethod(GRPC_SERVICES.BIN, WAREHOUSE_METHODS.DELETE_BIN)
+  async deleteBin(data: {
     id: string;
   }): Promise<ReturnType<typeof grpcResponse<null>>> {
     try {
       await this.baseHandler.deleteLogic(data.id);
-      return grpcResponse(null, WAREHOUSE_MESSAGES.ZONE_DELETED);
+      return grpcResponse(null, WAREHOUSE_MESSAGES.BIN_DELETED);
     } catch (error) {
       if (error instanceof RpcException) {
         throw error;
       }
       const err = error as Error;
       throw new RpcException(
-        err?.message || WAREHOUSE_MESSAGES.ZONE_DELETED_FAILED,
+        err?.message || WAREHOUSE_MESSAGES.BIN_DELETED_FAILED,
       );
     }
   }
 
-  @GrpcMethod(GRPC_SERVICES.WAREHOUSE, WAREHOUSE_METHODS.LIST_ZONES)
-  async listZones(data: {
-    wareHouseId: string;
+  @GrpcMethod(GRPC_SERVICES.BIN, WAREHOUSE_METHODS.LIST_BINS)
+  async listBins(data: {
+    rackId: string;
     page: number;
     limit: number;
     search?: string;
-  }): Promise<ReturnType<typeof grpcPaginateResponse<Zone>>> {
+  }): Promise<ReturnType<typeof grpcPaginateResponse<Bin>>> {
     try {
-      const searchFields = ['name'];
+      const searchFields = ['code'];
       const searchFilter = buildSearchFilter(data.search, searchFields);
 
-      const { data: zones, ...meta } = await this.baseHandler.getAllLogic(
+      const { data: bins, ...meta } = await this.baseHandler.getAllLogic(
         data.page,
         data.limit,
-        { wareHouseId: data.wareHouseId, ...searchFilter },
+        { rackId: data.rackId, ...searchFilter },
       );
       return grpcPaginateResponse(
-        { data: zones, ...meta },
-        WAREHOUSE_MESSAGES.ZONE_LIST_SUCCESS,
+        { data: bins, ...meta },
+        WAREHOUSE_MESSAGES.BIN_LIST_SUCCESS,
       );
     } catch (error) {
       if (error instanceof RpcException) {
@@ -109,7 +110,7 @@ export class ZonesController {
       }
       const err = error as Error;
       throw new RpcException(
-        err?.message || WAREHOUSE_MESSAGES.ZONE_LIST_FAILED,
+        err?.message || WAREHOUSE_MESSAGES.BIN_LIST_FAILED,
       );
     }
   }

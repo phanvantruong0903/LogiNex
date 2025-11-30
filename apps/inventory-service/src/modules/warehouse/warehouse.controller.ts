@@ -1,11 +1,6 @@
-import { Controller, Logger } from '@nestjs/common';
-import {
-  GrpcMethod,
-  RpcException,
-  EventPattern,
-  Payload,
-} from '@nestjs/microservices';
-import { WarehousesService } from '../services/warehouses.service';
+import { Controller } from '@nestjs/common';
+import { GrpcMethod, RpcException } from '@nestjs/microservices';
+import { WarehouseService } from './warehouse.service';
 import {
   GRPC_SERVICES,
   WAREHOUSE_MESSAGES,
@@ -20,22 +15,21 @@ import {
 } from '@loginex/common';
 
 @Controller()
-export class WarehousesController {
+export class WarehouseController {
   private readonly baseHandler: BaseGrpcHandler<
     WareHouse,
     CreateWarehouseDto,
     UpdateWarehouseDto
   >;
 
-  constructor(private readonly warehousesService: WarehousesService) {
+  constructor(private readonly warehouseService: WarehouseService) {
     this.baseHandler = new BaseGrpcHandler(
-      this.warehousesService,
+      this.warehouseService,
       CreateWarehouseDto,
       UpdateWarehouseDto,
     );
   }
 
-  // Warehouse
   @GrpcMethod(GRPC_SERVICES.WAREHOUSE, WAREHOUSE_METHODS.CREATE_WAREHOUSE)
   async createWarehouse(
     data: CreateWarehouseDto,
@@ -129,7 +123,7 @@ export class WarehousesController {
     id: string;
   }): Promise<ReturnType<typeof grpcResponse<WareHouse>>> {
     try {
-      const result = await this.warehousesService.inactivate(data.id);
+      const result = await this.warehouseService.inactivate(data.id);
       return grpcResponse(result, WAREHOUSE_MESSAGES.WAREHOUSE_INACTIVATE);
     } catch (error) {
       if (error instanceof RpcException) {
@@ -147,7 +141,7 @@ export class WarehousesController {
     id: string;
   }): Promise<ReturnType<typeof grpcResponse<WareHouse>>> {
     try {
-      const result = await this.warehousesService.activate(data.id);
+      const result = await this.warehouseService.activate(data.id);
       return grpcResponse(result, WAREHOUSE_MESSAGES.WAREHOUSE_ACTIVATE);
     } catch (error) {
       if (error instanceof RpcException) {
@@ -158,21 +152,5 @@ export class WarehousesController {
         err?.message || WAREHOUSE_MESSAGES.WAREHOUSE_ACTIVATE_FAILED,
       );
     }
-  }
-
-  @EventPattern('inbound.completed')
-  async handleInboundCompleted(@Payload() data: any) {
-    Logger.log('Inbound completed event received', 'InventoryController');
-    // TODO: Implement logic to increase stock based on inbound data
-    // This likely involves mapping the inbound items to AdjustStockDto and calling adjustStock
-    // For now, we just log it as the payload structure is not fully defined
-    console.log(data);
-  }
-
-  @EventPattern('outbound.completed')
-  async handleOutboundCompleted(@Payload() data: any) {
-    Logger.log('Outbound completed event received', 'InventoryController');
-    // TODO: Implement logic to decrease stock based on outbound data
-    console.log(data);
   }
 }

@@ -47,24 +47,25 @@ export class AuthService
 
   async validateUser(data: LoginUserDto): Promise<TokenPayload> {
     try {
-      const findUser = await prismaAuth.user.findUnique({
+      const findUserPromise = prismaAuth.user.findUnique({
         where: { email: data.email },
         select: {
           id: true,
           password: true,
         },
       });
+
+      const findUser = await findUserPromise;
       if (!findUser) {
         throwGrpcError(SERVER_MESSAGE.NOT_FOUND, [USER_MESSAGES.NOT_FOUND]);
       }
 
-      const isMatchPassword = bcrypt.compare(data.password, findUser.password);
-
-      const profile = this.getUserProfile(findUser.id);
+      const isMatchPromise = bcrypt.compare(data.password, findUser.password);
+      const profilePromise = this.getUserProfile(findUser.id);
 
       const [isMatch, userProfile] = await Promise.all([
-        isMatchPassword,
-        profile,
+        isMatchPromise,
+        profilePromise,
       ]);
 
       if (!isMatch) {

@@ -2,6 +2,10 @@ export const GRPC_SERVICES = {
   AUTH: 'AuthService',
   USER: 'UserService',
   WAREHOUSE: 'WarehouseService',
+  ZONE: 'ZoneService',
+  RACK: 'RackService',
+  BIN: 'BinService',
+  STOCK: 'StockService',
   PRODUCT: 'ProductService',
 } as const;
 

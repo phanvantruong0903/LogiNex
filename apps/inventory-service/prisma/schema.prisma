@@ -54,7 +54,7 @@ model WareHouse {
 enum WarehouseStatus {
   ACTIVE
   INACTIVE
-}
+} 
 
 model Zone {
   id          String   @id @default(uuid())

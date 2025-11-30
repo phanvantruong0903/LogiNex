@@ -6,7 +6,7 @@ dotenv.config();
 
 @Injectable()
 export class ConsulService {
-  private consul: any;
+  private readonly consul: any;
 
   constructor() {
     this.consul = new Consul({
