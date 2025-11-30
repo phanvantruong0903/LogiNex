@@ -4,7 +4,6 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import {
   Role,
   GRAPHQL_NAME_WAREHOUSE,
-  CreateWarehouseDto,
   CreateWareHouseInput,
   WarehouseResponse,
   UpdateWareHouseInput,
@@ -25,7 +24,7 @@ export class WarehouseResolver {
   @Roles(Role.ADMIN)
   async createWarehouse(
     @Args('body', { type: () => CreateWareHouseInput })
-    body: CreateWarehouseDto,
+    body: CreateWareHouseInput,
   ): Promise<WarehouseResponse> {
     return this.warehouseService.createWarehouse(body);
   }

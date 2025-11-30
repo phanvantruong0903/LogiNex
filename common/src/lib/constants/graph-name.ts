@@ -27,3 +27,29 @@ export const GRAPHQL_NAME_WAREHOUSE = {
   INACTIVATE: 'InactivateWarehouse',
   ACTIVATE: 'ActivateWarehouse',
 };
+
+export const GRAPHQL_NAME_ZONE = {
+  GET_ALL: 'Zones',
+  GET_ONE: 'Zone',
+  CREATE: 'CreateZone',
+  UPDATE: 'UpdateZone',
+  CHANGE_STATUS: 'ChangeZoneStatus',
+  DELETE: 'DeleteZone',
+  INACTIVATE: 'InactivateZone',
+  ACTIVATE: 'ActivateZone',
+};
+
+export const GRAPHQL_NAME_RACK = {
+  GET_ALL: 'Racks',
+  CREATE: 'CreateRack',
+  UPDATE: 'UpdateRack',
+  DELETE: 'DeleteRack',
+};
+
+export const GRAPHQL_NAME_BIN = {
+  GET_ALL: 'Bins',
+  GET_ONE: 'Bin',
+  CREATE: 'CreateBin',
+  UPDATE: 'UpdateBin',
+  DELETE: 'DeleteBin',
+};
