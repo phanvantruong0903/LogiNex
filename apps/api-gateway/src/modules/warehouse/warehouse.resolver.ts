@@ -10,7 +10,6 @@ import {
   GetWarehouseInput,
   WarehouseListResponse,
 } from '@loginex/common';
-import './graphql/enum';
 import { RoleGuard } from '../auth/role.guard';
 import { Roles } from '../auth/role.decorator';
 import { WarehouseService } from './warehouse.service';

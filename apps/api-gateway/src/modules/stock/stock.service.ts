@@ -5,6 +5,7 @@ import {
   GetStockInput,
   UpdateStockInput,
   StockLevelResponse,
+  GRPC_PACKAGE,
 } from '@loginex/common';
 import { Observable, lastValueFrom } from 'rxjs';
 
@@ -18,7 +19,7 @@ export class StockService implements OnModuleInit {
   private stockService!: StockServiceClient;
 
   constructor(
-    @Inject(GRPC_SERVICES.STOCK) private readonly client: ClientGrpc,
+    @Inject(GRPC_PACKAGE.INVENTORY) private readonly client: ClientGrpc,
   ) {}
 
   onModuleInit() {

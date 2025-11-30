@@ -17,8 +17,6 @@ import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/role.decorator';
 import { RoleGuard } from '../auth/role.guard';
-
-import './graphql/enum';
 import { UserService } from './user.service';
 
 @Resolver()

@@ -10,7 +10,6 @@ import {
   RackListResponse,
   GetRackInput,
 } from '@loginex/common';
-import '../zone/graphql/enum';
 import { RoleGuard } from '../auth/role.guard';
 import { Roles } from '../auth/role.decorator';
 import { RackService } from './rack.service';
