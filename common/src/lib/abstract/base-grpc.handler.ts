@@ -113,7 +113,7 @@ export class BaseGrpcHandler<
   }
 
   async deleteLogic(id: string): Promise<T> {
-    // Check if the delete method is imp  lemented in the service
+    // Check if the delete method is implemented in the service
     if (!this.service.remove) {
       throwGrpcError(SERVER_MESSAGE.UNSUPPORTED_OPERATION, [
         SERVER_MESSAGE.DELETED_NOT_IMPLEMENTED,

@@ -11,7 +11,8 @@ export const WAREHOUSE_METHODS = {
   UPDATE_WAREHOUSE: 'UpdateWarehouse',
   GET_WAREHOUSE: 'GetWarehouse',
   LIST_WAREHOUSES: 'ListWarehouses',
-  DELETE_WAREHOUSE: 'DeleteWarehouse',
+  INACTIVATE_WAREHOUSE: 'InactivateWarehouse',
+  ACTIVATE_WAREHOUSE: 'ActivateWarehouse',
 
   // Zone
   CREATE_ZONE: 'CreateZone',
