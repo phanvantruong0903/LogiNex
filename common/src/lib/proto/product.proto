@@ -7,6 +7,7 @@ service ProductService {
   rpc UpdateProduct(UpdateProductRequest) returns (UpdateProductResponse);
   rpc GetAllProducts(GetAllProductsRequest) returns (GetAllProductsResponse);
   rpc GetProductDetail(GetProductDetailRequest) returns (GetProductResponse);
+  rpc ChangeStatus(ChangeProductStatusRequest) returns (ChangeProductStatusResponse);
 }
 
 message Product {
@@ -20,8 +21,9 @@ message Product {
   bool isFragile = 8;
   bool hasBattery = 9;
   bool isHighValue = 10;
-  string createdAt = 11;
-  string updatedAt = 12;
+  string status = 11;
+  string createdAt = 12;
+  string updatedAt = 13;
 }
 
 message CreateProductRequest {
@@ -89,4 +91,16 @@ message GetAllProductsResponse {
   int32 limit = 6;
   int32 totalPages = 7;
   repeated string errors = 8;
+}
+
+message ChangeProductStatusRequest {
+  string id = 1;
+  string status = 2;
+}
+
+message ChangeProductStatusResponse {
+  bool success = 1;
+  string message = 2;
+  Product data = 3;
+  repeated string errors = 4;
 }

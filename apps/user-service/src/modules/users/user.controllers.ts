@@ -1,5 +1,10 @@
 import { Controller, UsePipes, ValidationPipe } from '@nestjs/common';
-import { GrpcMethod, RpcException } from '@nestjs/microservices';
+import {
+  EventPattern,
+  GrpcMethod,
+  Payload,
+  RpcException,
+} from '@nestjs/microservices';
 import {
   BaseGrpcHandler,
   CreateProfileDto,
@@ -13,6 +18,9 @@ import {
   Profile,
   grpcPaginateResponse,
   UserProfile,
+  KAFKA_TOPIC,
+  ChangeUserStatusDto,
+  SERVER_MESSAGE,
 } from '@loginex/common';
 import { UserService } from './user.services';
 
@@ -40,20 +48,7 @@ export class UserController {
     try {
       const { id, ...updateData } = data;
 
-      const findUser = await prismaUser.profile.findUnique({
-        where: { accountId: id },
-        select: {
-          id: true,
-        },
-      });
-      if (!findUser) {
-        throwGrpcError(USER_MESSAGES.NOT_FOUND, [USER_MESSAGES.NOT_FOUND]);
-      }
-
-      const result = await this.baseHandler.updateLogic(
-        findUser.id,
-        updateData,
-      );
+      const result = await this.baseHandler.updateLogic(id, updateData);
       return grpcResponse<UserProfile>(result, USER_MESSAGES.UPDATE_SUCCESS);
     } catch (error) {
       if (error instanceof RpcException) {
@@ -91,13 +86,13 @@ export class UserController {
     }
   }
 
-  @GrpcMethod(GRPC_SERVICES.USER, USER_METHODS.CREATE_PROFILE)
-  async createProfile(
-    data: CreateProfileDto,
-  ): Promise<ReturnType<typeof grpcResponse>> {
+  @EventPattern(KAFKA_TOPIC.USER_CREATED)
+  async createProfile(@Payload() data: any): Promise<Profile> {
     try {
-      const profile = await this.baseHandler.createLogic(data);
-      return grpcResponse<UserProfile>(profile, USER_MESSAGES.CREATE_SCUCCESS);
+      const profileData = data.value || data;
+      const profile = await this.baseHandler.createLogic(profileData);
+
+      return profile;
     } catch (error) {
       if (error instanceof RpcException) {
         throw error;
@@ -122,6 +117,35 @@ export class UserController {
       }
       const err = error as Error;
       throw new RpcException(err?.message || USER_MESSAGES.GET_ALL_FAILED);
+    }
+  }
+
+  @GrpcMethod(GRPC_SERVICES.USER, USER_METHODS.CHANGE_STATUS)
+  async changeStatus(
+    data: ChangeUserStatusDto,
+  ): Promise<ReturnType<typeof grpcResponse>> {
+    try {
+      const { accountId, ...updatedData } = data;
+      const profile = await prismaUser.profile.update({
+        where: { accountId },
+        data: updatedData,
+      });
+      return grpcResponse(profile, USER_MESSAGES.UPDATE_SUCCESS);
+    } catch (error: unknown) {
+      if (error instanceof RpcException) {
+        throw error;
+      }
+
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        'code' in error &&
+        error.code === 'P2025'
+      ) {
+        throwGrpcError(SERVER_MESSAGE.NOT_FOUND, [USER_MESSAGES.NOT_FOUND]);
+      }
+      const err = error as Error;
+      throw new RpcException(err?.message);
     }
   }
 }

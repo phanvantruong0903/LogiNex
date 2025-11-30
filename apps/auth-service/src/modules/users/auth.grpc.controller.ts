@@ -1,5 +1,5 @@
-import { Controller, UsePipes, ValidationPipe } from '@nestjs/common';
-import { GrpcMethod, RpcException } from '@nestjs/microservices';
+import { Controller, Inject, UsePipes, ValidationPipe } from '@nestjs/common';
+import { ClientKafka, GrpcMethod, RpcException } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
 import {
   BaseGrpcHandler,
@@ -13,9 +13,10 @@ import {
   CreateProfileDto,
   LoginUserDto,
   CreateUserDto,
-  prismaAuth,
   User,
   ChangePasswordDto,
+  KAFKA_SERVICE,
+  KAFKA_TOPIC,
 } from '@loginex/common';
 import * as bcrypt from 'bcrypt';
 
@@ -24,7 +25,11 @@ import * as bcrypt from 'bcrypt';
 export class AuthGrpcController {
   private readonly baseHandler: BaseGrpcHandler<User, UserDto, never>;
 
-  constructor(private readonly authService: AuthService) {
+  constructor(
+    @Inject(KAFKA_SERVICE.AUTH_SERVICE)
+    private readonly kafkaClient: ClientKafka,
+    private readonly authService: AuthService,
+  ) {
     this.baseHandler = new BaseGrpcHandler(this.authService, UserDto);
   }
 
@@ -51,20 +56,14 @@ export class AuthGrpcController {
         accountId: user.id,
         role: data.role,
       };
-      await this.createProfile(profileData);
+
+      this.kafkaClient.emit(KAFKA_TOPIC.USER_CREATED, {
+        key: user.id,
+        value: profileData,
+      });
 
       return grpcResponse(user, USER_MESSAGES.CREATE_SCUCCESS);
     } catch (error) {
-      // Rollback User Account Creation
-      if (user) {
-        try {
-          await prismaAuth.user.delete({ where: { id: user.id } });
-        } catch (rollbackError) {
-          const error = rollbackError as Error;
-          throwGrpcError(error.message, [error.message]);
-        }
-      }
-
       if (error instanceof RpcException) {
         throw error;
       }
@@ -104,19 +103,6 @@ export class AuthGrpcController {
 
     const result = await this.authService.refreshToken(refreshToken);
     return grpcResponse(result, USER_MESSAGES.REFRESH_TOKEN_SUCCESSFULLY);
-  }
-
-  async createProfile(data: CreateProfileDto) {
-    try {
-      const profile = await this.authService.createProfile(data);
-      return profile;
-    } catch (error) {
-      if (error instanceof RpcException) {
-        throw error;
-      }
-      const err = error as Error;
-      throw new RpcException(err?.message);
-    }
   }
 
   @GrpcMethod(GRPC_SERVICES.AUTH, USER_METHODS.CHANGE_PASSWORD)

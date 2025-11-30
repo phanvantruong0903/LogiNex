@@ -22,6 +22,7 @@ model Profile {
   YOB       Int
   role      Role             @default(USER)
   verify    UserVerifyStatus @default(Unverified)
+  status    UserStatus       @default(Active)
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
 
@@ -38,4 +39,9 @@ enum Role {
   USER
   ADMIN
   STAFF
+}
+
+enum UserStatus {
+  Active
+  Inactive
 }

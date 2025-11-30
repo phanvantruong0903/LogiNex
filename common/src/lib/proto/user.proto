@@ -9,6 +9,7 @@ message User {
   int32 YOB = 4;
   string verify = 5;
   string role = 6;
+  string status = 7;
 }
 
 
@@ -45,28 +46,19 @@ message UsersResponse {
   int32 totalPages = 7;
 }
 
-message CreateProfileRequest {
-  string name = 1;
-  string accountId = 2;
-  int32 YOB = 3;
-  string role = 4;
-}
-
-message CreateProfileResponse {
-  bool success = 1;
-  string message = 2;
-  User data = 3;
-  repeated string errors = 4;
-}
-
 message GetAllUserRequest {
   int32 page = 1;
   int32 limit = 2;
 }
 
+message ChangeStatusRequest {
+  string accountId = 1;
+  string status = 2;
+}
+
 service UserService {
   rpc GetUser(GetUserRequest) returns (UserDetailResponse);
   rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
-  rpc CreateProfile(CreateProfileRequest) returns (CreateProfileResponse);
   rpc GetAllUsers(GetAllUserRequest) returns (UsersResponse);
+  rpc ChangeStatus(ChangeStatusRequest) returns (UpdateUserResponse);
 }

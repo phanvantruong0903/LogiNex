@@ -25,6 +25,7 @@ export const USER_MESSAGES = {
   INVALID_PASSWORD: 'Invalid Password',
   CHANGE_PASSWORD_SUCCESS: 'Change password successfully',
   PASSWORD_SAME: 'Password same',
+  USER_STATUS_INVALID: 'User status invalid',
 };
 
 export const PRODUCT_MESSAGES = {
@@ -50,6 +51,8 @@ export const PRODUCT_MESSAGES = {
   WEIGHT_MUST_BE_NUMBER: 'Weight must be a number',
   VOLUMN_MUST_BE_NUMBER: 'Volume must be a number',
   GET_DETAIL_FAIL: 'Product details retrieved failed',
+  CHANGE_STATUS_SUCCESS: 'Product status changed successfully',
+  CHANGE_STATUS_FAIL: 'Product status changed failed',
 };
 
 export const WAREHOUSE_MESSAGES = {

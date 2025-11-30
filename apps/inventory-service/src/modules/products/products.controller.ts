@@ -10,6 +10,10 @@ import {
   grpcResponse,
   grpcPaginateResponse,
   buildSearchFilter,
+  ChangeProductStatusDto,
+  prismaInventory,
+  InventoryPrisma,
+  SERVER_MESSAGE,
 } from '@loginex/common';
 import { Controller, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ProductsService } from './products.service';
@@ -109,7 +113,11 @@ export class ProductsController {
   @GrpcMethod(GRPC_SERVICES.PRODUCT, PRODUCT_METHODS.GET_DETAIL)
   async getProductDetail({ id }: { id: string }) {
     try {
-      const result = await this.baseHandler.getOneById(id);
+      const result = await prismaInventory.product.findUnique({
+        where: {
+          id,
+        },
+      });
       if (!result) {
         throwGrpcError(PRODUCT_MESSAGES.NOT_FOUND, [
           PRODUCT_MESSAGES.NOT_FOUND,
@@ -123,6 +131,40 @@ export class ProductsController {
       }
       const err = error as Error;
       throw new RpcException(err?.message || PRODUCT_MESSAGES.GET_DETAIL_FAIL);
+    }
+  }
+
+  @GrpcMethod(GRPC_SERVICES.PRODUCT, PRODUCT_METHODS.CHANGE_STATUS)
+  async changeStatus(data: ChangeProductStatusDto) {
+    try {
+      const { id, ...updatedData } = data;
+      const result = await prismaInventory.product.update({
+        where: {
+          id,
+        },
+        data: updatedData,
+      });
+      return grpcResponse<Product>(
+        result,
+        PRODUCT_MESSAGES.CHANGE_STATUS_SUCCESS,
+      );
+    } catch (error) {
+      if (error instanceof RpcException) {
+        throw error;
+      }
+
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        'code' in error &&
+        error.code === 'P2025'
+      ) {
+        throwGrpcError(SERVER_MESSAGE.NOT_FOUND, [PRODUCT_MESSAGES.NOT_FOUND]);
+      }
+      const err = error as Error;
+      throw new RpcException(
+        err?.message || PRODUCT_MESSAGES.CHANGE_STATUS_FAIL,
+      );
     }
   }
 }

@@ -1,5 +1,5 @@
 import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { ZoneType } from './CreateZoneDto';
+import { ZoneType } from '../../../prisma/index';
 
 export class UpdateZoneDto {
   @IsString()

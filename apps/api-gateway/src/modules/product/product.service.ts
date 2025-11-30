@@ -8,6 +8,7 @@ import {
   ProductResponse,
   ProductListResponse,
   UpdateProductInput,
+  ChangeProductStatusInput,
 } from '@loginex/common';
 
 interface ProductServiceClient {
@@ -21,6 +22,7 @@ interface ProductServiceClient {
     data: { id: string } & UpdateProductInput,
   ): Observable<ProductResponse>;
   CreateProduct(data: CreateProductInput): Observable<ProductResponse>;
+  ChangeStatus(data: ChangeProductStatusInput): Observable<ProductResponse>;
 }
 
 @Injectable()
@@ -46,12 +48,16 @@ export class ProductService implements OnModuleInit {
   }
 
   async updateProduct(id: string, data: UpdateProductInput) {
-    return await lastValueFrom(
+    return await firstValueFrom(
       this.productService.UpdateProduct({ id, ...data }),
     );
   }
 
   async createProduct(data: CreateProductInput) {
     return await firstValueFrom(this.productService.CreateProduct(data));
+  }
+
+  async changeStatusProduct(data: ChangeProductStatusInput) {
+    return await firstValueFrom(this.productService.ChangeStatus(data));
   }
 }

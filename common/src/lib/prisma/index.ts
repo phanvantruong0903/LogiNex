@@ -44,5 +44,9 @@ export type Rack = InventoryPrismaInternal.Rack;
 export type WareHouse = InventoryPrismaInternal.WareHouse;
 export type Zone = InventoryPrismaInternal.Zone;
 export type Bin = InventoryPrismaInternal.Bin;
-export { Role, UserVerifyStatus } from './user/generated';
-export { ZoneType, WarehouseStatus } from './inventory/generated';
+export { Role, UserVerifyStatus, UserStatus } from './user/generated';
+export {
+  ZoneType,
+  ProductStatus,
+  WarehouseStatus,
+} from './inventory/generated';

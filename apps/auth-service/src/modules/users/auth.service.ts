@@ -11,12 +11,11 @@ import {
   UserResponse,
   throwGrpcError,
   CreateUserDto,
-  CreateProfileDto,
   LoginUserDto,
   prismaAuth,
   User,
   ChangePasswordDto,
-  Role,
+  UserStatus,
 } from '@loginex/common';
 import * as bcrypt from 'bcrypt';
 import { RpcException } from '@nestjs/microservices';
@@ -24,12 +23,6 @@ import type { ClientGrpc } from '@nestjs/microservices';
 import { firstValueFrom, Observable } from 'rxjs';
 
 interface UserServiceClient {
-  CreateProfile(data: {
-    name: string;
-    YOB: number;
-    accountId: string;
-    role: Role;
-  }): Observable<UserResponse>;
   GetUser(data: { id: string }): Observable<UserResponse>;
 }
 @Injectable()
@@ -82,6 +75,12 @@ export class AuthService
 
       const userData = userProfile.data as UserProfile;
 
+      if (userData.status !== UserStatus.Active) {
+        throwGrpcError(USER_MESSAGES.USER_STATUS_INVALID, [
+          USER_MESSAGES.USER_STATUS_INVALID,
+        ]);
+      }
+
       return {
         user_id: userData.accountId,
         verify: userData.verify,
@@ -94,10 +93,6 @@ export class AuthService
       const err = error as Error;
       throwGrpcError(SERVER_MESSAGE.INTERNAL_SERVER, [err?.message]);
     }
-  }
-
-  async createUserProfile(payload: CreateProfileDto) {
-    return await firstValueFrom(this.userService.CreateProfile(payload));
   }
 
   async getUserById(id: string) {
@@ -165,25 +160,6 @@ export class AuthService
 
   async verifyToken(token: string) {
     return this.jwtService.verifyToken(token);
-  }
-
-  async createProfile(data: CreateProfileDto) {
-    try {
-      const profile = await this.createUserProfile({
-        name: data.name,
-        accountId: data.accountId,
-        YOB: data.YOB,
-        role: data.role,
-      });
-
-      return profile;
-    } catch (error) {
-      if (error instanceof RpcException) {
-        throw error;
-      }
-      const err = error as Error;
-      throwGrpcError(SERVER_MESSAGE.INTERNAL_SERVER, [err?.message]);
-    }
   }
 
   async getUserProfile(id: string): Promise<UserResponse> {

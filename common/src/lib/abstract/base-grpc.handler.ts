@@ -68,7 +68,18 @@ export class BaseGrpcHandler<
   }
 
   async getOneById(id: string): Promise<T | null> {
-    return await this.service.findOne(id);
+    try {
+      const result = await this.service.findOne(id);
+      return result;
+    } catch (error: any) {
+      if (error?.code === 'P2025') {
+        throwGrpcError(SERVER_MESSAGE.NOT_FOUND, [SERVER_MESSAGE.NOT_FOUND]);
+      }
+
+      throwGrpcError(SERVER_MESSAGE.DATABASE_ERROR, [
+        error.message ?? SERVER_MESSAGE.UNEXPECTED_ERROR,
+      ]);
+    }
   }
 
   async updateLogic(id: string, dto: UpdateDto): Promise<T> {

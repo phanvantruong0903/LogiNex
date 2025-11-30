@@ -6,6 +6,7 @@ export const GRAPHQL_NAME_USER = {
   LOGIN: 'LoginUser',
   REFRESH_TOKEN: 'RefreshToken',
   CHANGE_PASSWORD: 'ChangePassword',
+  CHANGE_STATUS: 'ChangeUserStatus',
 };
 
 export const GRAPHQL_NAME_PRODUCT = {
@@ -13,4 +14,5 @@ export const GRAPHQL_NAME_PRODUCT = {
   GET_ONE: 'Product',
   CREATE: 'CreateProduct',
   UPDATE: 'UpdateProduct',
+  CHANGE_STATUS: 'ChangeProductStatus',
 };

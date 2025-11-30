@@ -10,6 +10,7 @@ import {
   UserProfile,
   UserResponse,
   GetUsersInput,
+  ChangeUserStatusInput,
 } from '@loginex/common';
 
 import { CurrentUser } from '../auth/current-user.decorator';
@@ -17,6 +18,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/role.decorator';
 import { RoleGuard } from '../auth/role.guard';
 
+import './graphql/enum';
 import { UserService } from './user.service';
 
 @Resolver()
@@ -69,6 +71,14 @@ export class UserResolver {
   ): Promise<UserResponse> {
     const id = user?.accountId;
     return this.userService.updateUser(id, data);
+  }
+
+  @Mutation(() => UserResponse, { name: GRAPHQL_NAME_USER.CHANGE_STATUS })
+  @UseGuards(JwtAuthGuard)
+  async changeStatus(
+    @Args('data') data: ChangeUserStatusInput,
+  ): Promise<UserResponse> {
+    return this.userService.changeStatus(data);
   }
 
   @Query(() => String)

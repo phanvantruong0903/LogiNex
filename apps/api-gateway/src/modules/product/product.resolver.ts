@@ -10,7 +10,9 @@ import {
   GRAPHQL_NAME_PRODUCT,
   CreateProductInput,
   UpdateProductInput,
+  ChangeProductStatusInput,
 } from '@loginex/common';
+import './graphql/enum';
 import { RoleGuard } from '../auth/role.guard';
 import { Roles } from '../auth/role.decorator';
 
@@ -69,6 +71,15 @@ export class ProductResolver {
   @Roles(Role.ADMIN)
   async getProductDetail(@Args('id') id: string): Promise<ProductResponse> {
     return this.productService.getProductDetail(id);
+  }
+
+  @Mutation(() => ProductResponse, { name: GRAPHQL_NAME_PRODUCT.CHANGE_STATUS })
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
+  async changeStatus(
+    @Args('data') data: ChangeProductStatusInput,
+  ): Promise<ProductResponse> {
+    return this.productService.changeStatusProduct(data);
   }
 
   @Query(() => String)

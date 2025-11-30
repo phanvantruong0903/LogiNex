@@ -49,6 +49,7 @@ export const USER_METHODS = {
   REFRESH_TOKEN: 'RefreshToken',
   CHANGE_PASSWORD: 'ChangePassword',
   CREATE_PROFILE: 'CreateProfile',
+  CHANGE_STATUS: 'ChangeStatus',
 } as const;
 
 export const PRODUCT_METHODS = {
@@ -57,4 +58,5 @@ export const PRODUCT_METHODS = {
   UPDATE: 'UpdateProduct',
   GET_ALL: 'GetAllProducts',
   GET_DETAIL: 'GetProductDetail',
+  CHANGE_STATUS: 'ChangeStatus',
 } as const;
