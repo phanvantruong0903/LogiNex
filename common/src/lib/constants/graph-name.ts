@@ -16,3 +16,14 @@ export const GRAPHQL_NAME_PRODUCT = {
   UPDATE: 'UpdateProduct',
   CHANGE_STATUS: 'ChangeProductStatus',
 };
+
+export const GRAPHQL_NAME_WAREHOUSE = {
+  GET_ALL: 'Warehouses',
+  GET_ONE: 'Warehouse',
+  CREATE: 'CreateWarehouse',
+  UPDATE: 'UpdateWarehouse',
+  CHANGE_STATUS: 'ChangeWarehouseStatus',
+  DELETE: 'DeleteWarehouse',
+  INACTIVATE: 'InactivateWarehouse',
+  ACTIVATE: 'ActivateWarehouse',
+};

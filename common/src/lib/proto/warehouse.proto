@@ -20,17 +20,20 @@ message Warehouse {
   string location = 3;
   string createdAt = 4;
   string updatedAt = 5;
+  string status = 6;
 }
 
 message CreateWarehouseDto {
   string name = 1;
   string location = 2;
+  optional string status = 3;
 }
 
 message UpdateWarehouseDto {
   string id = 1;
   string name = 2;
   string location = 3;
+  optional string status = 4;
 }
 
 message GetWarehouseDto {

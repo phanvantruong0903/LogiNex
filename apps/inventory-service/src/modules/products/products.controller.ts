@@ -12,7 +12,6 @@ import {
   buildSearchFilter,
   ChangeProductStatusDto,
   prismaInventory,
-  InventoryPrisma,
   SERVER_MESSAGE,
 } from '@loginex/common';
 import { Controller, UsePipes, ValidationPipe } from '@nestjs/common';
@@ -111,7 +110,11 @@ export class ProductsController {
   }
 
   @GrpcMethod(GRPC_SERVICES.PRODUCT, PRODUCT_METHODS.GET_DETAIL)
-  async getProductDetail({ id }: { id: string }) {
+  async getProductDetail({
+    id,
+  }: {
+    id: string;
+  }): Promise<ReturnType<typeof grpcResponse<Product>>> {
     try {
       const result = await prismaInventory.product.findUnique({
         where: {
@@ -135,7 +138,9 @@ export class ProductsController {
   }
 
   @GrpcMethod(GRPC_SERVICES.PRODUCT, PRODUCT_METHODS.CHANGE_STATUS)
-  async changeStatus(data: ChangeProductStatusDto) {
+  async changeStatus(
+    data: ChangeProductStatusDto,
+  ): Promise<ReturnType<typeof grpcResponse<Product>>> {
     try {
       const { id, ...updatedData } = data;
       const result = await prismaInventory.product.update({

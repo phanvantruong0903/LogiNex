@@ -30,7 +30,7 @@ export class ProductService implements OnModuleInit {
   private productService!: ProductServiceClient;
 
   constructor(
-    @Inject(GRPC_PACKAGE.PRODUCT) private readonly client: ClientGrpc,
+    @Inject(GRPC_PACKAGE.INVENTORY) private readonly client: ClientGrpc,
   ) {}
 
   onModuleInit() {

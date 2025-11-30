@@ -9,6 +9,7 @@ import {
 import { UserModule } from '../modules/user/user.module';
 import '../modules/user/graphql/enum';
 import { ProductModule } from '../modules/product/product.module';
+import { WarehouseModule } from '../modules/warehouse/warehouse.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ProductModule } from '../modules/product/product.module';
     AuthModule,
     UserModule,
     ProductModule,
+    WarehouseModule,
   ],
 })
 export class AppModule {}
