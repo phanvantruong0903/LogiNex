@@ -5,6 +5,7 @@ import {
   ConsulService,
   CONSULT_SERVICE_ID,
   GrpcExceptionFilter,
+  SERVICE_PORTS,
 } from '@loginex/common';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { join } from 'node:path';
@@ -13,7 +14,8 @@ async function bootstrap() {
   dotenvConfig();
 
   const consulService = new ConsulService();
-  const port = Number(process.env.INVENTORY_SERVICE_PORT) || 50053;
+  const port =
+    Number(process.env.INVENTORY_SERVICE_PORT) || SERVICE_PORTS.INVENTORY;
   const host = consulService.getLocalIp();
 
   await consulService.registerService(

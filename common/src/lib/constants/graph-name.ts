@@ -53,3 +53,8 @@ export const GRAPHQL_NAME_BIN = {
   UPDATE: 'UpdateBin',
   DELETE: 'DeleteBin',
 };
+
+export const GRAPHQL_NAME_STOCK = {
+  GET_STOCK_LEVEL: 'GetStockLevel',
+  ADJUST_STOCK: 'AdjustStock',
+};

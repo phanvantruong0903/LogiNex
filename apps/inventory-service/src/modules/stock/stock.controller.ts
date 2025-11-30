@@ -1,13 +1,13 @@
 import { Controller } from '@nestjs/common';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
 import { StockService } from './stock.service';
-import { GRPC_SERVICES, grpcResponse } from '@loginex/common';
+import { GRPC_SERVICES, grpcResponse, STOCK_METHODS } from '@loginex/common';
 
 @Controller()
 export class StockController {
   constructor(private readonly stockService: StockService) {}
 
-  @GrpcMethod(GRPC_SERVICES.STOCK, 'GetStockLevel')
+  @GrpcMethod(GRPC_SERVICES.STOCK, STOCK_METHODS.GET_STOCK_LEVEL)
   async getStockLevel(data: { productId: string; warehouseId?: string }) {
     try {
       const result = await this.stockService.getStockLevel(data);
@@ -21,7 +21,7 @@ export class StockController {
     }
   }
 
-  @GrpcMethod(GRPC_SERVICES.STOCK, 'AdjustStock')
+  @GrpcMethod(GRPC_SERVICES.STOCK, STOCK_METHODS.ADJUST_STOCK)
   async adjustStock(data: {
     binId: string;
     productId: string;

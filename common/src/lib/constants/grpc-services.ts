@@ -37,6 +37,11 @@ export const WAREHOUSE_METHODS = {
   LIST_BINS: 'ListBins',
 } as const;
 
+export const STOCK_METHODS = {
+  GET_STOCK_LEVEL: 'GetStockLevel',
+  ADJUST_STOCK: 'AdjustStock',
+} as const;
+
 export const GRPC_PACKAGE = {
   AUTH: 'AUTH_PACKAGE',
   USER: 'USER_PACKAGE',
