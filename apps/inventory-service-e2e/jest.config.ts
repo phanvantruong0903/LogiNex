@@ -1,4 +1,3 @@
- 
 import { readFileSync } from 'fs';
 
 // Reading the SWC compilation config for the spec files
@@ -11,7 +10,7 @@ swcJestConfig.swcrc = false;
 
 export default {
   displayName: 'inventory-service-e2e',
-  preset: '../../jest.preset.js',
+  preset: '../../jest.preset.cjs',
   globalSetup: '<rootDir>/src/support/global-setup.ts',
   globalTeardown: '<rootDir>/src/support/global-teardown.ts',
   setupFiles: ['<rootDir>/src/support/test-setup.ts'],
