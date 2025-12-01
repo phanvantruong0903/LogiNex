@@ -1,9 +1,10 @@
-import { Controller } from '@nestjs/common';
+import { Controller, UsePipes, ValidationPipe } from '@nestjs/common';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
 import { StockService } from './stock.service';
 import { GRPC_SERVICES, grpcResponse, STOCK_METHODS } from '@loginex/common';
 
 @Controller()
+@UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
 export class StockController {
   constructor(private readonly stockService: StockService) {}
 

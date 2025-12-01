@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import { Controller, UsePipes, ValidationPipe } from '@nestjs/common';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
 import { RackService } from './rack.service';
 import {
@@ -15,6 +15,7 @@ import {
 } from '@loginex/common';
 
 @Controller()
+@UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
 export class RackController {
   private readonly baseHandler: BaseGrpcHandler<
     Rack,
