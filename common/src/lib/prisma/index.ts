@@ -40,10 +40,10 @@ if (process.env.NODE_ENV !== 'production') {
 export type User = AuthPrismaInternal.User;
 export type Profile = UserPrismaInternal.Profile;
 export type Product = InventoryPrismaInternal.Product;
-export type Rack = InventoryPrismaInternal.Rack;
+export type RackModel = InventoryPrismaInternal.Rack;
 export type WareHouse = InventoryPrismaInternal.WareHouse;
-export type Zone = InventoryPrismaInternal.Zone;
-export type Bin = InventoryPrismaInternal.Bin;
+export type ZoneModel = InventoryPrismaInternal.Zone;
+export type BinModel = InventoryPrismaInternal.Bin;
 export { Role, UserVerifyStatus, UserStatus } from './user/generated';
 export {
   ZoneType,
