@@ -27,7 +27,7 @@ export function grpcPaginateResponse<T>(
   return {
     success: true,
     message,
-    data: result.data,
+    data: result.data.length == 0 ? [] : result.data,
     total: result.total,
     page: result.page,
     limit: result.limit,

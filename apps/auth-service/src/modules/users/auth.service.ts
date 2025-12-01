@@ -11,11 +11,11 @@ import {
   UserResponse,
   throwGrpcError,
   CreateUserDto,
-  CreateProfileDto,
   LoginUserDto,
   prismaAuth,
   User,
   ChangePasswordDto,
+  UserStatus,
 } from '@loginex/common';
 import * as bcrypt from 'bcrypt';
 import { RpcException } from '@nestjs/microservices';
@@ -23,11 +23,6 @@ import type { ClientGrpc } from '@nestjs/microservices';
 import { firstValueFrom, Observable } from 'rxjs';
 
 interface UserServiceClient {
-  CreateProfile(data: {
-    name: string;
-    YOB: number;
-    accountId: string;
-  }): Observable<UserResponse>;
   GetUser(data: { id: string }): Observable<UserResponse>;
 }
 @Injectable()
@@ -52,24 +47,25 @@ export class AuthService
 
   async validateUser(data: LoginUserDto): Promise<TokenPayload> {
     try {
-      const findUser = await prismaAuth.user.findUnique({
+      const findUserPromise = prismaAuth.user.findUnique({
         where: { email: data.email },
         select: {
           id: true,
           password: true,
         },
       });
+
+      const findUser = await findUserPromise;
       if (!findUser) {
         throwGrpcError(SERVER_MESSAGE.NOT_FOUND, [USER_MESSAGES.NOT_FOUND]);
       }
 
-      const isMatchPassword = bcrypt.compare(data.password, findUser.password);
-
-      const profile = this.getUserProfile(findUser.id);
+      const isMatchPromise = bcrypt.compare(data.password, findUser.password);
+      const profilePromise = this.getUserProfile(findUser.id);
 
       const [isMatch, userProfile] = await Promise.all([
-        isMatchPassword,
-        profile,
+        isMatchPromise,
+        profilePromise,
       ]);
 
       if (!isMatch) {
@@ -79,6 +75,12 @@ export class AuthService
       }
 
       const userData = userProfile.data as UserProfile;
+
+      if (userData.status !== UserStatus.Active) {
+        throwGrpcError(USER_MESSAGES.USER_STATUS_INVALID, [
+          USER_MESSAGES.USER_STATUS_INVALID,
+        ]);
+      }
 
       return {
         user_id: userData.accountId,
@@ -92,10 +94,6 @@ export class AuthService
       const err = error as Error;
       throwGrpcError(SERVER_MESSAGE.INTERNAL_SERVER, [err?.message]);
     }
-  }
-
-  async createUserProfile(payload: CreateProfileDto) {
-    return await firstValueFrom(this.userService.CreateProfile(payload));
   }
 
   async getUserById(id: string) {
@@ -163,24 +161,6 @@ export class AuthService
 
   async verifyToken(token: string) {
     return this.jwtService.verifyToken(token);
-  }
-
-  async createProfile(data: CreateProfileDto) {
-    try {
-      const profile = await this.createUserProfile({
-        name: data.name,
-        accountId: data.accountId,
-        YOB: data.YOB,
-      });
-
-      return profile;
-    } catch (error) {
-      if (error instanceof RpcException) {
-        throw error;
-      }
-      const err = error as Error;
-      throwGrpcError(SERVER_MESSAGE.INTERNAL_SERVER, [err?.message]);
-    }
   }
 
   async getUserProfile(id: string): Promise<UserResponse> {

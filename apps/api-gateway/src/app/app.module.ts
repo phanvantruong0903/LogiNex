@@ -7,7 +7,12 @@ import {
   ApolloServerPluginLandingPageLocalDefault,
 } from 'apollo-server-core';
 import { UserModule } from '../modules/user/user.module';
-import '../modules/user/graphql/enum';
+import { ProductModule } from '../modules/product/product.module';
+import { WarehouseModule } from '../modules/warehouse/warehouse.module';
+import { StockModule } from '../modules/stock/stock.module';
+import { BinModule } from '../modules/bin/bin.module';
+import { ZoneModule } from '../modules/zone/zone.module';
+import { RackModule } from '../modules/rack/rack.module';
 
 @Module({
   imports: [
@@ -28,6 +33,13 @@ import '../modules/user/graphql/enum';
     }),
     AuthModule,
     UserModule,
+    ProductModule,
+    ProductModule,
+    WarehouseModule,
+    StockModule,
+    BinModule,
+    ZoneModule,
+    RackModule,
   ],
 })
 export class AppModule {}

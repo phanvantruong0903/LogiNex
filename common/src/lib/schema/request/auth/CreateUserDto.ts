@@ -1,4 +1,12 @@
-import { IsEmail, IsNotEmpty, MinLength, Min, Max } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  MinLength,
+  Min,
+  Max,
+  IsNotIn,
+} from 'class-validator';
+import { Role } from '../../../prisma/index';
 
 export class CreateUserDto {
   @IsEmail()
@@ -16,4 +24,8 @@ export class CreateUserDto {
   @Min(1900, { message: 'YOB must be greater than 1900' })
   @Max(new Date().getFullYear(), { message: 'YOB must be less than now' })
   YOB!: number;
+
+  @IsNotEmpty()
+  @IsNotIn([Role.ADMIN], { message: 'Role must not be ADMIN' })
+  role!: Role;
 }
