@@ -1,10 +1,7 @@
-FROM node:18-alpine AS builder
+FROM node:22-alpine AS builder
 WORKDIR /app
 
 COPY package.json package-lock.json* pnpm-lock.yaml* nx.json tsconfig.base.json ./
-
-COPY apps/auth-service/prisma ./apps/auth-service/prisma
-COPY apps/user-service/prisma ./apps/user-service/prisma
 
 COPY common ./common
 
@@ -14,18 +11,14 @@ RUN npm ci --legacy-peer-deps
 
 COPY . .
 
-RUN npx prisma generate --schema=apps/auth-service/prisma/schema.prisma
-RUN npx prisma generate --schema=apps/user-service/prisma/schema.prisma
+RUN node tools/scripts/generate-all-prisma.js
 
 RUN npx nx run auth-service:prune --configuration=production
 
-FROM node:18-alpine AS runner
+FROM node:22-alpine AS runner
 WORKDIR /app
 
 RUN apk add --no-cache openssl
-
-ENV NODE_ENV=production
-ENV AUTH_SERVICE_PORT=50051
 
 COPY --from=builder /app/apps/auth-service/dist/package.json ./
 COPY --from=builder /app/apps/auth-service/dist/package-lock.json ./
@@ -40,16 +33,19 @@ RUN npm pkg delete scripts.postinstall && \
   class-validator class-transformer \
   consul axios bcrypt passport passport-jwt \
   rxjs reflect-metadata @nestjs/jwt dotenv prisma@5.22.0 \
+  kafkajs@2.2.4 \
   --legacy-peer-deps
 
 COPY --from=builder /app/apps/auth-service/dist/main.js ./
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
 COPY --from=builder /app/common ./common
+COPY --from=builder /app/common ./apps/auth-service/common
 COPY --from=builder /app/common/src/lib/prisma/auth/generated/libquery_engine-linux-musl-openssl-3.0.x.so.node ./
 
 COPY --from=builder /app/apps/auth-service/prisma ./apps/auth-service/prisma
 
 EXPOSE 50051
 
-CMD ["sh", "-c", "npx prisma db push --skip-generate --schema=./apps/auth-service/prisma/schema.prisma && node main.js"]
+WORKDIR /app/apps/auth-service
+CMD ["sh", "-c", "npx prisma migrate deploy && node /app/main.js"]

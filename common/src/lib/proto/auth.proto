@@ -18,6 +18,7 @@ message CreateUserRequest {
   string name = 2;
   string password = 3;
   int32 YOB = 4;
+  string role = 5;
 }
 
 message Token {

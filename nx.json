@@ -14,7 +14,7 @@
     ],
     "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
   },
-  "nxCloudId": "691d416c6a191d1a84908add",
+  "nxCloudId": "692d1ccbdd5fc829dbb647a1",
   "plugins": [
     {
       "plugin": "@nx/js/typescript",
@@ -47,7 +47,8 @@
       "exclude": [
         "apps/auth-service-e2e/**/*",
         "apps/user-service-e2e/**/*",
-        "common/**/*"
+        "common/**/*",
+        "apps/inventory-service-e2e/**/*"
       ]
     },
     {

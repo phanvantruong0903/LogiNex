@@ -13,4 +13,10 @@ export abstract class PaginationInput {
     defaultValue: 10,
   })
   limit?: number;
+
+  @Field(() => String, {
+    nullable: true,
+    defaultValue: '',
+  })
+  search?: string;
 }

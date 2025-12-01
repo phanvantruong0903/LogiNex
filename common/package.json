@@ -17,7 +17,8 @@
       "typecheck": {
         "dependsOn": [
           "@loginex/auth-service:prisma:generate",
-          "@loginex/user-service:prisma:generate"
+          "@loginex/user-service:prisma:generate",
+          "@loginex/inventory-service:prisma:generate"
         ]
       }
     }

@@ -6,10 +6,13 @@ import {
   CONSULT_SERVICE_ID,
   GRPC_PACKAGE,
   JwtSharedModule,
+  KAFKA_CLIENT_ID,
+  KAFKA_GROUP_ID,
+  KAFKA_SERVICE,
 } from '@loginex/common';
 import { AuthService } from './auth.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { join } from 'node:path';
 
 @Module({
@@ -32,6 +35,27 @@ import { join } from 'node:path';
               package: 'user',
               protoPath: join(process.cwd(), 'common/src/lib/proto/user.proto'),
               url: `${userService.address}:${userService.port}`,
+            },
+          };
+        },
+      },
+      {
+        name: KAFKA_SERVICE.AUTH_SERVICE,
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (configService: ConfigService) => {
+          const brokers =
+            configService.get<string>('KAFKA_BROKERS') || 'localhost:9092';
+          return {
+            transport: Transport.KAFKA,
+            options: {
+              client: {
+                clientId: KAFKA_CLIENT_ID.AUTH_SERVICE,
+                brokers: brokers.split(','),
+              },
+              consumer: {
+                groupId: KAFKA_GROUP_ID.AUTH_SERVICE,
+              },
             },
           };
         },

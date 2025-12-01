@@ -55,6 +55,8 @@ export class BaseGrpcHandler<
   async getAllLogic(
     page = 1,
     limit = 10,
+    filter?: any,
+    orderBy?: any,
   ): Promise<{
     data: T[];
     total: number;
@@ -62,11 +64,22 @@ export class BaseGrpcHandler<
     limit: number;
     totalPages: number;
   }> {
-    return await this.service.findAll(page, limit);
+    return await this.service.findAll(page, limit, filter, orderBy);
   }
 
   async getOneById(id: string): Promise<T | null> {
-    return await this.service.findOne(id);
+    try {
+      const result = await this.service.findOne(id);
+      return result;
+    } catch (error: any) {
+      if (error?.code === 'P2025') {
+        throwGrpcError(SERVER_MESSAGE.NOT_FOUND, [SERVER_MESSAGE.NOT_FOUND]);
+      }
+
+      throwGrpcError(SERVER_MESSAGE.DATABASE_ERROR, [
+        error.message ?? SERVER_MESSAGE.UNEXPECTED_ERROR,
+      ]);
+    }
   }
 
   async updateLogic(id: string, dto: UpdateDto): Promise<T> {
@@ -98,6 +111,31 @@ export class BaseGrpcHandler<
         throwGrpcError(SERVER_MESSAGE.FOREIGN_KEY_FAILED, [
           SERVER_MESSAGE.FOREIGN_KEY_INVALID(field),
         ]);
+      }
+
+      if (error?.code === 'P2025') {
+        throwGrpcError(SERVER_MESSAGE.NOT_FOUND, [SERVER_MESSAGE.NOT_FOUND]);
+      }
+
+      throwGrpcError(SERVER_MESSAGE.DATABASE_ERROR, [
+        error.message ?? SERVER_MESSAGE.UNEXPECTED_ERROR,
+      ]);
+    }
+  }
+
+  async deleteLogic(id: string): Promise<T> {
+    // Check if the delete method is implemented in the service
+    if (!this.service.remove) {
+      throwGrpcError(SERVER_MESSAGE.UNSUPPORTED_OPERATION, [
+        SERVER_MESSAGE.DELETED_NOT_IMPLEMENTED,
+      ]);
+    }
+    try {
+      const result = await this.service.remove(id);
+      return result;
+    } catch (error: any) {
+      if (error?.code === 'P2025') {
+        throwGrpcError(SERVER_MESSAGE.NOT_FOUND, [SERVER_MESSAGE.NOT_FOUND]);
       }
 
       throwGrpcError(SERVER_MESSAGE.DATABASE_ERROR, [

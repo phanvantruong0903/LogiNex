@@ -5,9 +5,11 @@ import { AuthModule } from '../modules/users/auth.module';
 import { HealthController } from '../health/health.controller';
 import { ConsuleModule } from '@loginex/common';
 
+import { SeedService } from '../modules/users/seed.service';
+
 @Module({
   imports: [AuthModule, ConsuleModule],
   controllers: [AppController, HealthController],
-  providers: [AppService],
+  providers: [AppService, SeedService],
 })
 export class AppModule {}
