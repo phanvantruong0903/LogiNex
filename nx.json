@@ -14,14 +14,12 @@
     ],
     "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
   },
-  "nxCloudId": "68cd6225550915330734291d",
+  "nxCloudId": "692d1ccbdd5fc829dbb647a1",
   "plugins": [
     {
       "plugin": "@nx/js/typescript",
       "options": {
-        "typecheck": {
-          "targetName": "typecheck"
-        },
+        "typecheck": { "targetName": "typecheck" },
         "build": {
           "targetName": "build",
           "configName": "tsconfig.lib.json",
@@ -42,17 +40,10 @@
         "serveStaticTargetName": "serve-static"
       }
     },
-    {
-      "plugin": "@nx/eslint/plugin",
-      "options": {
-        "targetName": "lint"
-      }
-    },
+    { "plugin": "@nx/eslint/plugin", "options": { "targetName": "lint" } },
     {
       "plugin": "@nx/jest/plugin",
-      "options": {
-        "targetName": "test"
-      },
+      "options": { "targetName": "test" },
       "exclude": [
         "apps/auth-service-e2e/**/*",
         "apps/user-service-e2e/**/*",
@@ -62,24 +53,13 @@
     },
     {
       "plugin": "@nx/docker",
-      "options": {
-        "buildTarget": "docker:build",
-        "runTarget": "docker:run"
-      }
+      "options": { "buildTarget": "docker:build", "runTarget": "docker:run" }
     },
     {
       "plugin": "@nx/js/typescript",
       "include": ["common/*"],
-      "options": {
-        "typecheck": {
-          "targetName": "typecheck"
-        }
-      }
+      "options": { "typecheck": { "targetName": "typecheck" } }
     }
   ],
-  "targetDefaults": {
-    "test": {
-      "dependsOn": ["^build"]
-    }
-  }
+  "targetDefaults": { "test": { "dependsOn": ["^build"] } }
 }
