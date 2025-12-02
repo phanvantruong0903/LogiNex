@@ -87,12 +87,30 @@ message RegisterUserResponse {
   repeated string errors = 4;
 }
 
+message ResetPasswordRequest {
+  string email = 1;
+}
+
+message ResetPasswordResponse {
+  bool success = 1;
+  string message = 2;
+  User data = 3;
+  repeated string errors = 4;
+}
+
+message VerifyOtpRequest {
+  string email = 1;
+  string otp = 2;
+}
+
 service AuthService {
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
   rpc LoginUser(LoginUserRequest) returns (LoginUserResponse);
   rpc RefreshToken(RefreshTokenRequest) returns (ResfreshTokenResponse);
   rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse);
   rpc Register(RegisterUserRequest) returns (RegisterUserResponse);
+  rpc ResetPassword(ResetPasswordRequest) returns (ResetPasswordResponse);
+  rpc VerifyOtp(VerifyOtpRequest) returns (ResetPasswordResponse);
 }
 
 message Empty {}

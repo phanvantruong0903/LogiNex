@@ -16,6 +16,8 @@ import {
   User,
   ChangePasswordDto,
   UserStatus,
+  ResetPasswordDto,
+  Account,
 } from '@loginex/common';
 import * as bcrypt from 'bcrypt';
 import { RpcException } from '@nestjs/microservices';
@@ -151,6 +153,44 @@ export class AuthService
       }
       const err = error as Error;
       throwGrpcError(SERVER_MESSAGE.INTERNAL_SERVER, [err?.message]);
+    }
+  }
+
+  async resetPassword(data: ResetPasswordDto) {
+    try {
+      const account = await this.getUserByEmail(data);
+      if (!account) {
+        throwGrpcError(SERVER_MESSAGE.NOT_FOUND, [USER_MESSAGES.NOT_FOUND]);
+      }
+
+      return account;
+    } catch (error) {
+      if (error instanceof RpcException) {
+        throw error;
+      }
+      const err = error as Error;
+      throw new RpcException(err?.message);
+    }
+  }
+
+  private async getUserByEmail(data: { email: string }): Promise<User> {
+    try {
+      const { email } = data;
+      const result = await prismaAuth.user.findUnique({
+        where: { email },
+      });
+
+      if (!result) {
+        throwGrpcError(SERVER_MESSAGE.NOT_FOUND, [USER_MESSAGES.NOT_FOUND]);
+      }
+
+      return result;
+    } catch (error) {
+      if (error instanceof RpcException) {
+        throw error;
+      }
+      const err = error as Error;
+      throw new RpcException(err?.message || USER_MESSAGES.GET_ALL_FAILED);
     }
   }
 

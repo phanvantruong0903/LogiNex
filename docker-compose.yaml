@@ -136,6 +136,19 @@ services:
       - "traefik.http.services.kafka-ui.loadbalancer.server.port=8080"
     networks:
       - loginex-network
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: 'unless-stopped'
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - loginex-network
 
   api-gateway:
     build:
@@ -198,6 +211,8 @@ services:
         condition: service_started
       kafka:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       - CONSUL_HOST=consul
       - CONSUL_PORT=8500
@@ -207,6 +222,8 @@ services:
       - ADMIN_EMAIL=${ADMIN_EMAIL}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - DEFAULT_USER_PASSWORD=${DEFAULT_USER_PASSWORD}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     healthcheck:
       test: ['CMD', 'nc', '-z', '127.0.0.1', '50051']
       interval: 5s
@@ -264,6 +281,36 @@ services:
       - KAFKA_BROKERS=kafka:29092
     healthcheck:
       test: ['CMD', 'nc', '-z', '127.0.0.1', '50053']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - loginex-network
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: apps/notification-service/Dockerfile
+    container_name: notification-service
+    restart: 'unless-stopped'
+    depends_on:
+      consul:
+        condition: service_started
+      kafka:
+        condition: service_healthy
+    environment:
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500
+      - NOTIFICATION_SERVICE_PORT=50054
+      - KAFKA_BROKERS=kafka:29092
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_PORT=${MAIL_PORT}
+      - MAIL_USER=${MAIL_USER}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - MAIL_FROM=${MAIL_FROM}
+    healthcheck:
+      test: ['CMD', 'nc', '-z', '127.0.0.1', '50054']
       interval: 5s
       timeout: 5s
       retries: 10

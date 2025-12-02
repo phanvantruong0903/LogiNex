@@ -19,8 +19,13 @@ import {
   KAFKA_TOPIC,
   RegisterUserDto,
   Role,
+  ResetPasswordDto,
+  Account,
+  REDIS_CONSTANTS,
+  REDIS_KEY_PREFIX,
 } from '@loginex/common';
 import * as bcrypt from 'bcrypt';
+import { Redis } from 'ioredis';
 
 @Controller()
 @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
@@ -30,6 +35,8 @@ export class AuthGrpcController {
   constructor(
     @Inject(KAFKA_SERVICE.AUTH_SERVICE)
     private readonly kafkaClient: ClientKafka,
+    @Inject(REDIS_CONSTANTS.REDIS_CLIENT)
+    private readonly redis: Redis,
     private readonly authService: AuthService,
   ) {
     this.baseHandler = new BaseGrpcHandler(this.authService, CreateUserDto);
@@ -84,6 +91,65 @@ export class AuthGrpcController {
     try {
       const user = await this.authService.changePassword(data);
       return grpcResponse(user, USER_MESSAGES.CHANGE_PASSWORD_SUCCESS);
+    } catch (error) {
+      if (error instanceof RpcException) {
+        throw error;
+      }
+      const err = error as Error;
+      throw new RpcException(err?.message);
+    }
+  }
+
+  @GrpcMethod(GRPC_SERVICES.AUTH, USER_METHODS.RESET_PASSWORD)
+  async resetPassword(data: ResetPasswordDto) {
+    const user = await this.authService.resetPassword(data);
+
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    await this.redis.set(
+      `${REDIS_KEY_PREFIX.PASSWORD_RESET}:${user.email}`,
+      otpCode,
+      'EX',
+      300,
+      'NX',
+    );
+
+    const account = user as Account;
+    this.kafkaClient.emit(KAFKA_TOPIC.USER_RESET_PASSWORD, {
+      key: account.id,
+      value: {
+        to: account?.email,
+        subject: 'OTP verification code',
+        template: 'reset-password',
+        data: {
+          email: account?.email,
+          otp: otpCode,
+        },
+      },
+    });
+
+    return grpcResponse(null, USER_MESSAGES.RESET_PASSWORD_OTP_SENT);
+  }
+
+  @GrpcMethod(GRPC_SERVICES.AUTH, USER_METHODS.VERIFY_OTP)
+  async verifyOtp(data: {
+    email: string;
+    otp: string;
+  }): Promise<ReturnType<typeof grpcResponse>> {
+    try {
+      const { email, otp } = data;
+      const storedOtp = await this.redis.get(
+        `${REDIS_KEY_PREFIX.PASSWORD_RESET}:${email}`,
+      );
+
+      if (storedOtp !== otp) {
+        throwGrpcError(SERVER_MESSAGE.UNAUTHORIZED, [
+          USER_MESSAGES.INVALID_OTP,
+        ]);
+      }
+
+      await this.redis.del(`${REDIS_KEY_PREFIX.PASSWORD_RESET}:${email}`);
+
+      return grpcResponse(null, USER_MESSAGES.OTP_VERIFIED_SUCCESS);
     } catch (error) {
       if (error instanceof RpcException) {
         throw error;
