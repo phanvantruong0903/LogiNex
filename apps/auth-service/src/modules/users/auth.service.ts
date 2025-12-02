@@ -17,7 +17,6 @@ import {
   ChangePasswordDto,
   UserStatus,
   ResetPasswordDto,
-  Account,
 } from '@loginex/common';
 import * as bcrypt from 'bcrypt';
 import { RpcException } from '@nestjs/microservices';

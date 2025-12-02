@@ -11,9 +11,13 @@ import { Redis } from 'ioredis';
       provide: REDIS_CONSTANTS.REDIS_CLIENT,
       useFactory: async (configService: ConfigService) => {
         return new Redis({
-          host: configService.get<string>(REDIS_CONSTANTS.REDIS_HOST),
-          port: configService.get<number>(REDIS_CONSTANTS.REDIS_PORT),
-          password: configService.get<string>(REDIS_CONSTANTS.REDIS_PASSWORD),
+          host:
+            configService.get<string>(REDIS_CONSTANTS.REDIS_HOST) ||
+            'localhost',
+          port: configService.get<number>(REDIS_CONSTANTS.REDIS_PORT) || 6379,
+          password:
+            configService.get<string>(REDIS_CONSTANTS.REDIS_PASSWORD) ||
+            'loginexredis0903',
         });
       },
       inject: [ConfigService],

@@ -2,7 +2,6 @@ import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
 import { Observable, firstValueFrom } from 'rxjs';
 import {
-  CreateUserDto,
   RegisterResponse,
   LoginResponse,
   ResfreshTokenResponse,

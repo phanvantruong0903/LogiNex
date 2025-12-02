@@ -25,10 +25,13 @@ COPY --from=builder /app/apps/notification-service/dist/workspace_modules ./work
 RUN npm pkg delete scripts.postinstall && \
   npm install --omit=dev --legacy-peer-deps && \
   npm install \
-  @nestjs/core@^11.1.6 @nestjs/common@^11.1.6 @nestjs/platform-express@^11.1.6 @nestjs/microservices@^11.1.6 @nestjs/config \
-  consul \
-  rxjs reflect-metadata dotenv \
-  kafkajs@2.2.4 \
+  @nestjs/core @nestjs/common @nestjs/platform-express @nestjs/microservices @nestjs/config @nestjs/passport \
+  @nestjs/graphql @nestjs/apollo graphql apollo-server-core \
+  @grpc/grpc-js @grpc/proto-loader \
+  class-validator class-transformer \
+  consul axios bcrypt passport passport-jwt \
+  rxjs reflect-metadata @nestjs/jwt dotenv \
+  @apollo/server ioredis@5.8.2 kafkajs@2.2.4 \
   --legacy-peer-deps
 
 COPY --from=builder /app/apps/notification-service/dist/main.js ./
