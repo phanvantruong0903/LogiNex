@@ -26,6 +26,7 @@ export const USER_MESSAGES = {
   CHANGE_PASSWORD_SUCCESS: 'Change password successfully',
   PASSWORD_SAME: 'Password same',
   USER_STATUS_INVALID: 'User status invalid',
+  USER_FIRST_LOGIN: 'User must change password first time login',
 };
 
 export const PRODUCT_MESSAGES = {

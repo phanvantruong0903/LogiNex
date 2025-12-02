@@ -9,6 +9,7 @@ import {
   ResfreshTokenResponse,
   GRAPHQL_NAME_USER,
   CreateUserInput,
+  RegisterUserInput,
   LoginInput,
   ChangePasswordResponse,
   ChangePasswordInput,
@@ -25,8 +26,15 @@ export class AuthResolver {
   @Mutation(() => RegisterResponse, { name: GRAPHQL_NAME_USER.CREATE })
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.ADMIN)
-  async register(
+  async createUser(
     @Args('body') body: CreateUserInput,
+  ): Promise<RegisterResponse> {
+    return this.authService.createUser(body);
+  }
+
+  @Mutation(() => RegisterResponse, { name: GRAPHQL_NAME_USER.REGISTER })
+  async register(
+    @Args('body') body: RegisterUserInput,
   ): Promise<RegisterResponse> {
     return this.authService.register(body);
   }

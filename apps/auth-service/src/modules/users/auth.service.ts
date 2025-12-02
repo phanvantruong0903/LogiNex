@@ -52,6 +52,7 @@ export class AuthService
         select: {
           id: true,
           password: true,
+          isFirstLogin: true,
         },
       });
 
@@ -71,6 +72,12 @@ export class AuthService
       if (!isMatch) {
         throwGrpcError(SERVER_MESSAGE.NOT_FOUND, [
           USER_MESSAGES.VALIDATION_FAILED,
+        ]);
+      }
+
+      if (findUser.isFirstLogin === true) {
+        throwGrpcError(SERVER_MESSAGE.NOT_FOUND, [
+          USER_MESSAGES.USER_FIRST_LOGIN,
         ]);
       }
 

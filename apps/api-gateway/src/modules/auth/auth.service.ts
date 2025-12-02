@@ -11,15 +11,18 @@ import {
   LoginInput,
   ChangePasswordInput,
   ChangePasswordResponse,
+  RegisterUserInput,
+  CreateUserInput,
 } from '@loginex/common';
 
 interface AuthServiceClient {
   LoginUser(data: LoginInput): Observable<LoginResponse>;
-  CreateUser(data: CreateUserDto): Observable<RegisterResponse>;
+  CreateUser(data: CreateUserInput): Observable<RegisterResponse>;
   RefreshToken(refreshToken: object): Observable<ResfreshTokenResponse>;
   ChangePassword(
     data: ChangePasswordInput & { accountId: string },
   ): Observable<ChangePasswordResponse>;
+  Register(data: RegisterUserInput): Observable<RegisterResponse>;
 }
 
 @Injectable()
@@ -38,8 +41,12 @@ export class AuthService implements OnModuleInit {
     return await firstValueFrom(this.userService.LoginUser(data));
   }
 
-  async register(data: CreateUserDto) {
+  async createUser(data: CreateUserInput) {
     return await firstValueFrom(this.userService.CreateUser(data));
+  }
+
+  async register(data: RegisterUserInput) {
+    return await firstValueFrom(this.userService.Register(data));
   }
 
   async refreshToken(refreshToken: string) {

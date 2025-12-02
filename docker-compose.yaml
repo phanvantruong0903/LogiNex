@@ -206,6 +206,7 @@ services:
       - KAFKA_BROKERS=kafka:29092
       - ADMIN_EMAIL=${ADMIN_EMAIL}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - DEFAULT_USER_PASSWORD=${DEFAULT_USER_PASSWORD}
     healthcheck:
       test: ['CMD', 'nc', '-z', '127.0.0.1', '50051']
       interval: 5s

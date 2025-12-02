@@ -58,6 +58,7 @@ export const USER_METHODS = {
   CHANGE_PASSWORD: 'ChangePassword',
   CREATE_PROFILE: 'CreateProfile',
   CHANGE_STATUS: 'ChangeStatus',
+  REGISTER: 'Register',
 } as const;
 
 export const PRODUCT_METHODS = {
