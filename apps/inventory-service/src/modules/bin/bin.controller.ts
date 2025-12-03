@@ -12,6 +12,7 @@ import {
   BaseGrpcHandler,
   Bin,
   buildSearchFilter,
+  prismaInventory,
 } from '@loginex/common';
 
 @Controller()
@@ -113,6 +114,83 @@ export class BinController {
       throw new RpcException(
         err?.message || WAREHOUSE_MESSAGES.BIN_LIST_FAILED,
       );
+    }
+  }
+
+  @GrpcMethod(GRPC_SERVICES.BIN, WAREHOUSE_METHODS.GET_BIN_LAYOUT)
+  async getBinLayout(data: {
+    rackId: string;
+  }): Promise<ReturnType<typeof grpcResponse>> {
+    try {
+      const result = await prismaInventory.bin.findMany({
+        where: {
+          rackId: data.rackId,
+        },
+        select: {
+          id: true,
+          rackId: true,
+          code: true,
+          xCoord: true,
+          yCoord: true,
+          currVolume: true,
+          maxVolume: true,
+          currWeight: true,
+          maxWeight: true,
+        },
+      });
+
+      return grpcResponse(result, WAREHOUSE_MESSAGES.BIN_GET_SUCCESS);
+    } catch (error) {
+      if (error instanceof RpcException) {
+        throw error;
+      }
+      const err = error as Error;
+      throw new RpcException(err?.message || WAREHOUSE_MESSAGES.BIN_GET_FAILED);
+    }
+  }
+
+  @GrpcMethod(GRPC_SERVICES.BIN, WAREHOUSE_METHODS.GET_BIN_PRODUCT)
+  async getProductInBin(data: {
+    binId: string;
+  }): Promise<ReturnType<typeof grpcResponse>> {
+    try {
+      const result = await prismaInventory.bin.findUnique({
+        where: {
+          id: data.binId,
+        },
+        select: {
+          id: true,
+          code: true,
+          currVolume: true,
+          maxVolume: true,
+          currWeight: true,
+          maxWeight: true,
+          items: {
+            select: {
+              quantity: true,
+              product: {
+                select: {
+                  id: true,
+                  sku: true,
+                  name: true,
+                  volume: true,
+                  weight: true,
+                  isFragile: true,
+                  isHighValue: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      return grpcResponse(result, WAREHOUSE_MESSAGES.BIN_GET_SUCCESS);
+    } catch (error) {
+      if (error instanceof RpcException) {
+        throw error;
+      }
+      const err = error as Error;
+      throw new RpcException(err?.message || WAREHOUSE_MESSAGES.BIN_GET_FAILED);
     }
   }
 }

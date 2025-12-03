@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
 
 export class UpdateBinDto {
   @IsString()
@@ -15,9 +15,13 @@ export class UpdateBinDto {
 
   @IsNumber()
   @IsOptional()
+  @Min(0)
+  @Max(200)
   maxWeight?: number;
 
   @IsNumber()
   @IsOptional()
+  @Min(0)
+  @Max(200)
   maxVolume?: number;
 }
