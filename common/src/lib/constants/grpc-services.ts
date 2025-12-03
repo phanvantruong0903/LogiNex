@@ -7,6 +7,7 @@ export const GRPC_SERVICES = {
   BIN: 'BinService',
   STOCK: 'StockService',
   PRODUCT: 'ProductService',
+  NOTIFICATION: 'NotificationService',
 } as const;
 
 export const WAREHOUSE_METHODS = {
@@ -46,6 +47,7 @@ export const GRPC_PACKAGE = {
   AUTH: 'AUTH_PACKAGE',
   USER: 'USER_PACKAGE',
   INVENTORY: 'INVENTORY_PACKAGE',
+  NOTIFICATION: 'NOTIFICATION_PACKAGE',
 };
 
 export const USER_METHODS = {
@@ -58,6 +60,9 @@ export const USER_METHODS = {
   CHANGE_PASSWORD: 'ChangePassword',
   CREATE_PROFILE: 'CreateProfile',
   CHANGE_STATUS: 'ChangeStatus',
+  REGISTER: 'Register',
+  RESET_PASSWORD: 'ResetPassword',
+  VERIFY_OTP: 'VerifyOtp',
 } as const;
 
 export const PRODUCT_METHODS = {

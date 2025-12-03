@@ -59,4 +59,4 @@ prisma/generated/
 
 # Traefik
 traefik/logs
-
+.zed/settings.json
