@@ -155,24 +155,7 @@ export class AuthService
     }
   }
 
-  async resetPassword(data: ResetPasswordDto) {
-    try {
-      const account = await this.getUserByEmail(data);
-      if (!account) {
-        throwGrpcError(SERVER_MESSAGE.NOT_FOUND, [USER_MESSAGES.NOT_FOUND]);
-      }
-
-      return account;
-    } catch (error) {
-      if (error instanceof RpcException) {
-        throw error;
-      }
-      const err = error as Error;
-      throw new RpcException(err?.message);
-    }
-  }
-
-  private async getUserByEmail(data: { email: string }): Promise<User> {
+  async getUserByEmail(data: { email: string }): Promise<User> {
     try {
       const { email } = data;
       const result = await prismaAuth.user.findUnique({
@@ -262,6 +245,29 @@ export class AuthService
       });
 
       return user;
+    } catch (error) {
+      if (error instanceof RpcException) {
+        throw error;
+      }
+      const err = error as Error;
+      throwGrpcError(SERVER_MESSAGE.INTERNAL_SERVER, [err?.message]);
+    }
+  }
+
+  async verifyOtpSuccess(email: string) {
+    try {
+      const user = await this.getUserByEmail({ email });
+
+      if (!user) {
+        throwGrpcError(USER_MESSAGES.NOT_FOUND, [USER_MESSAGES.NOT_FOUND]);
+      }
+
+      await prismaAuth.user.update({
+        where: { id: user.id },
+        data: {
+          isFirstLogin: false,
+        },
+      });
     } catch (error) {
       if (error instanceof RpcException) {
         throw error;

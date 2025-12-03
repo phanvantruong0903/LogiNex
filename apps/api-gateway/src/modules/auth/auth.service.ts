@@ -12,6 +12,8 @@ import {
   ChangePasswordResponse,
   RegisterUserInput,
   CreateUserInput,
+  UserResponse,
+  VerifyOtpInput,
 } from '@loginex/common';
 
 interface AuthServiceClient {
@@ -22,6 +24,8 @@ interface AuthServiceClient {
     data: ChangePasswordInput & { accountId: string },
   ): Observable<ChangePasswordResponse>;
   Register(data: RegisterUserInput): Observable<RegisterResponse>;
+  ResetPassword(data: object): Observable<UserResponse>;
+  VerifyOtp(data: VerifyOtpInput): Observable<UserResponse>;
 }
 
 @Injectable()
@@ -56,5 +60,13 @@ export class AuthService implements OnModuleInit {
 
   async changePassword(data: ChangePasswordInput & { accountId: string }) {
     return await firstValueFrom(this.userService.ChangePassword(data));
+  }
+
+  async resetPassword(email: string) {
+    return await firstValueFrom(this.userService.ResetPassword({ email }));
+  }
+
+  async verifyOtp(data: VerifyOtpInput) {
+    return await firstValueFrom(this.userService.VerifyOtp(data));
   }
 }

@@ -78,6 +78,7 @@ message RegisterUserRequest {
   string email = 1;
   string name = 2;
   string password = 3;
+  int32 YOB = 4;  
 }
 
 message RegisterUserResponse {

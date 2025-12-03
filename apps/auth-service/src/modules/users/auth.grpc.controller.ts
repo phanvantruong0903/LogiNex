@@ -102,7 +102,7 @@ export class AuthGrpcController {
 
   @GrpcMethod(GRPC_SERVICES.AUTH, USER_METHODS.RESET_PASSWORD)
   async resetPassword(data: ResetPasswordDto) {
-    const user = await this.authService.resetPassword(data);
+    const user = await this.authService.getUserByEmail(data);
 
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
     await this.redis.set(
@@ -147,7 +147,13 @@ export class AuthGrpcController {
         ]);
       }
 
-      await this.redis.del(`${REDIS_KEY_PREFIX.PASSWORD_RESET}:${email}`);
+      const deleted = this.redis.del(
+        `${REDIS_KEY_PREFIX.PASSWORD_RESET}:${email}`,
+      );
+
+      const verify = this.authService.verifyOtpSuccess(email);
+
+      await Promise.all([deleted, verify]);
 
       return grpcResponse(null, USER_MESSAGES.OTP_VERIFIED_SUCCESS);
     } catch (error) {
