@@ -20,12 +20,12 @@ export class CreateBinDto {
   @IsNumber()
   @IsNotEmpty()
   @Min(0)
-  @Max(200)
+  @Max(40)
   maxWeight!: number;
 
   @IsNumber()
   @IsNotEmpty()
   @Min(0)
-  @Max(200)
+  @Max(2000)
   maxVolume!: number;
 }

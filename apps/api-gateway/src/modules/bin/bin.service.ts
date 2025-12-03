@@ -6,6 +6,8 @@ import {
   GRPC_SERVICES,
   BinResponse,
   BinListResponse,
+  BinLayoutResponse,
+  BinProductResponse,
   UpdateBinInput,
   CreateBinInput,
 } from '@loginex/common';
@@ -19,6 +21,8 @@ interface BinServiceClient {
   UpdateBin(data: { id: string } & UpdateBinInput): Observable<BinResponse>;
   CreateBin(data: CreateBinInput): Observable<BinResponse>;
   DeleteBin(data: { id: string }): Observable<BinResponse>;
+  GetBinLayout(data: { rackId: string }): Observable<BinLayoutResponse>;
+  GetBinProduct(data: { binId: string }): Observable<BinProductResponse>;
 }
 
 @Injectable()
@@ -49,5 +53,13 @@ export class BinService implements OnModuleInit {
 
   async deleteBin(data: { id: string }) {
     return await firstValueFrom(this.binService.DeleteBin(data));
+  }
+
+  async getBinLayout(data: { rackId: string }) {
+    return await firstValueFrom(this.binService.GetBinLayout(data));
+  }
+
+  async getBinProduct(data: { binId: string }) {
+    return await firstValueFrom(this.binService.GetBinProduct(data));
   }
 }
