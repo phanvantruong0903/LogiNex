@@ -17,8 +17,15 @@ import {
   ChangePasswordDto,
   KAFKA_SERVICE,
   KAFKA_TOPIC,
+  RegisterUserDto,
+  Role,
+  ResetPasswordDto,
+  Account,
+  REDIS_CONSTANTS,
+  REDIS_KEY_PREFIX,
 } from '@loginex/common';
 import * as bcrypt from 'bcrypt';
+import { Redis } from 'ioredis';
 
 @Controller()
 @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
@@ -28,51 +35,25 @@ export class AuthGrpcController {
   constructor(
     @Inject(KAFKA_SERVICE.AUTH_SERVICE)
     private readonly kafkaClient: ClientKafka,
+    @Inject(REDIS_CONSTANTS.REDIS_CLIENT)
+    private readonly redis: Redis,
     private readonly authService: AuthService,
   ) {
-    this.baseHandler = new BaseGrpcHandler(this.authService, UserDto);
+    this.baseHandler = new BaseGrpcHandler(this.authService, CreateUserDto);
   }
 
   @GrpcMethod(GRPC_SERVICES.AUTH, USER_METHODS.CREATE)
   async createUser(
     data: CreateUserDto,
   ): Promise<ReturnType<typeof grpcResponse>> {
-    let user: User | null = null;
-    try {
-      // Step 1 : Create User Account Record
-      const hashPassword = await bcrypt.hash(data.password, 10);
+    return this._handleCreateUserLogic(data, data.role);
+  }
 
-      const userData: UserDto = {
-        email: data.email,
-        password: hashPassword,
-      };
-
-      user = await this.baseHandler.createLogic(userData);
-
-      // Step 2 : Create User Profile Record
-      const profileData: CreateProfileDto = {
-        YOB: data.YOB,
-        name: data.name,
-        accountId: user.id,
-        role: data.role,
-      };
-
-      this.kafkaClient.emit(KAFKA_TOPIC.USER_CREATED, {
-        key: user.id,
-        value: profileData,
-      });
-
-      return grpcResponse(user, USER_MESSAGES.CREATE_SCUCCESS);
-    } catch (error) {
-      if (error instanceof RpcException) {
-        throw error;
-      }
-      const err = error as Error;
-
-      throwGrpcError(err?.message || USER_MESSAGES.CREATE_FAILED, [
-        err.message,
-      ]);
-    }
+  @GrpcMethod(GRPC_SERVICES.AUTH, USER_METHODS.REGISTER)
+  async register(
+    data: RegisterUserDto,
+  ): Promise<ReturnType<typeof grpcResponse>> {
+    return this._handleCreateUserLogic(data, Role.USER);
   }
 
   @GrpcMethod(GRPC_SERVICES.AUTH, USER_METHODS.LOGIN)
@@ -116,6 +97,124 @@ export class AuthGrpcController {
       }
       const err = error as Error;
       throw new RpcException(err?.message);
+    }
+  }
+
+  @GrpcMethod(GRPC_SERVICES.AUTH, USER_METHODS.RESET_PASSWORD)
+  async resetPassword(data: ResetPasswordDto) {
+    const user = await this.authService.getUserByEmail(data);
+
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    await this.redis.set(
+      `${REDIS_KEY_PREFIX.PASSWORD_RESET}:${user.email}`,
+      otpCode,
+      'EX',
+      300,
+      'NX',
+    );
+
+    const account = user as Account;
+    this.kafkaClient.emit(KAFKA_TOPIC.USER_RESET_PASSWORD, {
+      key: account.id,
+      value: {
+        to: account?.email,
+        subject: 'OTP verification code',
+        template: 'reset-password',
+        data: {
+          email: account?.email,
+          otp: otpCode,
+        },
+      },
+    });
+
+    return grpcResponse(null, USER_MESSAGES.RESET_PASSWORD_OTP_SENT);
+  }
+
+  @GrpcMethod(GRPC_SERVICES.AUTH, USER_METHODS.VERIFY_OTP)
+  async verifyOtp(data: {
+    email: string;
+    otp: string;
+  }): Promise<ReturnType<typeof grpcResponse>> {
+    try {
+      const { email, otp } = data;
+      const storedOtp = await this.redis.get(
+        `${REDIS_KEY_PREFIX.PASSWORD_RESET}:${email}`,
+      );
+
+      if (storedOtp !== otp) {
+        throwGrpcError(SERVER_MESSAGE.UNAUTHORIZED, [
+          USER_MESSAGES.INVALID_OTP,
+        ]);
+      }
+
+      const deleted = this.redis.del(
+        `${REDIS_KEY_PREFIX.PASSWORD_RESET}:${email}`,
+      );
+
+      const verify = this.authService.verifyOtpSuccess(email);
+
+      await Promise.all([deleted, verify]);
+
+      return grpcResponse(null, USER_MESSAGES.OTP_VERIFIED_SUCCESS);
+    } catch (error) {
+      if (error instanceof RpcException) {
+        throw error;
+      }
+      const err = error as Error;
+      throw new RpcException(err?.message);
+    }
+  }
+
+  private async _handleCreateUserLogic(
+    data: RegisterUserDto | CreateUserDto,
+    role: Role,
+  ): Promise<ReturnType<typeof grpcResponse>> {
+    let user: User | null = null;
+    try {
+      let rawPassword = '';
+      let isFirstLogin = false;
+
+      if (role === Role.USER && 'password' in data) {
+        rawPassword = data.password;
+      } else {
+        rawPassword =
+          process.env.DEFAULT_USER_PASSWORD || 'default_user_password';
+        isFirstLogin = true;
+      }
+
+      // Step 1: Create User Account Record
+      const hashPassword = await bcrypt.hash(rawPassword, 10);
+
+      const userData: UserDto = {
+        email: data.email,
+        password: hashPassword,
+        isFirstLogin,
+      };
+
+      user = await this.baseHandler.createLogic(userData);
+
+      // Step 2: Create User Profile Record
+      const profileData: CreateProfileDto = {
+        YOB: data.YOB,
+        name: data.name,
+        accountId: user.id,
+        role: role,
+      };
+
+      this.kafkaClient.emit(KAFKA_TOPIC.USER_CREATED, {
+        key: user.id,
+        value: profileData,
+      });
+
+      return grpcResponse(user, USER_MESSAGES.CREATE_SCUCCESS);
+    } catch (error) {
+      if (error instanceof RpcException) {
+        throw error;
+      }
+      const err = error as Error;
+      throwGrpcError(err?.message || USER_MESSAGES.CREATE_FAILED, [
+        err.message,
+      ]);
     }
   }
 }

@@ -42,7 +42,7 @@ RUN npm pkg delete scripts.postinstall && \
   class-validator class-transformer \
   consul axios bcrypt passport passport-jwt \
   rxjs reflect-metadata @nestjs/jwt dotenv \
-  @apollo/server \
+  @apollo/server ioredis@5.8.2 \
   --legacy-peer-deps
 
 COPY --from=builder /app/apps/api-gateway/dist/main.js ./

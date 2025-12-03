@@ -9,6 +9,7 @@ import {
   KAFKA_CLIENT_ID,
   KAFKA_GROUP_ID,
   KAFKA_SERVICE,
+  RedisModule,
 } from '@loginex/common';
 import { AuthService } from './auth.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
@@ -20,6 +21,7 @@ import { join } from 'node:path';
     ConsuleModule,
     JwtSharedModule,
     ConfigModule.forRoot({ isGlobal: true }),
+    RedisModule,
     ClientsModule.registerAsync([
       {
         name: GRPC_PACKAGE.USER,

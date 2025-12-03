@@ -7,6 +7,9 @@ export const GRAPHQL_NAME_USER = {
   REFRESH_TOKEN: 'RefreshToken',
   CHANGE_PASSWORD: 'ChangePassword',
   CHANGE_STATUS: 'ChangeUserStatus',
+  REGISTER: 'RegisterUser',
+  VERIFY_OTP: 'VerifyOTP',
+  RESET_PASSWORD: 'ResetPassword',
 };
 
 export const GRAPHQL_NAME_PRODUCT = {
