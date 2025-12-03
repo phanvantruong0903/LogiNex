@@ -9,6 +9,8 @@ import {
   UpdateBinInput,
   GetBinInput,
   BinListResponse,
+  BinLayoutResponse,
+  BinProductResponse,
 } from '@loginex/common';
 import { RoleGuard } from '../auth/role.guard';
 import { Roles } from '../auth/role.decorator';
@@ -64,6 +66,28 @@ export class BinResolver {
   @Roles(Role.ADMIN)
   async DeleteBin(@Args('id') id: string): Promise<BinResponse> {
     return this.binService.deleteBin({ id });
+  }
+
+  @Query(() => BinLayoutResponse, {
+    name: GRAPHQL_NAME_BIN.GET_LAYOUT,
+  })
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
+  async getBinLayout(
+    @Args('rackId') rackId: string,
+  ): Promise<BinLayoutResponse> {
+    return this.binService.getBinLayout({ rackId });
+  }
+
+  @Query(() => BinProductResponse, {
+    name: GRAPHQL_NAME_BIN.GET_PRODUCT,
+  })
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.ADMIN)
+  async getBinProduct(
+    @Args('binId') binId: string,
+  ): Promise<BinProductResponse> {
+    return this.binService.getBinProduct({ binId });
   }
 
   @Query(() => String)
