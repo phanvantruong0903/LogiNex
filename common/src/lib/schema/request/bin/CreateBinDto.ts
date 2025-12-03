@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, Max, Min } from 'class-validator';
 
 export class CreateBinDto {
   @IsString()
@@ -19,9 +19,13 @@ export class CreateBinDto {
 
   @IsNumber()
   @IsNotEmpty()
+  @Min(0)
+  @Max(40)
   maxWeight!: number;
 
   @IsNumber()
   @IsNotEmpty()
+  @Min(0)
+  @Max(2000)
   maxVolume!: number;
 }

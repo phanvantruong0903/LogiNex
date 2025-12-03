@@ -9,6 +9,66 @@ service BinService {
   rpc UpdateBin (UpdateBinDto) returns (BinResponse);
   rpc DeleteBin (DeleteBinDto) returns (DeleteResponse);
   rpc ListBins (ListBinsDto) returns (ListBinsResponse);
+  rpc GetBinLayout(GetBinLayoutDto) returns (GetBinLayoutResponse);
+  rpc GetBinProduct(GetBinProductDto) returns (GetBinProductResponse);
+}
+
+message GetBinLayoutDto {
+  string rackId = 1;
+}
+
+message GetBinProductDto {
+  string binId = 1;
+}
+
+message GetBinProductResponse {
+  bool success = 1;
+  string message = 2;
+  BinProduct data = 3;
+  repeated string errors = 4;
+}
+
+message BinProduct {
+  string id = 1;
+  string code = 2;
+  double currVolume = 3;
+  double maxVolume = 4;
+  double currWeight = 5;
+  double maxWeight = 6;
+  repeated item items = 7;
+}
+
+message item {
+  int32 quantity = 1;
+  ProductInBin product = 2;
+}
+
+message ProductInBin {
+  string id = 1;
+  string sku = 2;
+  string name = 3;
+  double volume = 4;
+  double weight = 5;
+  bool isFragile = 6;
+  bool isHighValue = 7;
+}
+
+message BinLayout {
+  string id = 1;
+  string code = 2;
+  int32 xCoord = 3;
+  int32 yCoord = 4;
+  double maxWeight = 5;
+  double maxVolume = 6;
+  double currWeight = 7;
+  double currVolume = 8;
+}
+
+message GetBinLayoutResponse {
+  bool success = 1;
+  string message = 2;
+  repeated BinLayout data = 3;
+  repeated string errors = 4;
 }
 
 message Bin {

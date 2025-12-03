@@ -36,6 +36,8 @@ export const WAREHOUSE_METHODS = {
   UPDATE_BIN: 'UpdateBin',
   DELETE_BIN: 'DeleteBin',
   LIST_BINS: 'ListBins',
+  GET_BIN_LAYOUT: 'GetBinLayout',
+  GET_BIN_PRODUCT: 'GetBinProduct',
 } as const;
 
 export const STOCK_METHODS = {

@@ -55,6 +55,8 @@ export const GRAPHQL_NAME_BIN = {
   CREATE: 'CreateBin',
   UPDATE: 'UpdateBin',
   DELETE: 'DeleteBin',
+  GET_LAYOUT: 'GetBinLayout',
+  GET_PRODUCT: 'GetBinProduct',
 };
 
 export const GRAPHQL_NAME_STOCK = {
